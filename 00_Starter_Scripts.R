@@ -11,24 +11,24 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 library(scales)
-library(ggplot2)
 
 
 ###### Only need to do this once ########
 #installing PEcAn.photosynthesis as a stand alone
+#need rjags installed in R and also JAGS (stand alone application) installed on your computer
+#Jags download can be found here: http://www.sourceforge.net/projects/mcmc-jags/files
+#You will then download an html file which will take you to where you can download one of two .exe files
+#Can use command "sessionInfo()" to see which version of R you're using. 
+#need Rtools installed
+
 if (!require("PEcAn.photosynthesis",character.only = TRUE))
 {
   library(devtools)
   install_github("PecanProject/pecan/modules/photosynthesis") 
 }
 
-#note you need rjags installed in R and also JAGS (stand alone application) installed on your computer
-  #note you will also need Rtools installed.
-  #Jags download can be found here: http://www.sourceforge.net/projects/mcmc-jags/files
-  #note you will get an error 
-  library(PEcAn.photosynthesis)
-
-  
+#note you will get an error 
+library(PEcAn.photosynthesis)
   #PlantEcoPhys
   # Plantecophys - An R Package for Analysing and Modelling Leaf Gas Exchange Data
   # Remko A. Duursma
