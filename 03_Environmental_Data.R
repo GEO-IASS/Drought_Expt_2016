@@ -3,6 +3,7 @@
 #Date: 01/07/2016 
 #Purpose: Script for reading in LiCor files, doing QC, fitting A/Ci. 
 #Then creates summary df for work with stats
+#Here is a description from the PEcAN website that also useful: https://github.com/PecanProject/pecan/blob/master/modules/photosynthesis/vignettes/ResponseCurves.Rmd
 
 
 #Grab the following packages before you start
@@ -13,6 +14,7 @@ library(plantecophys)
 #### To load a single file using PECAN.photosynthesis
 ## Read LI-COR 6400 files (ASCII not xls)
 
+#already did these in Script 2----------------------------
 #Prompt - program A/Ci curves for plant ID so that there's a column with PlantID in all licor files
 #Pecan Function for A/Ci QC 
 master <- Licor.QC(NameofDataFrame)
@@ -25,8 +27,9 @@ fit1 <- fitA(master[[1]])
 
 #Filter out -1 QC points here 
 
-#Plant_Ecophys
-fitaci(NameofDataFrame)
+#Plant_Ecophys--------------------------------------
+
+fitaci(dat)
 plot(fitaci(NameofDataFrame))
 
 #Dave's stuff----------------------------------------------------

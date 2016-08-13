@@ -3,9 +3,10 @@
   #Date: 01/05/2016 
   #Purpose: Script for reading in LiCor files, doing QC, fitting A/Ci. 
   #Then creates summary df for work with stats
+#Here's some useful info on QC with Pecan Photosynthesis: https://github.com/PecanProject/pecan/blob/master/modules/photosynthesis/vignettes/ResponseCurves.Rmd
   
   
-  #Grab the following packages before you start
+#Grab the following packages before you start
   
 library(devtools)
 library(ggplot2)
@@ -39,15 +40,20 @@ library(PEcAn.photosynthesis)
       #this runs licor QC on a file - you click on outliers to remove them
       master[[1]] <- Licor.QC(master[[1]])
       
-        #same process for all files
+        #same process for all files - this makes the first image pop up. 
         for(i in 1:length(master)){
             master[[i]] = Licor.QC(master[[i]])
           }
       
         #after the QC process combine the files into one data frame
         
-        dat<-do.call("rbind", master)
+        #This is what I'm supposed to use based on the pecan documentation but that was giving
+        #me the unequal columns error so I used "bind_rows" from dply r instead: 
+        #dat<-do.call("rbind", master)
         
+        dat <- bind_rows(master)
+        
+
           
           ## if QC was done, remove both unchecked points and those that fail QC
           if("QC" %in% colnames(dat)){
@@ -56,5 +62,9 @@ library(PEcAn.photosynthesis)
                 QC = rep(1,nrow(dat))
                 dat = cbind(dat,QC)
               }
-        Status 
+#write "dat" to a .csv file so I don't have to do QA/QC again: 
+
+write.csv(dat, "Curves_QC_8_13_2016.csv")
+
+#Status 
         
