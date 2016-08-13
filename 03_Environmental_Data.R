@@ -14,9 +14,6 @@ library(plantecophys)
 ## Read LI-COR 6400 files (ASCII not xls)
 
 #Prompt - program A/Ci curves for plant ID so that there's a column with PlantID in all licor files
-
-
-
 #Pecan Function for A/Ci QC 
 master <- Licor.QC(NameofDataFrame)
 

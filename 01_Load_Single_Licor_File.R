@@ -9,10 +9,15 @@
 library(devtools)
 library(PEcAn.photosynthesis)
 
-  #### To load a single file using PECAN.photosynthesis
-  ## Read LI-COR 6400 files (ASCII not xls)
 
-NameofDataFrame <- read.Licor("Summer_2016_Drought_Experiment/b2 pop a18 aci dl 06-23-2016")
+#### To load a single file using PECAN.photosynthesis
+  ## Read LI-COR 6400 files (ASCII not xls)
+#Working across multiple computers so need to set working directory: 
+#For USDA Computer: 
+setwd("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/A_Ci/")
+
+
+Single_File <- read.Licor("b2_pop_a18_aci_mb_06_30_2016")
 
 ?read.Licor
 

@@ -13,7 +13,7 @@ library(dplyr)
 library(scales)
 
 
-###### Only need to do this once ########
+###### Install Pecan: Only need to do this once ########
 #installing PEcAn.photosynthesis as a stand alone
 #need rjags installed in R and also JAGS (stand alone application) installed on your computer
 #Jags download can be found here: http://www.sourceforge.net/projects/mcmc-jags/files
@@ -27,13 +27,15 @@ if (!require("PEcAn.photosynthesis",character.only = TRUE))
   install_github("PecanProject/pecan/modules/photosynthesis") 
 }
 
-#note you will get an error 
+#note you will get an error: it says "In library(package, lib.loc = lib.loc, character.only = TRUE, logical.return = TRUE,  :
+#there is no package called ‘PEcAn.photosynthesis’"" 
+
 library(PEcAn.photosynthesis)
-  #PlantEcoPhys
+
+######  Install PlantEcoPhys ######
   # Plantecophys - An R Package for Analysing and Modelling Leaf Gas Exchange Data
   # Remko A. Duursma
   # Paper describing the package: http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0143346
   # Source code and descriptions: https://bitbucket.org/remkoduursma/plantecophys
-  
-  library(devtools)
+
 install_bitbucket("remkoduursma/plantecophys")

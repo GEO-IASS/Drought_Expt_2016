@@ -8,11 +8,10 @@
   #Grab the following packages before you start
   
 library(devtools)
-#library(ggplot2)
-  #library(plyr)
-  #library(dplyr)
-  #library(scales)
-  
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(scales)
 library(ggplot2)
 library(PEcAn.photosynthesis)
 
@@ -22,7 +21,7 @@ library(PEcAn.photosynthesis)
   #this command looks for files *starting with* '2015-01-' within the folder "data" - the files adhere to 
   # a naming convention that let's the code pull out whether the file is an A/ci curve or an aq curve
   
-  setwd("C:/Users/Mallory/Documents/")
+  setwd("C:/Users/rsstudent/Dropbox/")
   path_files <- "Summer_2016_Drought_Experiment/A_Ci/"
   filenames <- dir(path_files)
   filenames <- filenames[-grep(".xls", filenames, fixed=T)]
