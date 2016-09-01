@@ -53,6 +53,10 @@ library(PEcAn.photosynthesis)
         
         dat <- bind_rows(master)
         
+        #If you want both the bad and good observations in a data file, you'll need to save it here: 
+        
+        write.csv(dat, "QC_9_1_2016_bad_and_good.csv")
+        
 
           
           ## if QC was done, remove both unchecked points and those that fail QC
@@ -64,7 +68,7 @@ library(PEcAn.photosynthesis)
               }
 #write "dat" to a .csv file so I don't have to do QA/QC again: 
 
-write.csv(dat, "Curves_QC_8_13_2016.csv")
+write.csv(dat, "QC_9_1_2016.csv")
 
 #Status 
         
