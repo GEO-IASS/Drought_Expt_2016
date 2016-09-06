@@ -48,10 +48,8 @@ plotspc(test_spec)
 #Create new hyperSpec object and custmoe ASCII import function-------------------------------------
 #https://cran.r-project.org/web/packages/hyperSpec/vignettes/fileio.pdf see this Vignette for help (page 13)
 
-scan.txt.Poplar <- function (files = (Sys.glob("*.txt")), ..., label = list (),
+scan.txt.Poplar <- function (files = "*.txt", ..., label = list (),
                                   short = "scan.txt.Poplar", user = NULL, date = NULL) {
-        print("this working?")
-        summary(files)
         ## set some defaults
         long <- list (files = files, ..., label = label)
         label <- modifyList (list (.wavelength = expression (lambda / nm),
@@ -93,10 +91,6 @@ scan.txt.Poplar <- function (files = (Sys.glob("*.txt")), ..., label = list (),
 
 #having trouble getting it to properly read the txt files in the folder I tell it to, instead am having
 #to run the function on the list of text files. 
-scan.txt.Poplar(Sys.glob("*.txt"))
+source ("scan.txt.Poplar.R")
 scan.txt.Poplar("ASCII_Reflectance/")
-
-
-Sys.glob("ASCII_Reflectance/")
-
-filenames <- Sys.glob("*.txt")
+list.files("ASCII_Reflectance/", pattern = "*.txt")
