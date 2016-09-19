@@ -18,6 +18,8 @@ setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspec
 #Read in file, used "col.names" argument to rename columns properly. Will need to figure out
 #how to do this with a list of ASCII files
 test <- read.table("ASCII_Reflectance/b2popmlb_A1_Leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+str(test)
+qplot(test$wavelength, test$reflectance)
 
 #Create Column with filename and then delete the first row of data frame
 test$filename <- (test$reflectance[1:1])
@@ -45,13 +47,14 @@ dim(test_spec)
 plot(test_spec, "spcprctile")
 plotspc(test_spec)
 
-#Create new hyperSpec object and custmoe ASCII import function-------------------------------------
+#Create new hyperSpec object and custom ASCII import function-------------------------------------
 #https://cran.r-project.org/web/packages/hyperSpec/vignettes/fileio.pdf see this Vignette for help (page 13)
+vignette ("fileio")
 
-scan.txt.Poplar <- function (files = "*.txt", ..., label = list (),
+scan.txt.Poplar <- function (files = "*.txt", label = list (),
                                   short = "scan.txt.Poplar", user = NULL, date = NULL) {
         ## set some defaults
-        long <- list (files = files, ..., label = label)
+        long <- list (files = files, label = label)
         label <- modifyList (list (.wavelength = expression (lambda / nm),
                                    spc = expression (I[fl] / "a.u.")),
                              label)
@@ -77,7 +80,7 @@ scan.txt.Poplar <- function (files = "*.txt", ..., label = list (),
         spc [1, ] <- buffer [, 2]
         ## now read the remaining files
         for (f in seq (along = files)[-1]) {
-                buffer <- matrix (scan (files [f], ...), ncol = 2, byrow = TRUE)
+                buffer <- matrix (scan (files [f]), ncol = 2, byrow = TRUE)
                 ## check whether they have the same wavelength axis
                 if (! all.equal (buffer [, 1], wavelength))
                         stop (paste(files [f], "has different wavelength axis."))
