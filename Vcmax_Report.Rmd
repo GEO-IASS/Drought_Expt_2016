@@ -1,0 +1,96 @@
+---
+title: "Vcmax_Preliminary_Analysis"
+author: "Mallory Barnes"
+date: "September 19, 2016"
+output: html_document
+---
+
+Preliminary analysis of Vcmax and Jmax from A_Ci curves from my B2 2016 Drought Experiment
+
+Vcmax varied throughout the experiment:
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+library(gridExtra)
+Big_Leaf <-subset(merged, Genotype=="R-270")
+Small_Leaf<-subset(merged, Genotype=="52-276")
+
+plot1 <- ggplot(Big_Leaf, aes(Date.x, Vcmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Big Leaf - R-270")
+
+plot2 <- ggplot(Small_Leaf, aes(Date.x, Vcmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Small Leaf - 52-276")
+
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+
+
+So did Jmax - it has more of a clear downward trend: 
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+library(gridExtra)
+Big_Leaf <-subset(merged, Genotype=="R-270")
+Small_Leaf<-subset(merged, Genotype=="52-276")
+
+plot1 <- ggplot(Big_Leaf, aes(Date.x, Jmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Big Leaf - R-270")
+
+plot2 <- ggplot(Small_Leaf, aes(Date.x, Jmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Small Leaf - 52-276")
+
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+
+Here's Vcmax grouped by Genotype (smoothed):
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(aes(group=Genotype))+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Here's Jmax grouped by Genotype (smoothed): 
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + geom_smooth(aes(group=Genotype))+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Variation in Jmax and Vcmax is not well-explaned by stress (pre-dawn water potential)
+
+Correlation between Vcmax and Water Potential
+
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$Water_Pot, xx$Vcmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+
+
+
+Correlation between Jmax and Water Potential
+
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$Water_Pot, xx$Jmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+```

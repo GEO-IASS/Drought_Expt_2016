@@ -50,6 +50,8 @@ write.csv(A_Ci_ests, "A_Ci_Ests_to_merge.csv")
 write.csv(Climate_data, "Climate_data_to_merge.csv")
 merged <-merge(A_Ci_ests, Climate_data, by="uniqueID")
 
+write.csv(merged, "Merged_data_to_analyze.csv")
+
 str(merged)
 #Initial Plotting-------------------
 ggplot(merged, aes(Water_Pot, Vcmax, colour=Genotype)) + geom_line(aes(group=Plant_ID.x))
@@ -68,7 +70,7 @@ ddply(merged, .(Plant_ID.x), func)
 
 func2 <- function(xx)
 {
-        return(data.frame(COR = cor(xx$VPD, xx$Jmax)))
+        return(data.frame(COR = cor(xx$max, xx$wind_speed)))
 }
 
 
