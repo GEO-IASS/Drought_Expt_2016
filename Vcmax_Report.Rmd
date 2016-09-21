@@ -19,7 +19,7 @@ Small_Leaf<-subset(merged, Genotype=="52-276")
 plot1 <- ggplot(Big_Leaf, aes(Date.x, Vcmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         ggtitle("Big Leaf - R-270")
 
-plot2 <- ggplot(Small_Leaf, aes(Date.x, Vcmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+plot2 <- ggplot(Small_Leaf, aes(Date.x, Vcmax, colour=Plant_ID.x)) + geom_line( aes(group=Plant_ID.x))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         ggtitle("Small Leaf - 52-276")
 
 grid.arrange(plot1, plot2, ncol=2)
@@ -51,7 +51,7 @@ Here's Vcmax grouped by Genotype (smoothed):
 ```{r, echo=FALSE}
 merged <- read.csv("Merged_data_to_analyze.csv")
 library(ggplot2)
-ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(aes(group=Genotype))+
+ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(method="lm", aes(group=Genotype))+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
@@ -60,7 +60,7 @@ Here's Jmax grouped by Genotype (smoothed):
 ```{r, echo=FALSE}
 merged <- read.csv("Merged_data_to_analyze.csv")
 library(ggplot2)
-ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + geom_smooth(aes(group=Genotype))+
+ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + stat_smooth(method="lm", aes(group=Genotype))+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
@@ -93,4 +93,30 @@ func <- function(xx)
 ddply(merged, .(Genotype), func)
 ddply(merged, .(Plant_ID.x), func)
 ```
+
+Vcmax seems to be correlated with VPD, while Jmax isn't
+
+Vcmax and VPD
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$VPD, xx$Vcmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
 ```
+
+Jmax and VPD
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$VPD, xx$Jmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+

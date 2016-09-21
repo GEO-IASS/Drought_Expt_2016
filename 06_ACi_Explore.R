@@ -50,23 +50,26 @@ write.csv(A_Ci_ests, "A_Ci_Ests_to_merge.csv")
 write.csv(Climate_data, "Climate_data_to_merge.csv")
 merged <-merge(A_Ci_ests, Climate_data, by="uniqueID")
 
+getwd()
 write.csv(merged, "Merged_data_to_analyze.csv")
-
+merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
 str(merged)
+merged$ratio <- (merged$Vcmax/merged$Jmax)
 #Initial Plotting-------------------
-ggplot(merged, aes(Water_Pot, Vcmax, colour=Genotype)) + geom_line(aes(group=Plant_ID.x))
-ggplot(merged, aes(Date.x, Vcmax, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))
+ggplot(merged, aes(Water_Pot, Average_Thickness, colour=Genotype)) + geom_line(aes(group=Genotype))
+ggplot(merged, aes(Water_Pot, Average_Thickness, colour=Plant_ID.x)) + stat_smooth(method="lm")
 
 
 #Checking out correlations------------------
 require(plyr)
 func <- function(xx)
 {
-        return(data.frame(COR = cor(xx$VPD, xx$Vcmax)))
+        return(data.frame(COR = cor(xx$ratio, xx$Delta_T)))
 }
 
 ddply(merged, .(Genotype), func)
 ddply(merged, .(Plant_ID.x), func)
+
 
 func2 <- function(xx)
 {
