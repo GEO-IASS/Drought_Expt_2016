@@ -19,7 +19,6 @@ setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspec
 #how to do this with a list of ASCII files
 test <- read.table("ASCII_Reflectance/b2popmlb_A1_Leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
 str(test)
-qplot(test$wavelength, test$reflectance)
 
 #Create Column with filename and then delete the first row of data frame
 test$filename <- (test$reflectance[1:1])
@@ -31,6 +30,9 @@ test$reflectance <-as.numeric(levels(test$reflectance))[test$reflectance]
 
 str(test)
 head(test)
+
+#Simple Plot of Test
+qplot(test$wavelength, test$reflectance)
 
 #Create Hyperspec object from 1 file
 test_spec <- new ("hyperSpec", spc = test$reflectance, wavelength = test$wavelength, label=test$filename)

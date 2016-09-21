@@ -85,3 +85,15 @@ qplot(merged$Vcmax, merged$Date.x)
 
 #There is variation in Vcmax and Jmax over the season but it does not seem to be explained by 
 #Water potential (stress). It does, however, seem to be explained - to some extent, by VPD
+
+#Water Potential Data--------------------
+ggplot(merged, aes(Date.x, Water_Pot, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))
+
+#Finding good comparison observations: Looks like Individual E4, E10, E3 and G11 all got pretty stressed
+#Gonna subset and re-plot
+
+merged_stressed <- subset(merged, Plant_ID.x == "e04" | Plant_ID.x == "e03" | Plant_ID.x == "e10" | Plant_ID.x == "g11")
+
+ggplot(merged_stressed, aes(Date.x, Water_Pot, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))
+
+#Let's look at E03 on 6/24 (stressed) and E03 on 06/09 (not stressed)
