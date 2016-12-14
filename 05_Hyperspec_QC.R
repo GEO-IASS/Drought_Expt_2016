@@ -60,6 +60,7 @@ calc_NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
 calc_NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
 
 # batch import text files (files must be in working directory); 'pattern' is case-sensitive
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 txtfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 txtfiles_subset = txtfiles[1:5]
 
@@ -71,7 +72,7 @@ setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectr
 
 
 indices_tmp <- lapply(txtfiles_subset, calc_indices)
-indices <- do.call(rbind, indices)
+indices <- do.call(rbind, indices_tmp)
 
 
 calc_indices <- function(file){
