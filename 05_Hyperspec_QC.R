@@ -52,11 +52,14 @@ test[221,2]
 test[511,2]
 test[341,2]
 
-
-
+#For Loop -----------------------------------------------------------
 
 # Define function to calculate mean from instrument output data file
-meanSS = function(diam, freq){(sum(diam*freq))/(sum(freq))}
+PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
+NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
+NDWI = function(w_860, w_1240){((w_531-w_570)/(w_531+w_570))}
+
+
 
 # batch import text files (files must be in working directory); 'pattern' is case-sensitive
 txtfiles = list.files(pattern="*.TXT")
