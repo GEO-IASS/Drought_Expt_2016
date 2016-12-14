@@ -70,32 +70,29 @@ indices = numeric(length(txtfiles))
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
 
-indices <- as.data.frame(lapply(txtfiles_subset, calc_indices))
+indices_tmp <- lapply(txtfiles_subset, calc_indices)
+indices <- do.call(rbind, indices)
 
 
 calc_indices <- function(file){
         tmp = read.table(file,  col.names=c("wavelength", "reflectance"))
-        print(head(tmp))
         tmp$filename <- (tmp$reflectance[1:1])
         tmp = tmp[-1,]
         tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
         tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
-        print(head(tmp))
         filename <- substr(tmp[1,3], 1,31)
         ID <-  substr(tmp[1,3], 10,11)
         date <- (substr(tmp[1,3], 18,26))
         observation =(substr(tmp[1,3], 30,31))
         w_531 =tmp[182,2]
-        print(w_531)
         w_570 = tmp[221,2]
-        print(w_570)
         w_690 = tmp[341,2]
         w_860 = tmp[511,2]
         w_1240 = tmp[891,2]
         PRI = calc_PRI(w_531, w_570)
         NDVI = calc_NDVI(w_860, w_690)
         NDWI = calc_NDWI(w_860, w_1240)
-        indices=cbind(filename, ID, date, observation, PRI, NDVI, NDWI)
+        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI))
         return(indices)
 }
 
