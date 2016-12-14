@@ -52,9 +52,9 @@ test[221,2]
 test[511,2]
 test[341,2]
 
-#For Loop -----------------------------------------------------------
+#Lapply to calculate for all hyperspec files -----------------------------------------------------------
 
-# Define functions to calculate vegetation indices from hyperspectral file
+#Define functions to calculate vegetation indices from hyperspectral file
 calc_PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
 calc_NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
 calc_NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
@@ -62,20 +62,33 @@ calc_NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
 # batch import text files (files must be in working directory); 'pattern' is case-sensitive
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 txtfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
+
+#txtfiles_subset is to test out the lapply
 txtfiles_subset = txtfiles[1:5]
 
-indices = numeric(length(txtfiles))
+#Some dates are slightly different lenghts than others: trying to fix that...
+sapply(txtfiles, function(x) any(nchar(x) > 39))
 
-# Loop that creates subset (SS, which is 10-63 micron range), assigns name to columns, and 
-# computes mean of that subset for all the text files that were read in
+
+#Don't neeed this anymore right?
+#indices = numeric(length(txtfiles))
+
+# Lapply - defined function that calculates indices and apply it over the list of 
+#textfiles (hyperspectral) 
+
+
+
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
-
-indices_tmp <- lapply(txtfiles, calc_indices)
+#Lapply "calc_indices functinon"
+indices_tmp <- lapply(txtfiles_subset, calc_indices)
+#Bind rows together
 indices <- do.call(rbind, indices_tmp)
+#str still looks really funky
 str(indices)
 indices[200:235,]
 head(indices)
+as_date(indices$date)
 
 calc_indices <- function(file){
         tmp = read.table(file,  col.names=c("wavelength", "reflectance"))
@@ -83,9 +96,9 @@ calc_indices <- function(file){
         tmp = tmp[-1,]
         tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
         tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
-        filename <- substr(tmp[1,3], 1,34)
-        ID <-  substr(tmp[1,3], 10,11)
-        date <- (substr(tmp[1,3], 18,27))
+        filename <- substr(tmp[1,3], 1,39)
+        ID <-  substr(tmp[1,3], 10,12)
+        date <- (substr(tmp[1,3], 19,27))
         observation =(substr(tmp[1,3], 30,31))
         w_531 =tmp[182,2]
         w_570 = tmp[221,2]
@@ -98,12 +111,6 @@ calc_indices <- function(file){
         indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI))
         return(indices)
 }
-
-
-
-
-
-
 
 
 # define vectors to store results (mean sortable silt values)
