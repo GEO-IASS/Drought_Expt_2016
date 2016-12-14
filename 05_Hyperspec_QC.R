@@ -54,31 +54,42 @@ test[341,2]
 
 #For Loop -----------------------------------------------------------
 
-# Define function to calculate mean from instrument output data file
+# Define functions to calculate vegetation indices from hyperspectral file
 PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
 NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
-NDWI = function(w_860, w_1240){((w_531-w_570)/(w_531+w_570))}
-
-
+NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
 
 # batch import text files (files must be in working directory); 'pattern' is case-sensitive
-txtfiles = list.files(pattern="*.TXT")
+txtfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
+txtfiles_subset = txtfiles[1:5]
 
-means = numeric(length(txtfiles))
+indices = numeric(length(txtfiles))
 
 # Loop that creates subset (SS, which is 10-63 micron range), assigns name to columns, and 
 # computes mean of that subset for all the text files that were read in
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
-for (i in 1:length(txtfiles)){
-  tmp = read.table(txtfiles[i], sep=",", skip=15)
-  SS = data.frame(subset(tmp, V1 > 9.99)) 
-  diam = SS[[1]]
-  freq = SS[[2]]
-  means[i] = meanSS(diam, freq)
+
+for (i in 1:length(txtfiles_subset)){
+  tmp = read.table(txtfiles_subset[i],  col.names=c("wavelength", "reflectance"))
+  tmp$filename <- (tmp$reflectance[1:1])
+  tmp = tmp[-1,]
+  filename <- substr(tmp[1,3], 1,31)
+  ID <-  substr(tmp[1,3], 10,11)
+  date <- (substr(tmp[1,3], 18,26))
+  w_531 =test[182,2]
+  w_570 = test[221,2]
+  w_690 = test[341,2]
+  w_860 = test[511,2]
+  w_1240 = test[891,2]
+  indices$PRI = PRI(w_531, w_570)
+  indices$NDVI = NDVI(w_860, w_690)
+  indices$NDWI = NDWI(w_860, w_1240)
+  
 }
 
 # define vectors to store results (mean sortable silt values)
-results = data.frame(txtfiles, means)
+results = data.frame(txtfiles_subset, indices)
 print(results)
 
 #having trouble getting it to properly read the txt files in the folder I tell it to, instead am having
@@ -86,4 +97,4 @@ print(results)
 source ("scan.txt.Poplar.R")
 scan.txt.Poplar("ASCII_Reflectance/")
 
-list.files("ASCII_Reflectance/", pattern = "*.txt")
+
