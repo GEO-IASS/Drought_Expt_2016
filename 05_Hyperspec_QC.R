@@ -81,7 +81,7 @@ sapply(txtfiles, function(x) any(nchar(x) > 39))
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
 #Lapply "calc_indices functinon"
-indices_tmp <- lapply(txtfiles_subset, calc_indices)
+indices_tmp <- lapply(txtfiles, calc_indices)
 calc_indices(textfiles_subset)
 #Bind rows together
 indices <- do.call(rbind, indices_tmp)
@@ -90,6 +90,11 @@ str(indices)
 indices[200:235,]
 head(indices)
 as_date(indices$date)
+
+write.csv(indices,"Processed_Hyperspec_Files.csv")
+
+#Wrote it to file so I can clean up in excel and actually use. NOT A GOOD PLAN and
+#NOT CURRENTLY REPRODUCIBLE :(
 
 calc_indices <- function(file){
         tmp = read.table(file,  col.names=c("wavelength", "reflectance"))
