@@ -77,12 +77,13 @@ indices <- do.call(rbind, indices_tmp)
 str(indices)
 indices[200:235,]
 head(indices)
-as_date(indices$date)
+#Going to format different variables now (numeric, date, etc. etc. for analysis)
+indices$PRI <- as.numeric(indices$PRI)
+indices$NDVI <- as.numeric(indices$NDVI)
+indices$NDWI <- as.numeric(indices$NDWI)
+indices$date <- as.Date(indices$date, format="%m-%d-%Y")
 
 write.csv(indices,"Processed_Hyperspec_Files.csv")
-
-#Wrote it to file so I can clean up in excel and actually use. NOT A GOOD PLAN and
-#NOT CURRENTLY REPRODUCIBLE :(
 
 calc_indices <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
