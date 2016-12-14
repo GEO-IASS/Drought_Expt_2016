@@ -55,9 +55,9 @@ test[341,2]
 #For Loop -----------------------------------------------------------
 
 # Define functions to calculate vegetation indices from hyperspectral file
-PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
-NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
-NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
+calc_PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
+calc_NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
+calc_NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
 
 # batch import text files (files must be in working directory); 'pattern' is case-sensitive
 txtfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
@@ -72,20 +72,27 @@ setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectr
 
 for (i in 1:length(txtfiles_subset)){
   tmp = read.table(txtfiles_subset[i],  col.names=c("wavelength", "reflectance"))
+  print(head(tmp))
   tmp$filename <- (tmp$reflectance[1:1])
   tmp = tmp[-1,]
+  tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
+  tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
+  print(head(tmp))
   filename <- substr(tmp[1,3], 1,31)
   ID <-  substr(tmp[1,3], 10,11)
   date <- (substr(tmp[1,3], 18,26))
-  w_531 =test[182,2]
-  w_570 = test[221,2]
-  w_690 = test[341,2]
-  w_860 = test[511,2]
-  w_1240 = test[891,2]
-  indices$PRI = PRI(w_531, w_570)
-  indices$NDVI = NDVI(w_860, w_690)
-  indices$NDWI = NDWI(w_860, w_1240)
-  
+  observation =(substr(tmp[1,3], 30,31))
+  w_531 =tmp[182,2]
+  print(w_531)
+  w_570 = tmp[221,2]
+  print(w_570)
+  w_690 = tmp[341,2]
+  w_860 = tmp[511,2]
+  w_1240 = tmp[891,2]
+    PRI = calc_PRI(w_531, w_570)
+  NDVI = calc_NDVI(w_860, w_690)
+  NDWI = calc_NDWI(w_860, w_1240)
+  indices=cbind(filename, ID, date, observation, PRI, NDVI, NDWI)
 }
 
 # define vectors to store results (mean sortable silt values)
