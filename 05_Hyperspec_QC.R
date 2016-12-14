@@ -59,30 +59,18 @@ calc_PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
 calc_NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
 calc_NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
 
-# batch import text files (files must be in working directory); 'pattern' is case-sensitive
+#create list of text files (files must be in working directory); 'pattern' is case-sensitive
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
-txtfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
+textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 
 #txtfiles_subset is to test out the lapply
-txtfiles_subset = txtfiles[1:5]
-
-#Some dates are slightly different lenghts than others: trying to fix that...
-sapply(txtfiles, function(x) any(nchar(x) > 39))
-
-
-#Don't neeed this anymore right?
-#indices = numeric(length(txtfiles))
-
-# Lapply - defined function that calculates indices and apply it over the list of 
-#textfiles (hyperspectral) 
-
+textfiles_subset = txtfiles[1:5]
 
 
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
 #Lapply "calc_indices functinon"
-indices_tmp <- lapply(txtfiles, calc_indices)
-calc_indices(textfiles_subset)
+indices_tmp <- lapply(textfiles, calc_indices)
 #Bind rows together
 indices <- do.call(rbind, indices_tmp)
 #str still looks really funky
@@ -96,19 +84,16 @@ write.csv(indices,"Processed_Hyperspec_Files.csv")
 #Wrote it to file so I can clean up in excel and actually use. NOT A GOOD PLAN and
 #NOT CURRENTLY REPRODUCIBLE :(
 
-calc_indices <- function(file){
-        tmp = read.table(file,  col.names=c("wavelength", "reflectance"))
-        print(head(tmp))
-        tmp$filename <- (tmp$reflectance[1:1])
-        print(head(tmp))
+calc_indices <- function(x){
+        tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
+        tmp$filename <- basename(x)
         tmp = tmp[-1,]
         tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
         tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
-        filename <- substr(tmp[1,3], 1,39)
+        filename <- substr(tmp[1,3], 1,40)
         ID <-  substr(tmp[1,3], 10,12)
-        print(head(ID))
         date <- (substr(tmp[1,3], 19,27))
-        observation =(substr(tmp[1,3], 30,31))
+        observation =(substr(tmp[1,3], 31,32))
         w_531 =tmp[182,2]
         w_570 = tmp[221,2]
         w_690 = tmp[341,2]
@@ -126,9 +111,5 @@ calc_indices <- function(file){
 results = data.frame(txtfiles_subset, indices)
 print(results)
 
-#having trouble getting it to properly read the txt files in the folder I tell it to, instead am having
-#to run the function on the list of text files. 
-source ("scan.txt.Poplar.R")
-scan.txt.Poplar("ASCII_Reflectance/")
 
 
