@@ -78,12 +78,12 @@ str(indices)
 indices[200:235,]
 head(indices)
 #Going to format different variables now (numeric, date, etc. etc. for analysis)
-indices$PRI <- as.numeric(indices$PRI)
-indices$NDVI <- as.numeric(indices$NDVI)
-indices$NDWI <- as.numeric(indices$NDWI)
+indices$PRI <- as.numeric(as.character(indices$PRI))
+indices$NDVI <- as.numeric(as.character(indices$NDVI))
+indices$NDWI <- as.numeric(as.character(indices$NDWI))
 indices$date <- as.Date(indices$date, format="%m-%d-%Y")
 
-write.csv(indices,"Processed_Hyperspec_Files.csv")
+write.csv(indices,"C:/Users//Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
 
 calc_indices <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
