@@ -82,6 +82,7 @@ setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectr
 
 #Lapply "calc_indices functinon"
 indices_tmp <- lapply(txtfiles_subset, calc_indices)
+calc_indices(textfiles_subset)
 #Bind rows together
 indices <- do.call(rbind, indices_tmp)
 #str still looks really funky
@@ -92,12 +93,15 @@ as_date(indices$date)
 
 calc_indices <- function(file){
         tmp = read.table(file,  col.names=c("wavelength", "reflectance"))
+        print(head(tmp))
         tmp$filename <- (tmp$reflectance[1:1])
+        print(head(tmp))
         tmp = tmp[-1,]
         tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
         tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
         filename <- substr(tmp[1,3], 1,39)
         ID <-  substr(tmp[1,3], 10,12)
+        print(head(ID))
         date <- (substr(tmp[1,3], 19,27))
         observation =(substr(tmp[1,3], 30,31))
         w_531 =tmp[182,2]
