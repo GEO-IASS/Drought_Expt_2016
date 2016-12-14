@@ -34,6 +34,41 @@ head(test)
 #Simple Plot of Test
 qplot(test$wavelength, test$reflectance)
 
+#Test Calculate Indices
+
+filename <- substr(test[1,3], 1,31)
+ID <-  substr(test[1,3], 10,11)
+date <- (substr(test[1,3], 18,26))
+observation <- (substr(test[1,3], 30,31))
+PRI <- ((test[182,2]-test[221,2])/(test[182,2]+test[221,2]))
+NDVI <- ((test[511,2]-test[341,2])/(test[511,2]+test[341,2]))
+NDWI <- ((test[511,2]-test[891,2])/(test[511,2]+test[891,2]))
+
+
+test_df <- cbind(filename, ID, date, observation, PRI, NDVI, NDWI)
+
+test[182,2]
+test[221,2]
+test[511,2]
+test[341,2]
+
+
+
+# Loop that creates subset (SS, which is 10-63 micron range), assigns name to columns, and 
+# computes mean of that subset for all the text files that were read in
+means = numeric(length(txtfiles))
+
+for (i in 1:length(txtfiles)){
+  tmp = read.table(txtfiles[i], sep=",", skip=15)
+  SS = data.frame(subset(tmp, V1 > 9.99)) 
+  diam = SS[[1]]
+  freq = SS[[2]]
+  means[i] = meanSS(diam, freq)
+}
+
+# define vectors to store results (mean sortable silt values)
+results = data.frame(txtfiles, means)
+print(results)
 #Create Hyperspec object from 1 file
 test_spec <- new ("hyperSpec", spc = test$reflectance, wavelength = test$wavelength, label=test$filename)
 
@@ -98,4 +133,5 @@ scan.txt.Poplar <- function (files = "*.txt", label = list (),
 #to run the function on the list of text files. 
 source ("scan.txt.Poplar.R")
 scan.txt.Poplar("ASCII_Reflectance/")
+
 list.files("ASCII_Reflectance/", pattern = "*.txt")
