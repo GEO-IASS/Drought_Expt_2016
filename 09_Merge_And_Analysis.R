@@ -98,7 +98,8 @@ gtR270 <- subset(data_graphs, Genotype=="R-270")
 
 str(gt52_276)
 str(gtR270)
-#Figure_1: water potential, vmax, and jmax by genotype with correlations
+#Figure_1: ----------------------------------------
+#water potential, vmax, and jmax by genotype with correlations
 #So this will need to be 4 panels, each with 2 lines on it
 
 graph1a <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
@@ -122,17 +123,62 @@ graph1d <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
         annotate("text", x=-0.75, y=165, label="Phase 2: r= -0.25,\n Phase 3: r= -0.11")
 
 
-multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
+fig_1 <- multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
 
-ggplot(data=all_data, (aes(x=Water_Pot, y=Vcmax, colour=Genotype)))+
+
+ggsave(fig_1, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_1.png", dpi=500)
+
+
+#Figure 2---------------------------------------------
+#Are hyperspectral indices correlated with Vcmax and Jmax?
+
+graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
         geom_point()+
-        geom_smooth()
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
 
+
+graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+
+graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+
+graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+
+
+
+
+#7b3294
+#008837
 
 ggplot(data=all_data,
        aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
         geom_point()+
         geom_smooth()
+
+
+
+
+
+
+
+
+
+
+
+#What's this stuff - from before right?
 #Finding good comparison observations: Looks like Individual E4, E10, E3 and G11 all got pretty stressed
 #Gonna subset and re-plot
 
