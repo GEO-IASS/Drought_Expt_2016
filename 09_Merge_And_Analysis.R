@@ -33,21 +33,41 @@ c <-(cor(all_data[,unlist(lapply(all_data, is.numeric))]))
 write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
 all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
+str(all_data)
 #1) Are Vcmax and Jmax Sensistive to Drought Stress?---------------------
 #Function to return correlations by group
 
 all_data$Date.x <- as.Date(all_data$Date.x)
-all_data
-phase_1 <-subset(all_data, Date.x<="2016-06-08")
+all_data$phase <- 2
+phase_2$phase <-2
+phase_3$phase <-3
+data_graphs <- rbind(phase_2, phase_3)
+str(data)
+
+phase_1 <-subset(all_data, Date.x<"2016-06-08")
 phase_2 <- subset(all_data, Date.x>="2016-06-08" & Date.x<="2016-06-16")
 phase_3 <- subset(all_data, Date.x>="2016-06-16")
 require(plyr)
 func <- function(xx, a, b)
 {
-        return(data.frame(COR = cor(xx$NDWI, xx$Water_Pot)))
+        return(data.frame(COR = cor(xx$Vcmax, xx$Water_Pot)))
 }
 
-ddply(phase_3, .(Genotype), func)
+ddply(all_data, .(Genotype), func)
+
+#subsets by genotyp
+
+
+
+#Figure_1: water potential, vmax, and jmax by genotype with correlations
+#So this will need to be 4 panels, each with 2 lines on it
+
+graph1a <- (data=data_graphs, (aeas(x=Water_Pot, y=Vcmax, colour=Phase)))
+
+ggplot(data=all_data, (aes(x=Water_Pot, y=Vcmax, colour=Genotype)))+
+        geom_point()+
+        geom_smooth()
+
 
 ggplot(data=all_data,
        aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
