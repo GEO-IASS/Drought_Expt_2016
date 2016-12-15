@@ -98,6 +98,8 @@ gtR270 <- subset(data_graphs, Genotype=="R-270")
 
 str(gt52_276)
 str(gtR270)
+
+gtR270
 #Figure_1: ----------------------------------------
 #water potential, vmax, and jmax by genotype with correlations
 #So this will need to be 4 panels, each with 2 lines on it
@@ -139,29 +141,38 @@ graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
         annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
 
 
-graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
+graph2b <- ggplot(data=all_data, (aes(x=Jmax, y=NDVI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+        annotate("text", x=97, y=0.8, label="52-276: r= 0.7855, \n R270: r=0.451")
 
-graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
+graph2c <- ggplot(data=all_data, (aes(x=Vcmax, y=PRI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+        annotate("text", x=50, y=0.1, label="52-276: r= 0.478, \n R270: r=0.396")
 
-graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
+graph2d <- ggplot(data=all_data, (aes(x=Jmax, y=PRI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+        annotate("text", x=100, y=0.05, label="52-276: r= 0.09, \n R270: r=-0.12")
+
+graph2e <- ggplot(data=all_data, (aes(x=Vcmax, y=NDWI, colour=Genotype)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=50, y=0.1, label="52-276: r= 0.27, \n R270: r=0.08")
+
+graph2f <- ggplot(data=all_data, (aes(x=Jmax, y=NDWI, colour=Genotype)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=105, y=0.07, label="52-276: r= 0.554, \n R270: r=0.526")
 
 
 
-
-#7b3294
-#008837
 
 ggplot(data=all_data,
        aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
