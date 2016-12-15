@@ -8,6 +8,42 @@ head(merged)
 merged[25:35,]
 head(hyperspec)
 
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+        library(grid)
+        
+        # Make a list from the ... arguments and plotlist
+        plots <- c(list(...), plotlist)
+        
+        numPlots = length(plots)
+        
+        # If layout is NULL, then use 'cols' to determine layout
+        if (is.null(layout)) {
+                # Make the panel
+                # ncol: Number of columns of plots
+                # nrow: Number of rows needed, calculated from # of cols
+                layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                                 ncol = cols, nrow = ceiling(numPlots/cols))
+        }
+        
+        if (numPlots==1) {
+                print(plots[[1]])
+                
+        } else {
+                # Set up the page
+                grid.newpage()
+                pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+                
+                # Make each plot, in the correct location
+                for (i in 1:numPlots) {
+                        # Get the i,j matrix positions of the regions that contain this subplot
+                        matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+                        
+                        print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                                        layout.pos.col = matchidx$col))
+                }
+        }
+}
+
 
 #hyperspectral data - create "unique id" (same as in 'merged')and then average by unique ID
 #Then will be able to merge with A/Ci and Climate files
@@ -50,40 +86,43 @@ phase_3 <- subset(all_data, Date.x>="2016-06-16")
 require(plyr)
 func <- function(xx, a, b)
 {
-        return(data.frame(COR = cor(xx$Vcmax, xx$Water_Pot)))
+        return(data.frame(COR = cor(xx$Jmax, xx$Water_Pot)))
 }
 
-ddply(all_data, .(Genotype), func)
+ddply(phase_2, .(Genotype), func)
 
 #subsets by genotype
 str(data_graphs)
-gt52_276 <-subset(data_graphs, Genotype="52-276")
-gtR270 <- subset(data_graphs, Genotype="R-270")
+gt52_276 <-subset(data_graphs, Genotype=="52-276")
+gtR270 <- subset(data_graphs, Genotype=="R-270")
 
 str(gt52_276)
+str(gtR270)
 #Figure_1: water potential, vmax, and jmax by genotype with correlations
 #So this will need to be 4 panels, each with 2 lines on it
 
 graph1a <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)
-graph1a + annotate("text", x=-1, y=100, label="Phase 2: r= 0.359, Phase 3: r= 0.126")
+        geom_smooth(method="lm", se=FALSE)+ 
+        annotate("text", x=-1.1, y=95, label="Phase 2: r= 0.359, \n Phase 3: r= 0.126")
 
 graph1b <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)
-graph1b + annotate("text", x=-1, y=100, label="Phase 2: r= 0.0.35, Phase 3: r= -0.19")
+        geom_smooth(method="lm", se=FALSE)+
+        annotate("text", x=-1.1, y=182, label="Phase 2: r= 0.35, \n Phase 3: r= -0.19")
 
 graph1c <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)
-graph1c + annotate("text", x=-1, y=100, label="Phase 2: r= 0.405, Phase 3: r= -0.25")
+        geom_smooth(method="lm", se=FALSE)+ 
+        annotate("text", x=-0.75, y=90, label="Phase 2: r= 0.405, \n Phase 3: r= -0.25")
 
-graph1d <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
+graph1d <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)
-graph1d + annotate("text", x=-1, y=100, label="Phase 2: r= -0.25, Phase 3: r= -0.11")
+        geom_smooth(method="lm", se=FALSE)+ 
+        annotate("text", x=-0.75, y=165, label="Phase 2: r= -0.25,\n Phase 3: r= -0.11")
 
+
+multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
 
 ggplot(data=all_data, (aes(x=Water_Pot, y=Vcmax, colour=Genotype)))+
         geom_point()+
