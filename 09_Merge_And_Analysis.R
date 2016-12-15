@@ -138,41 +138,44 @@ graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=50, y=0.85, label="52-276: r= 0.837, \n R270: r=0.544")
+        annotate("text", x=80, y=0.68, label="52-276: r= 0.837, \n R270: r=0.544")
 
 
 graph2b <- ggplot(data=all_data, (aes(x=Jmax, y=NDVI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=97, y=0.8, label="52-276: r= 0.7855, \n R270: r=0.451")
+        annotate("text", x=175, y=0.68, label="52-276: r= 0.786, \n R270: r=0.451")
 
 graph2c <- ggplot(data=all_data, (aes(x=Vcmax, y=PRI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=50, y=0.1, label="52-276: r= 0.478, \n R270: r=0.396")
+        annotate("text", x=90, y=-0.04, label="52-276: r= 0.478, \n R270: r=0.396")
 
 graph2d <- ggplot(data=all_data, (aes(x=Jmax, y=PRI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=100, y=0.05, label="52-276: r= 0.09, \n R270: r=-0.12")
+        annotate("text", x=190, y=-0.035, label="52-276: r= 0.09, \n R270: r=-0.12")
 
 graph2e <- ggplot(data=all_data, (aes(x=Vcmax, y=NDWI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=50, y=0.1, label="52-276: r= 0.27, \n R270: r=0.08")
+        annotate("text", x=100, y=0.035, label="52-276: r= 0.27, \n R270: r=0.08")
 
 graph2f <- ggplot(data=all_data, (aes(x=Jmax, y=NDWI, colour=Genotype)))+
         geom_point()+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=105, y=0.07, label="52-276: r= 0.554, \n R270: r=0.526")
+        annotate("text", x=180, y=0.035, label="52-276: r= 0.554, \n R270: r=0.526")
 
 
 
+fig_2 <- multiplot(graph2a, graph2b, graph2c, graph2d, graph2e, graph2f, cols=2)
+
+#saved manually because ggsave not working
 
 ggplot(data=all_data,
        aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
