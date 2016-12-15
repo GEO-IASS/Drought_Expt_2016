@@ -1,6 +1,6 @@
 library(plyr)
 library(psych)
-
+library(Hmisc)
 merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
 hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
 
@@ -32,21 +32,27 @@ all_data <- subset(all_data, select=-c(X,X.1, X.2))
 c <-(cor(all_data[,unlist(lapply(all_data, is.numeric))]))
 write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
+all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
 #1) Are Vcmax and Jmax Sensistive to Drought Stress?---------------------
 #Function to return correlations by group
-str(all_data)
+
+all_data$Date.x <- as.Date(all_data$Date.x)
+all_data
+phase_1 <-subset(all_data, Date.x<="2016-06-08")
+phase_2 <- subset(all_data, Date.x>="2016-06-08" & Date.x<="2016-06-16")
+phase_3 <- subset(all_data, Date.x>="2016-06-16")
 require(plyr)
 func <- function(xx, a, b)
 {
-        return(data.frame(COR = cor(xx$Water_Pot, xx$Vcmax)), (P = (cor.test(xx$Water_Pot,xx$Vcmax)$p.value)))
-        
+        return(data.frame(COR = cor(xx$NDWI, xx$Water_Pot)))
 }
 
-ddply(all_data, .(Genotype), func)
+ddply(phase_3, .(Genotype), func)
 
-
-ggplot(merged, aes(Date.x, Water_Pot, colour=Plant_ID.x)) + geom_line(aes(group=Plant_ID.x))
-
+ggplot(data=all_data,
+       aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
+        geom_point()+
+        geom_smooth()
 #Finding good comparison observations: Looks like Individual E4, E10, E3 and G11 all got pretty stressed
 #Gonna subset and re-plot
 
