@@ -42,7 +42,7 @@ all_data$phase <- 2
 phase_2$phase <-2
 phase_3$phase <-3
 data_graphs <- rbind(phase_2, phase_3)
-str(data)
+data_graphs$phase <- as.factor(data_graphs$phase)
 
 phase_1 <-subset(all_data, Date.x<"2016-06-08")
 phase_2 <- subset(all_data, Date.x>="2016-06-08" & Date.x<="2016-06-16")
@@ -55,14 +55,35 @@ func <- function(xx, a, b)
 
 ddply(all_data, .(Genotype), func)
 
-#subsets by genotyp
+#subsets by genotype
+str(data_graphs)
+gt52_276 <-subset(data_graphs, Genotype="52-276")
+gtR270 <- subset(data_graphs, Genotype="R-270")
 
-
-
+str(gt52_276)
 #Figure_1: water potential, vmax, and jmax by genotype with correlations
 #So this will need to be 4 panels, each with 2 lines on it
 
-graph1a <- (data=data_graphs, (aeas(x=Water_Pot, y=Vcmax, colour=Phase)))
+graph1a <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)
+graph1a + annotate("text", x=-1, y=100, label="Phase 2: r= 0.359, Phase 3: r= 0.126")
+
+graph1b <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)
+graph1b + annotate("text", x=-1, y=100, label="Phase 2: r= 0.0.35, Phase 3: r= -0.19")
+
+graph1c <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)
+graph1c + annotate("text", x=-1, y=100, label="Phase 2: r= 0.405, Phase 3: r= -0.25")
+
+graph1d <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)
+graph1d + annotate("text", x=-1, y=100, label="Phase 2: r= -0.25, Phase 3: r= -0.11")
+
 
 ggplot(data=all_data, (aes(x=Water_Pot, y=Vcmax, colour=Genotype)))+
         geom_point()+
