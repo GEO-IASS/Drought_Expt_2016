@@ -110,23 +110,28 @@ gtR270
 
 graph1a <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)+ 
-        annotate("text", x=-1.1, y=95, label="Phase 2: r= 0.359, \n Phase 3: r= 0.126")
+        #geom_smooth(method="lm", se=FALSE)+ 
+        #annotate("text", x=-1.1, y=95, label="Phase 2: r= 0.359, \n Phase 3: r= 0.126")
+        annotate("text", x=-1.1, y=95, label="Correlations \n nonsignificant")
 
 graph1b <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)+
-        annotate("text", x=-1.1, y=182, label="Phase 2: r= 0.35, \n Phase 3: r= -0.19")
+        #geom_smooth(method="lm", se=FALSE)+
+        #annotate("text", x=-1.1, y=182, label="Phase 2: r= 0.35, \n Phase 3: r= -0.19")
+        annotate("text", x=-1.1, y=182, label="Correlations \n nonsignificant")
+
 
 graph1c <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)+ 
-        annotate("text", x=-0.75, y=90, label="Phase 2: r= 0.405, \n Phase 3: r= -0.25")
+        #geom_smooth(method="lm", se=FALSE)+ 
+        #annotate("text", x=-0.75, y=90, label="Phase 2: r= 0.405, \n Phase 3: r= -0.25")
+        annotate("text", x=-0.75, y=90, label="Correlations \n nonsignificant")
 
 graph1d <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)+ 
-        annotate("text", x=-0.75, y=165, label="Phase 2: r= -0.25,\n Phase 3: r= -0.11")
+        #geom_smooth(method="lm", se=FALSE)+ 
+        #annotate("text", x=-0.75, y=165, label="Phase 2: r= -0.25,\n Phase 3: r= -0.11")
+        annotate("text", x=-0.75, y=165, label="Correlations \n nonsignificant")
 
 
 fig_1 <- multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
@@ -159,15 +164,19 @@ graph2c <- ggplot(data=all_data, (aes(x=Vcmax, y=PRI, colour=Genotype)))+
 
 graph2d <- ggplot(data=all_data, (aes(x=Jmax, y=PRI, colour=Genotype)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)+
+        #geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=190, y=-0.035, label="52-276: r= 0.09, \n R270: r=-0.12")
+        #annotate("text", x=190, y=-0.035, label="52-276: r= 0.09, \n R270: r=-0.12")
+        annotate("text", x=190, y=-0.035, label="52-276: Corr NS, \n R270: Corr NS")
+        
 
 graph2e <- ggplot(data=all_data, (aes(x=Vcmax, y=NDWI, colour=Genotype)))+
         geom_point()+
-        geom_smooth(method="lm", se=FALSE)+
+        #geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=100, y=0.035, label="52-276: r= 0.27, \n R270: r=0.08")
+        #annotate("text", x=100, y=0.035, label="52-276: r= 0.27, \n R270: r=0.08")+
+        annotate("text", x=100, y=0.035, label="52-276: Corr NS, \n R270: Corr NS")
+
 
 graph2f <- ggplot(data=all_data, (aes(x=Jmax, y=NDWI, colour=Genotype)))+
         geom_point()+
