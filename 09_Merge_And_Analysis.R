@@ -85,11 +85,15 @@ phase_2 <- subset(all_data, Date.x>="2016-06-08" & Date.x<="2016-06-16")
 phase_3 <- subset(all_data, Date.x>="2016-06-16")
 require(plyr)
 func <- function(xx, a, b)
+        
 {
-        return(data.frame(COR = cor(xx$Jmax, xx$Water_Pot)))
+        print(cor.test(xx$Vcmax, xx$NDWI))
+        return(data.frame(COR = cor(xx$Vcmax, xx$NDWI)))
+        
 }
 
-ddply(phase_2, .(Genotype), func)
+ddply(phase_3, .(Genotype), func)
+ddply(all_data, .(Genotype), func)
 
 #subsets by genotype
 str(data_graphs)
@@ -173,9 +177,16 @@ graph2f <- ggplot(data=all_data, (aes(x=Jmax, y=NDWI, colour=Genotype)))+
 
 
 
-fig_2 <- multiplot(graph2a, graph2b, graph2c, graph2d, graph2e, graph2f, cols=2)
+fig_2 <- multiplot(graph2a, graph2c, graph2e, graph2b, graph2d, graph2f, cols=2)
 
 #saved manually because ggsave not working
+
+#Figure_3-------------------
+#
+
+
+
+
 
 ggplot(data=all_data,
        aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
