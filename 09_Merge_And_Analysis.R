@@ -70,6 +70,7 @@ write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
 all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
 str(all_data)
+all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
 #1) Are Vcmax and Jmax Sensistive to Drought Stress?---------------------
 #Function to return correlations by group
 
@@ -87,12 +88,12 @@ require(plyr)
 func <- function(xx, a, b)
         
 {
-        print(cor.test(xx$Vcmax, xx$NDWI))
-        return(data.frame(COR = cor(xx$Vcmax, xx$NDWI)))
+        print(cor.test(xx$ratio, xx$Water_Pot))
+        return(data.frame(COR = cor(xx$ratio, xx$Water_Pot)))
         
 }
 
-ddply(phase_3, .(Genotype), func)
+ddply(phase_2, .(Genotype), func)
 ddply(all_data, .(Genotype), func)
 
 #subsets by genotype

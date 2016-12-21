@@ -5,12 +5,13 @@ date: "September 19, 2016"
 output: html_document
 ---
 
+
 Preliminary analysis of Vcmax and Jmax from A_Ci curves from my B2 2016 Drought Experiment
 
 Vcmax varied throughout the experiment:
 
 ```{r, echo=FALSE}
-merged <- read.csv("Merged_data_to_analyze.csv")
+merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
 library(ggplot2)
 library(gridExtra)
 Big_Leaf <-subset(merged, Genotype=="R-270")

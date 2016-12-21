@@ -25,14 +25,14 @@ hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(
 
 phase_1_2 <- merge(Predawns, hyperspec_avg, by="uniqueID")
 
-Phase_2 <- subset(phase_1_2, Phase==2)
+Phase_1 <- subset(phase_1_2, Phase==1)
 
 func <- function(xx, a, b)
 {
         return(data.frame(COR = cor(xx$NDVI, xx$Water.Potential)))
 }
 
-ddply(Phase_2, .(Genotype), func)
+ddply(Phase_1, .(Genotype), func)
 
 ggplot(Predawns, aes(Date, Water.Potential)) + geom_point(aes(colour=factor(Genotype)), size=3)
 
