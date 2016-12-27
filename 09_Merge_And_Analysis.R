@@ -217,11 +217,7 @@ fig_2 <- multiplot(graph2a, graph2c, graph2e, graph2b, graph2d, graph2f, cols=2)
 #saved manually because ggsave not working
 
 #Figure_3-------------------
-#
-
-
-
-
+#Still trying to find code from the summer (Alec's stuff)
 
 ggplot(data=all_data,
        aes(x=Delta_T, y=Vcmax, colour=Genotype)) +
@@ -230,14 +226,7 @@ ggplot(data=all_data,
 
 
 
-
-
-
-
-
-
-
-
+#Get and Plot Hyperspec Files (no longer necessary?)-------------------
 #What's this stuff - from before right?
 #Finding good comparison observations: Looks like Individual E4, E10, E3 and G11 all got pretty stressed
 #Gonna subset and re-plot
@@ -249,7 +238,6 @@ ggplot(merged_stressed, aes(Date.x, Water_Pot, colour=Plant_ID.x)) + geom_line(a
 #Let's look at E03 on 6/24 (stressed) and E03 on 06/09 (not stressed)
 #Cool but how to 
 
-#Get and Plot Hyperspec Files-------------------
 #for my personal laptop
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 
