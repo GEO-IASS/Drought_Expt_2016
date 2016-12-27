@@ -1,7 +1,16 @@
+#Author: Mallory Barnes
+#Date: 12/15/2016 
+#Input: 'Merged' data frame containing A/Ci and met input varibles, processed hyperspectral files
+#'Unique-ID' column is the key to merging 
+#Output: Merged Data frame, also several figures
+
 library(plyr)
 library(psych)
 library(Hmisc)
+
+#'merged' file contains A/Ci (Vcmax/Jmax), met variables, and 'unique_ID' 
 merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
+#'hyperspec' file contains processed hyperspectral files including 'unique_ID'
 hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
 
 head(merged)
