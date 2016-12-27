@@ -8,16 +8,6 @@ library(plyr)
 library(psych)
 library(Hmisc)
 
-#'merged' file contains A/Ci (Vcmax/Jmax), met variables, and 'unique_ID' 
-merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
-#'hyperspec' file contains processed hyperspectral files including 'unique_ID'
-hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
-
-#Checking out both files
-head(merged)
-merged[25:35,]
-head(hyperspec)
-
 #Multiplot function from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 #Allows multiple graphs on one page
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
@@ -56,6 +46,20 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         }
 }
 
+#pre-analysis merging/ cleaning ------------------------------------------
+#only needs to be altered if the Files of origin have been changed (A/Ci output file or hyperspectral files)
+#'merged' file contains A/Ci (Vcmax/Jmax), met variables, and 'unique_ID' 
+merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
+#'hyperspec' file contains processed hyperspectral files including 'unique_ID'
+hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
+
+#Checking out both files
+head(merged)
+merged[25:35,]
+head(hyperspec)
+
+
+
 
 #hyperspectral data - create "unique id" (same as in 'merged')and then average by unique ID
 #Then will be able to merge with A/Ci and Climate files
@@ -67,19 +71,21 @@ hyperspec$uniqueID <- paste(tolower(hyperspec$ID), hyperspec$date, sep='-')
 hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(PRI), NDWI=mean(NDWI))
 
 #merge hyperspec and a/ci data
-
 all_data <- merge(hyperspec_avg, merged, by="uniqueID")
 str(all_data)
 write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
+
 #clean up "all_data"
 #delete X.2, X.1, and X columns (what even are these?)
-
 all_data <- subset(all_data, select=-c(X,X.1, X.2))
 
-#giant correlation matrix!
+#giant correlation matrix to clipboard for quick glance
+#Saved as 'corr matrix' in the Paper_2 folder in dropbox
 c <-(cor(all_data[,unlist(lapply(all_data, is.numeric))]))
 write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
+#Reading in merged data
+#START HERE if no changes to original data files necessary--------------- 
 all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
