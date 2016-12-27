@@ -13,10 +13,13 @@ merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_an
 #'hyperspec' file contains processed hyperspectral files including 'unique_ID'
 hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
 
+#Checking out both files
 head(merged)
 merged[25:35,]
 head(hyperspec)
 
+#Multiplot function from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+#Allows multiple graphs on one page
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         library(grid)
         
