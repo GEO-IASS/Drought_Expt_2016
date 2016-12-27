@@ -2,7 +2,7 @@
 #Date: 12/15/2016 
 #Input: 'Merged' data frame containing A/Ci and met input varibles, processed hyperspectral files
 #'Unique-ID' column is the key to merging 
-#Output: Merged Data frame, also several figures
+#Output: Merged Data frame, figs 1 and 2 
 
 library(plyr)
 library(psych)
@@ -89,19 +89,25 @@ write.table(c, "clipboard", sep="\t", row.names=FALSE)
 all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
+
 #1) Are Vcmax and Jmax Sensistive to Drought Stress?---------------------
-#Function to return correlations by group
-
+#Format date as date
 all_data$Date.x <- as.Date(all_data$Date.x)
-all_data$phase <- 2
-phase_2$phase <-2
-phase_3$phase <-3
-data_graphs <- rbind(phase_2, phase_3)
-data_graphs$phase <- as.factor(data_graphs$phase)
-
+#Defining by experiment phase
 phase_1 <-subset(all_data, Date.x<"2016-06-08")
 phase_2 <- subset(all_data, Date.x>="2016-06-08" & Date.x<="2016-06-16")
 phase_3 <- subset(all_data, Date.x>="2016-06-16")
+#Set phases 
+all_data$phase <- 2
+phase_2$phase <-2
+phase_3$phase <-3
+#Data graphs (data frame) - file has only phases 2 and 3 for graphing purposes
+data_graphs <- rbind(phase_2, phase_3)
+data_graphs$phase <- as.factor(data_graphs$phase)
+
+#User-defined function to return correlations by group
+#Also returns the p-value of the correlation
+#Have to chagnge the variables based on what you want to look at (xx$____ and xx$y)
 require(plyr)
 func <- function(xx, a, b)
         
@@ -111,10 +117,12 @@ func <- function(xx, a, b)
         
 }
 
+#For example: this shows the correlations in phase 2 by genotype
 ddply(phase_2, .(Genotype), func)
+#This shows the correlations in all the data by genotype
 ddply(all_data, .(Genotype), func)
 
-#subsets by genotype
+#create subsets by genotype
 str(data_graphs)
 gt52_276 <-subset(data_graphs, Genotype=="52-276")
 gtR270 <- subset(data_graphs, Genotype=="R-270")
@@ -122,7 +130,6 @@ gtR270 <- subset(data_graphs, Genotype=="R-270")
 str(gt52_276)
 str(gtR270)
 
-gtR270
 #Figure_1: ----------------------------------------
 #water potential, vmax, and jmax by genotype with correlations
 #So this will need to be 4 panels, each with 2 lines on it
@@ -152,10 +159,10 @@ graph1d <- ggplot(data=gtR270, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
         #annotate("text", x=-0.75, y=165, label="Phase 2: r= -0.25,\n Phase 3: r= -0.11")
         annotate("text", x=-0.75, y=165, label="Correlations \n nonsignificant")
 
-
+#Draw figure 1 using multiplot function
 fig_1 <- multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
 
-
+#Save figure 1 as .png - wasn't working properly 
 ggsave(fig_1, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_1.png", dpi=500)
 
 
