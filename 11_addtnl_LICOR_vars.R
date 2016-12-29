@@ -24,7 +24,18 @@ str(Licor_files)
 Licor_subset <- subset(Licor_files, select=c('fname', 'Obs', 'HHMMSS', 'Trmmol', 'Cond', 'Photo'))
 
 #Need to get 'Plant_ID' and 'Date' properly formatted 
+#Some of the filnames have dashes instead of underscores - to fix: 
+Licor_subset$fname <- gsub('-','_', Licor_subset$fname)
 
 Licor_subset$Plant_ID <- substr(Licor_subset$fname, 8,10)
-Licor_date <- substr(Licor_subset$fname, 19,28)
+#Licor_date <- substr(Licor_subset$fname, 19,28)
 Licor_date <- as.Date(substr(Licor_subset$fname, 19,28), "%m_%d_%Y")
+
+#Funky dates: obs: 430-442, 704-716
+#Problem - dashes instead of underscores (Ugh!)
+#I'll have to change manually
+
+
+Licor_date[430:442,]
+
+Licor_date
