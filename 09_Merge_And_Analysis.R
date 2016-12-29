@@ -58,9 +58,6 @@ head(merged)
 merged[25:35,]
 head(hyperspec)
 
-
-
-
 #hyperspectral data - create "unique id" (same as in 'merged')and then average by unique ID
 #Then will be able to merge with A/Ci and Climate files
 #'uniqueID' takes form: a18-2016-06-08 
