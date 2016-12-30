@@ -43,3 +43,9 @@ str(all_data)
 data_plus_photo <- merge(all_data, Licor_firstobs, by="uniqueID")
 str(data_plus_photo)
 #we lost 14 observations...why? where'd they go?
+
+#clean_up
+data_plus_photo  <- subset(data_plus_photo, select=-c(Plant_ID.x,Plant_ID.y, HHMMSS, X, Date.x, fname.y))
+str(data_plus_photo)
+write.csv(data_plus_photo, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
+
