@@ -9,6 +9,8 @@
 #Input: Non-QA-QCed Licor files containing all licor observations, 'all_data' file (step 2)
 #Output: Big data file containing the additional licor variables
 
+library(corrr)
+
 #load Licor files and get first observation for each----------------------------
 
 Licor_files <- read.csv("C:/Users/Mallory/Dropbox/QC_9_1_2016_bad_and_good.csv")
@@ -49,3 +51,10 @@ data_plus_photo  <- subset(data_plus_photo, select=-c(Plant_ID.x,Plant_ID.y, HHM
 str(data_plus_photo)
 write.csv(data_plus_photo, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
 
+#Exploring corrr package in R
+#Base function: 'correlate'
+
+#Need to get rid of non-numeric variables: Genotype, obs, QC, date, Date.y, fname.x, uniqueID
+all_for_corr <- data_plus_photo
+str(data_plus_photo)
+c <- correlate(data_plus_photo, use="pairwise.complete.obs")
