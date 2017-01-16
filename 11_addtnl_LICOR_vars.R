@@ -10,6 +10,7 @@
 #Output: Big data file containing the additional licor variables
 
 library(corrr)
+library(dplyr)
 
 #load Licor files and get first observation for each----------------------------
 
@@ -49,12 +50,22 @@ str(data_plus_photo)
 #clean_up
 data_plus_photo  <- subset(data_plus_photo, select=-c(Plant_ID.x,Plant_ID.y, HHMMSS, X, Date.x, fname.y))
 str(data_plus_photo)
+cor(data_plus_photo$Vcmax, data_plus_photo$Jmax)
 write.csv(data_plus_photo, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
 
 #Exploring corrr package in R
 #Base function: 'correlate'
 
 #Need to get rid of non-numeric variables: Genotype, obs, QC, date, Date.y, fname.x, uniqueID
-all_for_corr <- data_plus_photo
 str(data_plus_photo)
-c <- correlate(data_plus_photo, use="pairwise.complete.obs")
+all_for_corr <- subset(data_plus_photo, select=-c(Genotype, Obs, QC, date, Date.y, fname.x, uniqueID, Plant_ID))
+str(all_for_corr)
+#Now use correlate function to get correlation matrix - corrr package then uses pipes for filtering
+#And various operations
+c <- correlate(all_for_corr)
+
+#Filter by correlation higher than 0.7
+c %>% filter(Vcmax> .7)  %>% 
+        select(rowname, Jmax, Cond, Photo)
+
+c %>% focus(Vcmax, Jmax)%>% print(n=40)
