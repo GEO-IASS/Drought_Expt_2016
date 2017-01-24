@@ -5,10 +5,10 @@ date: "January 23, 2017"
 output: html_document
 ---
 
-Analysis objectives for Dave M. one-on-one meeting 1/23/2017
+Analysis objectives for Dave M. one-on-one meeting 1/24/2017
 
 1) Is there drought stress?
-
+Yes - but more for some individuals than others
 
 ```{r, echo=FALSE}
 data_file <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
@@ -32,9 +32,18 @@ grid.arrange(plot1, plot2, ncol=2)
 
 
 2) Analyze Anet, gs, @ ambient (first A/Ci point) against Water Potential 
+
 Correlation Between Anet and Water Potential 
 ```{r, echo=FALSE}
 library(plyr)
+phase_1 <-subset(data_file, date<"2016-06-08")
+phase_2 <- subset(data_file, date>="2016-06-08" & date<="2016-06-16")
+phase_3 <- subset(data_file, date="2016-06-16")
+#Set phases 
+data_file$phase <- 2
+phase_2$phase <-2
+phase_3$phase <-3
+
 func <- function(xx)
 {
         COR=cor(xx$Water_Pot, xx$Photo)
@@ -42,8 +51,13 @@ func <- function(xx)
         return(data.frame(COR, SIG))
         
 }
+"overall"
 func(data_file)
+"by genotype"
 ddply(data_file, .(Genotype), func)
+"by genotype and phase"
+ddply(data_file, .(phase, Genotype), func)
+"by plant_ID"
 ddply(data_file, .(Plant_ID), func)
 ```
 Correlation Between gs and Water Potential 
@@ -56,9 +70,15 @@ func <- function(xx)
         return(data.frame(COR, SIG))
         
 }
+"overall"
 func(data_file)
+"by genotype"
 ddply(data_file, .(Genotype), func)
+"by genotype and phase"
+ddply(data_file, .(phase, Genotype), func)
+"by plant_ID"
 ddply(data_file, .(Plant_ID), func)
+
 ```
 
 ```{r, echo=FALSE}
@@ -82,12 +102,15 @@ grid.arrange(plot1, plot2, ncol=2)
 ```
 
 
-3) Compare instantaneous Ci/Ca Ratios (first point) against long term Ci/Ca ratio (from A/Ci curve)
+3) Timeseries Vcmax & Jmax
 
 ```{r, echo=FALSE}
 merged <- read.csv("Merged_data_to_analyze.csv")
 library(ggplot2)
-ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(method="lm", aes(group=Genotype))+
+ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_line(aes(group=Plant_ID.x))+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+library(ggplot2)
+ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + geom_line(aes(group=Plant_ID.x))+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
@@ -138,6 +161,7 @@ Only significant correlation between NDWI and Water Potential in small leaf geno
 Big_Leaf <-subset(data_file, Genotype=="R-270")
 Small_Leaf<-subset(data_file, Genotype=="52-276")
 
+
 plot1 <- ggplot(Big_Leaf, aes(Water_Pot, NDWI, colour=Plant_ID)) + geom_point(aes(group=Plant_ID))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
         ggtitle("Big Leaf R-270")
 
@@ -149,43 +173,6 @@ grid.arrange(plot1, plot2, ncol=2)
 
 
 
-Correlation between Jmax and Water Potential
+Correlation between Vcmax, Jmax and Water Potential with only drier data
 
-```{r, echo=FALSE}
-library(plyr)
-func <- function(xx)
-{
-        return(data.frame(COR = cor(xx$Water_Pot, xx$Jmax)))
-}
-
-ddply(merged, .(Genotype), func)
-ddply(merged, .(Plant_ID.x), func)
-```
-
-Vcmax seems to be correlated with VPD, while Jmax isn't
-
-Vcmax and VPD
-```{r, echo=FALSE}
-library(plyr)
-func <- function(xx)
-{
-        return(data.frame(COR = cor(xx$VPD, xx$Vcmax)))
-}
-
-ddply(merged, .(Genotype), func)
-ddply(merged, .(Plant_ID.x), func)
-```
-
-Jmax and VPD
-```{r, echo=FALSE}
-library(plyr)
-func <- function(xx)
-{
-        return(data.frame(COR = cor(xx$VPD, xx$Jmax)))
-}
-
-ddply(merged, .(Genotype), func)
-ddply(merged, .(Plant_ID.x), func)
-```
-
-
+![]("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_15.png")
