@@ -77,7 +77,7 @@ grid.arrange(plot1, plot2, ncol=2)
 ```
 
 
-Here's Vcmax grouped by Genotype (smoothed):
+3) Compare instantaneous Ci/Ca Ratios (first point) against long term Ci/Ca ratio (from A/Ci curve)
 
 ```{r, echo=FALSE}
 merged <- read.csv("Merged_data_to_analyze.csv")
