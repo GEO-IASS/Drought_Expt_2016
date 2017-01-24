@@ -27,6 +27,7 @@ plot2 <- ggplot(Small_Leaf, aes(date, Water_Pot, colour=Plant_ID)) + geom_line( 
 
 grid.arrange(plot1, plot2, ncol=2)
 
+
 ```
 
 
@@ -36,12 +37,12 @@ Correlation Between Anet and Water Potential
 library(plyr)
 func <- function(xx)
 {
-        COR=cor(xx$Water_Pot, xx$Cond)
-        SIG=cor.test(xx$Water_Pot,xx$Cond)$p.value
+        COR=cor(xx$Water_Pot, xx$Photo)
+        SIG=cor.test(xx$Water_Pot,xx$Photo)$p.value
         return(data.frame(COR, SIG))
         
 }
-
+func(data_file)
 ddply(data_file, .(Genotype), func)
 ddply(data_file, .(Plant_ID), func)
 ```
@@ -55,20 +56,18 @@ func <- function(xx)
         return(data.frame(COR, SIG))
         
 }
-
+func(data_file)
 ddply(data_file, .(Genotype), func)
 ddply(data_file, .(Plant_ID), func)
 ```
 
 ```{r, echo=FALSE}
-merged <- read.csv("Merged_data_to_analyze.csv")
 library(ggplot2)
 library(gridExtra)
 library(corrr)
-data_file$date <- as.Date(data_file$date)
 
-cor.test(data_file$Water_Pot, data_file$Cond)
-cor.test(data_file$Water_Pot, data_file$Photo)
+print("Anet/Water Potential: Corr: 0.07063973,Significance: p=0.6049162")
+print("Gs/Water Potential: Corr: -0.09283565,Significance: p=0.4961744")
 
 Big_Leaf <-subset(data_file, Genotype=="R-270")
 Small_Leaf<-subset(data_file, Genotype=="52-276")
@@ -95,28 +94,57 @@ ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(method="lm", a
 4) VI Relationships to Water Potential 
 
 ```{r, echo=FALSE}
+"PRI"
+func_PRI <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$PRI)
+        SIG=cor.test(xx$Water_Pot,xx$PRI)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func_PRI(data_file)
+ddply(data_file, .(Genotype), func_PRI)
+ddply(data_file, .(Plant_ID), func_PRI)
 
-cor.test(data_file$PRI, data_file$Water_Pot)
-cor.test(data_file$NDVI, data_file$Water_Pot)
-cor.test(data_file$NDWI,data_file$Water_Pot)
+"NDVI"
+func_NDVI <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$NDVI)
+        SIG=cor.test(xx$Water_Pot,xx$NDVI)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func_PRI(data_file)
+ddply(data_file, .(Genotype), func_NDVI)
+ddply(data_file, .(Plant_ID), func_NDVI)
 
-ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + stat_smooth(method="lm", aes(group=Genotype))+
-        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+"NDWI"
+func_NDWI <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$NDWI)
+        SIG=cor.test(xx$Water_Pot,xx$NDWI)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func_NDWI(data_file)
+ddply(data_file, .(Genotype), func_NDWI)
+ddply(data_file, .(Plant_ID), func_NDWI)
+
 ```
 
-Variation in Jmax and Vcmax is not well-explaned by stress (pre-dawn water potential)
-
-Correlation between Vcmax and Water Potential
+Only significant correlation between NDWI and Water Potential in small leaf genotype
 
 ```{r, echo=FALSE}
-library(plyr)
-func <- function(xx)
-{
-        return(data.frame(COR = cor(xx$Water_Pot, xx$Vcmax)))
-}
+Big_Leaf <-subset(data_file, Genotype=="R-270")
+Small_Leaf<-subset(data_file, Genotype=="52-276")
 
-ddply(merged, .(Genotype), func)
-ddply(merged, .(Plant_ID.x), func)
+plot1 <- ggplot(Big_Leaf, aes(Water_Pot, NDWI, colour=Plant_ID)) + geom_point(aes(group=Plant_ID))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Big Leaf R-270")
+
+plot2 <- ggplot(Small_Leaf, aes(Water_Pot, NDWI)) + geom_point()+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) + geom_smooth(method="lm")+
+        ggtitle("Small Leaf 52-276")
+
+grid.arrange(plot1, plot2, ncol=2)
 ```
 
 
