@@ -11,7 +11,7 @@ Analysis objectives for Dave M. one-on-one meeting 1/23/2017
 
 
 ```{r, echo=FALSE}
-data_file <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
+data_file <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
 library(ggplot2)
 library(gridExtra)
 data_file$date <- as.Date(data_file$date)
@@ -36,7 +36,10 @@ Correlation Between Anet and Water Potential
 library(plyr)
 func <- function(xx)
 {
-        return(data.frame(COR = cor(xx$Water_Pot, xx$Photo)))
+        COR=cor(xx$Water_Pot, xx$Cond)
+        SIG=cor.test(xx$Water_Pot,xx$Cond)$p.value
+        return(data.frame(COR, SIG))
+        
 }
 
 ddply(data_file, .(Genotype), func)
@@ -47,7 +50,10 @@ Correlation Between gs and Water Potential
 library(plyr)
 func <- function(xx)
 {
-        return(data.frame(COR = cor(xx$Water_Pot, xx$Cond)))
+        COR=cor(xx$Water_Pot, xx$Cond)
+        SIG=cor.test(xx$Water_Pot,xx$Cond)$p.value
+        return(data.frame(COR, SIG))
+        
 }
 
 ddply(data_file, .(Genotype), func)
@@ -61,8 +67,8 @@ library(gridExtra)
 library(corrr)
 data_file$date <- as.Date(data_file$date)
 
-cor(data_file$Water_Pot, data_file$Cond)
-cor(data_file$Water_Pot, data_file$Photo)
+cor.test(data_file$Water_Pot, data_file$Cond)
+cor.test(data_file$Water_Pot, data_file$Photo)
 
 Big_Leaf <-subset(data_file, Genotype=="R-270")
 Small_Leaf<-subset(data_file, Genotype=="52-276")
@@ -86,11 +92,14 @@ ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(method="lm", a
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-Here's Jmax grouped by Genotype (smoothed): 
+4) VI Relationships to Water Potential 
 
 ```{r, echo=FALSE}
-merged <- read.csv("Merged_data_to_analyze.csv")
-library(ggplot2)
+
+cor.test(data_file$PRI, data_file$Water_Pot)
+cor.test(data_file$NDVI, data_file$Water_Pot)
+cor.test(data_file$NDWI,data_file$Water_Pot)
+
 ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + stat_smooth(method="lm", aes(group=Genotype))+
         theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
