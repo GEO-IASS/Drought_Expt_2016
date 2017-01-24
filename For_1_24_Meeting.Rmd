@@ -2,7 +2,9 @@
 title: "Analysis For 1/24 Meeting"
 author: "Mallory Barnes"
 date: "January 23, 2017"
-output: html_document
+output: 
+  html_document:
+    self_contained: no
 ---
 
 Analysis objectives for Dave M. one-on-one meeting 1/24/2017
@@ -10,7 +12,7 @@ Analysis objectives for Dave M. one-on-one meeting 1/24/2017
 1) Is there drought stress?
 Yes - but more for some individuals than others
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 data_file <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
 library(ggplot2)
 library(gridExtra)
@@ -34,7 +36,7 @@ grid.arrange(plot1, plot2, ncol=2)
 2) Analyze Anet, gs, @ ambient (first A/Ci point) against Water Potential 
 
 Correlation Between Anet and Water Potential 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 library(plyr)
 phase_1 <-subset(data_file, date<"2016-06-08")
 phase_2 <- subset(data_file, date>="2016-06-08" & date<="2016-06-16")
@@ -61,7 +63,7 @@ ddply(data_file, .(phase, Genotype), func)
 ddply(data_file, .(Plant_ID), func)
 ```
 Correlation Between gs and Water Potential 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 library(plyr)
 func <- function(xx)
 {
@@ -81,7 +83,7 @@ ddply(data_file, .(Plant_ID), func)
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 library(ggplot2)
 library(gridExtra)
 library(corrr)
@@ -104,7 +106,7 @@ grid.arrange(plot1, plot2, ncol=2)
 
 3) Timeseries Vcmax & Jmax
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 merged <- read.csv("Merged_data_to_analyze.csv")
 library(ggplot2)
 ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_line(aes(group=Plant_ID.x))+
@@ -116,7 +118,7 @@ ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + geom_line(aes(group=Plant_I
 
 4) VI Relationships to Water Potential 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 "PRI"
 func_PRI <- function(xx)
 {
@@ -157,7 +159,7 @@ ddply(data_file, .(Plant_ID), func_NDWI)
 
 Only significant correlation between NDWI and Water Potential in small leaf genotype
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE}
 Big_Leaf <-subset(data_file, Genotype=="R-270")
 Small_Leaf<-subset(data_file, Genotype=="52-276")
 
@@ -175,4 +177,4 @@ grid.arrange(plot1, plot2, ncol=2)
 
 Correlation between Vcmax, Jmax and Water Potential with only drier data
 
-![]("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_15.png")
+![My_Figure]("C:/Users/Mallory/Dropbox/Drought_Expt_2016/fig_16.png")
