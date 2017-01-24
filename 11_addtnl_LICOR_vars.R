@@ -66,6 +66,12 @@ c <- correlate(all_for_corr)
 
 #Filter by correlation higher than 0.7
 c %>% filter(Vcmax> .7)  %>% 
-        select(rowname, Jmax, Cond, Photo)
+        select(rowname, Jmax, Cond, Photo) %>% print(n=40)
 
 c %>% focus(Vcmax, Jmax)%>% print(n=40)
+
+c %>% focus(Cond, Photo)%>% print(n=40)
+
+#Checking on Vcmax/Jmax Correlations --------------------------------
+cor(data_plus_photo$Vcmax, data_plus_photo$Jmax)
+qplot(data_plus_photo$Vcmax, data_plus_photo$Jmax) + geom_smooth(method="lm")
