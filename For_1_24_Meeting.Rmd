@@ -36,7 +36,10 @@ grid.arrange(plot1, plot2, ncol=2)
 merged <- read.csv("Merged_data_to_analyze.csv")
 library(ggplot2)
 library(gridExtra)
+library(corrr)
 data_file$date <- as.Date(data_file$date)
+
+c <- correlate(data_plus_photo, use="pairwise.complete.obs")
 
 Big_Leaf <-subset(data_file, Genotype=="R-270")
 Small_Leaf<-subset(data_file, Genotype=="52-276")
