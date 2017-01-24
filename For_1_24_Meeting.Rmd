@@ -1,0 +1,154 @@
+---
+title: "Analysis For 1/24 Meeting"
+author: "Mallory Barnes"
+date: "January 23, 2017"
+output: html_document
+---
+
+Analysis objectives for Dave M. one-on-one meeting 1/23/2017
+
+1) Is there drought stress?
+
+
+```{r, echo=FALSE}
+data_file <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
+library(ggplot2)
+library(gridExtra)
+data_file$date <- as.Date(data_file$date)
+
+Big_Leaf <-subset(data_file, Genotype=="R-270")
+Small_Leaf<-subset(data_file, Genotype=="52-276")
+
+plot1 <- ggplot(Big_Leaf, aes(date, Water_Pot, colour=Plant_ID)) + geom_line(aes(group=Plant_ID))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Big Leaf - R-270")
+
+plot2 <- ggplot(Small_Leaf, aes(date, Water_Pot, colour=Plant_ID)) + geom_line( aes(group=Plant_ID))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Small Leaf - 52-276")
+
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+
+
+2) Analyze Anet, gs, @ ambient (first A/Ci point) against Water Potential 
+Correlation Between Anet and Water Potential 
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$Water_Pot, xx$Photo)))
+}
+
+ddply(data_file, .(Genotype), func)
+ddply(data_file, .(Plant_ID), func)
+```
+Correlation Between gs and Water Potential 
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$Water_Pot, xx$Cond)))
+}
+
+ddply(data_file, .(Genotype), func)
+ddply(data_file, .(Plant_ID), func)
+```
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+library(gridExtra)
+library(corrr)
+data_file$date <- as.Date(data_file$date)
+
+cor(data_file$Water_Pot, data_file$Cond)
+cor(data_file$Water_Pot, data_file$Photo)
+
+Big_Leaf <-subset(data_file, Genotype=="R-270")
+Small_Leaf<-subset(data_file, Genotype=="52-276")
+
+plot1 <- ggplot(data_file, aes(Water_Pot, Cond, colour=Genotype)) + geom_point(aes(group=Genotype))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Conductance")
+
+plot2 <- ggplot(data_file, aes(Water_Pot, Photo, colour=Genotype)) + geom_point(aes(group=Genotype))+ theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        ggtitle("Anet")
+
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+
+3) Compare instantaneous Ci/Ca Ratios (first point) against long term Ci/Ca ratio (from A/Ci curve)
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+ggplot(merged, aes(Date.x, Vcmax, colour=Genotype)) + geom_smooth(method="lm", aes(group=Genotype))+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Here's Jmax grouped by Genotype (smoothed): 
+
+```{r, echo=FALSE}
+merged <- read.csv("Merged_data_to_analyze.csv")
+library(ggplot2)
+ggplot(merged, aes(Date.x, Jmax, colour=Genotype)) + stat_smooth(method="lm", aes(group=Genotype))+
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+Variation in Jmax and Vcmax is not well-explaned by stress (pre-dawn water potential)
+
+Correlation between Vcmax and Water Potential
+
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$Water_Pot, xx$Vcmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+
+
+
+Correlation between Jmax and Water Potential
+
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$Water_Pot, xx$Jmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+
+Vcmax seems to be correlated with VPD, while Jmax isn't
+
+Vcmax and VPD
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$VPD, xx$Vcmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+
+Jmax and VPD
+```{r, echo=FALSE}
+library(plyr)
+func <- function(xx)
+{
+        return(data.frame(COR = cor(xx$VPD, xx$Jmax)))
+}
+
+ddply(merged, .(Genotype), func)
+ddply(merged, .(Plant_ID.x), func)
+```
+
+

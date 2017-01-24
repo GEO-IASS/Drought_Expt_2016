@@ -12,7 +12,7 @@ library(plantecophys)
 #Then create summary df for work with stats
 
 #Load up saved datafile
-dat <- read.csv("QC_9_1_2016.csv")
+dat <- read.csv("C:/Users/rsstudent/Dropbox/QC_9_1_2016.csv")
 
 #Format dat$fname as factor
 dat$fname <- as.factor(dat$fname)
@@ -22,6 +22,18 @@ dat$fname <- as.factor(dat$fname)
 
 #Fit curves to all A/Ci files
 fits <- fitacis(dat, "fname")
+#Photosyn to find Ci/Ca ratio
+plot(Photosyn(VPD = 1.5, Ca = 400, PPFD = 1500, Tleaf = 25, Patm = 100,
+         RH = NULL, gsmodel = c("BBOpti", "BBLeuning", "BallBerry"), g1 = 4,
+         g0 = 0, gk = 0.5, vpdmin = 0.5, D0 = 5, GS = NULL, alpha = 0.24,
+         theta = 0.85, Jmax = 100, Vcmax = 50, gmeso = NULL, TPU = 1000,
+         Rd0 = 0.92, Q10 = 1.92, Rd = NULL, TrefR = 25, Rdayfrac = 1,
+         EaV = 82620.87, EdVC = 0, delsC = 645.1013, EaJ = 39676.89,
+         EdVJ = 2e+05, delsJ = 641.3615, GammaStar = NULL, Km = NULL,
+         Ci = NULL, Tcorrect = TRUE, returnParsOnly = FALSE, whichA = c("Ah",
+                                                                        "Amin", "Ac", "Aj")))
+
+
 
 #Plot Vcmax by Jmax
 with(coef(fits), plot(Vcmax, Jmax))
