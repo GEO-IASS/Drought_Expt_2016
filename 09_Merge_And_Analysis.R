@@ -114,7 +114,6 @@ func <- function(xx, a, b)
         return(data.frame(COR = cor(xx$ratio, xx$Water_Pot)))
         
 }
-
 #For example: this shows the correlations in phase 2 by genotype
 ddply(phase_2, .(Genotype), func)
 #This shows the correlations in all the data by genotype
@@ -134,8 +133,6 @@ func_Vcmax(dry_data)
 ddply(dry_data, .(phase,Genotype), func_Vcmax)
 ddply(dry_data, .(Genotype), func_Vcmax)
 ddply(dry_data, .(Plant_ID.x), func_Vcmax)
-
-
 func_Jmax <- function(xx)
 {
         COR=cor(xx$Water_Pot, xx$Jmax)
@@ -143,14 +140,47 @@ func_Jmax <- function(xx)
         return(data.frame(COR, SIG))
         
 }
-func(dry_data)
-ddply(dry_data, .(phase,Genotype), func_Jmax)
-ddply(dry_data, .(Genotype), func_Jmax)
-ddply(dry_data, .(Plant_ID.x), func_Jmax)
+
+
+
+
+#Explore correlations between delta t and vcmax/jmax
+
+func_Vcmax_T <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$Vcmax)
+        SIG=cor.test(xx$Delta_T,xx$Vcmax)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func_Vcmax_T(data_graphs)
+ddply(data_graphs, .(phase,Genotype), func_Vcmax)
+ddply(data_graphs, .(Genotype), func_Vcmax)
+ddply(data_graphs, .(Plant_ID.x), func_Vcmax)
+
+
+
+func_Jmax_T <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$Jmax)
+        SIG=cor.test(xx$Delta_T,xx$Jmax)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func_Jmax_T(data_graphs)
+ddply(data_graphs, .(phase,Genotype), func_Jmax_T)
+ddply(data_graphs, .(Genotype), func_Jmax_T)
+ddply(data_graphs, .(Plant_ID.x), func_Jmax_T)
+
+
+
 #create subsets by genotype
 str(data_graphs)
 gt52_276 <-subset(data_graphs, Genotype=="52-276")
 gtR270 <- subset(data_graphs, Genotype=="R-270")
+
+gt52_276_dry <-subset(dry_data, Genotype=="52-276")
+gtR270_dry <- subset(dry_data, Genotype=="R-270")
 
 str(gt52_276)
 str(gtR270)
@@ -190,7 +220,38 @@ fig_1 <- multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
 #Save figure 1 as .png - wasn't working properly 
 ggsave(fig_1, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_1.png", dpi=500)
 
-#Figure 1 - remade for low water potentials only: 
+#Figure 1.5 - remade for low water potentials only: 
+
+graph15a <- ggplot(data=gt52_276_dry, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
+        geom_point()+
+        #geom_smooth(method="lm", se=FALSE)+ 
+        #annotate("text", x=-1.1, y=95, label="Phase 2: r= 0.359, \n Phase 3: r= 0.126")
+        annotate("text", x=-1.1, y=95, label="Correlations \n nonsignificant")
+
+graph15b <- ggplot(data=gt52_276_dry, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
+        geom_point()+
+        #geom_smooth(method="lm", se=FALSE)+
+        #annotate("text", x=-1.1, y=182, label="Phase 2: r= 0.35, \n Phase 3: r= -0.19")
+        annotate("text", x=-1.1, y=182, label="Correlations \n nonsignificant")
+
+
+graph15c <- ggplot(data=gtR270_dry, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
+        geom_point()+
+        geom_smooth(method="lm", se=FALSE)+ 
+        annotate("text", x=-0.75, y=90, label="Phase 2: r= -0.83, \n Phase 3: r= 0.129")
+        #annotate("text", x=-0.75, y=90, label="Correlations \n nonsignificant")
+
+graph15d <- ggplot(data=gtR270_dry, (aes(x=Water_Pot, y=Jmax, colour=phase)))+
+        geom_point()+
+        #geom_smooth(method="lm", se=FALSE)+ 
+        #annotate("text", x=-0.75, y=165, label="Phase 2: r= -0.25,\n Phase 3: r= -0.11")
+        annotate("text", x=-0.75, y=165, label="Correlations \n nonsignificant")
+
+#Draw figure 1 using multiplot function
+fig_15 <- multiplot(graph15a, graph15b, graph15c, graph15d, cols=2)
+
+#Save figure 1 as .png - wasn't working properly 
+ggsave(fig_15, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_15.png", dpi=500)
 
 
 #Figure 2---------------------------------------------
