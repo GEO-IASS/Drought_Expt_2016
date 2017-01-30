@@ -86,6 +86,7 @@ write.table(c, "clipboard", sep="\t", row.names=FALSE)
 all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
+head(all_data)
 
 #1) Are Vcmax and Jmax Sensistive to Drought Stress?---------------------
 #Format date as date
@@ -118,7 +119,34 @@ func <- function(xx, a, b)
 ddply(phase_2, .(Genotype), func)
 #This shows the correlations in all the data by genotype
 ddply(all_data, .(Genotype), func)
+#What about the correlations in all the data (dry end only) by genotype? 
+#create subset by water potential
+dry_data <- subset(data_graphs, Water_Pot < -0.3)
+str(dry_data)
+func_Vcmax <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$Vcmax)
+        SIG=cor.test(xx$Water_Pot,xx$Vcmax)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func_Vcmax(dry_data)
+ddply(dry_data, .(phase,Genotype), func_Vcmax)
+ddply(dry_data, .(Genotype), func_Vcmax)
+ddply(dry_data, .(Plant_ID.x), func_Vcmax)
 
+
+func_Jmax <- function(xx)
+{
+        COR=cor(xx$Water_Pot, xx$Jmax)
+        SIG=cor.test(xx$Water_Pot,xx$Jmax)$p.value
+        return(data.frame(COR, SIG))
+        
+}
+func(dry_data)
+ddply(dry_data, .(phase,Genotype), func_Jmax)
+ddply(dry_data, .(Genotype), func_Jmax)
+ddply(dry_data, .(Plant_ID.x), func_Jmax)
 #create subsets by genotype
 str(data_graphs)
 gt52_276 <-subset(data_graphs, Genotype=="52-276")
@@ -161,6 +189,8 @@ fig_1 <- multiplot(graph1a, graph1b, graph1c, graph1d, cols=2)
 
 #Save figure 1 as .png - wasn't working properly 
 ggsave(fig_1, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_1.png", dpi=500)
+
+#Figure 1 - remade for low water potentials only: 
 
 
 #Figure 2---------------------------------------------

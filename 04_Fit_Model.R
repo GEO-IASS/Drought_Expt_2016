@@ -22,7 +22,8 @@ dat$fname <- as.factor(dat$fname)
 
 #Fit curves to all A/Ci files
 fits <- fitacis(dat, "fname")
-#Photosyn to find Ci/Ca ratio
+
+## Trying to figure out 'Photosyn' to find Ci/Ca ratio##
 plot(Photosyn(VPD = 1.5, Ca = 400, PPFD = 1500, Tleaf = 25, Patm = 100,
          RH = NULL, gsmodel = c("BBOpti", "BBLeuning", "BallBerry"), g1 = 4,
          g0 = 0, gk = 0.5, vpdmin = 0.5, D0 = 5, GS = NULL, alpha = 0.24,
@@ -32,9 +33,6 @@ plot(Photosyn(VPD = 1.5, Ca = 400, PPFD = 1500, Tleaf = 25, Patm = 100,
          EdVJ = 2e+05, delsJ = 641.3615, GammaStar = NULL, Km = NULL,
          Ci = NULL, Tcorrect = TRUE, returnParsOnly = FALSE, whichA = c("Ah",
                                                                         "Amin", "Ac", "Aj")))
-
-
-
 #Plot Vcmax by Jmax
 with(coef(fits), plot(Vcmax, Jmax))
 
