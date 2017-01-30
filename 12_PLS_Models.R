@@ -42,3 +42,32 @@ library(plsropt)
 #'
 #' @import signal
 #' @export
+
+data(peach)
+matplot(colnames(peach$NIR), t(peach$NIR), type = "l", lty = 1,
+        xlab = "wavelength (nm)", ylab = "log(1/R)",
+        main = "NIR spectra of intact peach fruits")
+
+datAll <- read.csv(file = "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/peachNIR.csv", row.names = 1, check.names = F)
+
+rownames(datAll)
+colnames(datAll)[1:5]
+colnames(datAll)[(NCOL(datAll)-4):NCOL(datAll)]
+x <- extdat(datAll, start = 700, end = 2498)
+peach <- data.frame(datAll[, 1:2], NIR = I(as.matrix(x)))
+
+peach$NIR <- extdat(peach$NIR, start = 700, end = 1098)
+peach$NIR <- snv(peach$NIR)
+peach$NIR <- matsgolay(peach$NIR, p=2, n=11, m=2)
+peach$NIR <- scale(peach$NIR, center = TRUE, scale = TRUE)
+
+datTrain <- peach[1:50, ]
+datTest <- peach[51:74, ]
+
+
+result <- plsrPlot(Brix ~ NIR, data = datTrain, testdata = datTest,
+                   ncomp = "auto", maxcomp = 10,
+                   validation = "CV", segment.type ="interleaved",
+                   output = FALSE)
+
+
