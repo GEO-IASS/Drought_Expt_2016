@@ -71,3 +71,6 @@ result <- plsrPlot(Brix ~ NIR, data = datTrain, testdata = datTest,
                    output = FALSE)
 
 
+#Need to get data in proper format: 
+
+
