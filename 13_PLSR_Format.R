@@ -3,26 +3,36 @@
 #Purpose: Format files for use in PLSRopt package
 #Input: Hyperspectral  Reflectances in ASCII format
 #Output: Single data frame in following format: 
+peach <- read.csv("")
 
 # UniqueID Vcmax Jmax Water_Pot  300 301 302 303 etc. etc. (data must be in wide format)
 #for my personal laptop
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+
 
 #Read in file, used "col.names" argument to rename columns properly. Will need to figure out
 #how to do this with a list of ASCII files
-test <- read.table("ASCII_Reflectance/b2popmlb_A1_Leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+#Testing reshape with a single file 'test'
+test <- read.table("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
 str(test)
+test$filename <- basename("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt")
+test_wide <- reshape(test, idvar="filename", timevar="wavelength", direction="wide")
+
+
 
 #Lapply to calculate for all hyperspec files -----------------------------------------------------------
 
 #create list of text files (files must be in working directory); 'pattern' is case-sensitive
-setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 #txtfiles_subset is to test out the lapply
-textfiles_subset = txtfiles[1:5]
+textfiles_subset = textfiles[1:5]
+
+setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
 #Function to format in wide format
-calc_indices <- function(x){
+format_PLSR <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
         tmp$filename <- basename(x)
         tmp = tmp[-1,]
@@ -32,21 +42,13 @@ calc_indices <- function(x){
         ID <-  substr(tmp[1,3], 10,12)
         date <- (substr(tmp[1,3], 19,27))
         observation =(substr(tmp[1,3], 31,32))
-        w_531 =tmp[182,2]
-        w_570 = tmp[221,2]
-        w_690 = tmp[341,2]
-        w_860 = tmp[511,2]
-        w_1240 = tmp[891,2]
-        PRI = calc_PRI(w_531, w_570)
-        NDVI = calc_NDVI(w_860, w_690)
-        NDWI = calc_NDWI(w_860, w_1240)
-        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI))
+        reflectances <- reshape(test, idvar="filename", timevar="wavelength", direction="wide")
+        indices=as.data.frame(cbind(filename, ID, date, observation, reflectances))
         return(indices)
 }
 
-
-#Lapply "calc_indices functinon"
-indices_tmp <- lapply(textfiles, calc_indices)
+#Lapply "calc_indices functinon" over full list of files
+indices_tmp <- lapply(textfiles_subset, format_PLSR)
 #Bind rows together
 indices <- do.call(rbind, indices_tmp)
 #str still looks really funky
