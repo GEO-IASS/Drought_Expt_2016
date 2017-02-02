@@ -43,13 +43,16 @@ library(plsropt)
 #' @import signal
 #' @export
 
+summary(peach)
+str(peach)
+head(peach)
 data(peach)
 matplot(colnames(peach$NIR), t(peach$NIR), type = "l", lty = 1,
         xlab = "wavelength (nm)", ylab = "log(1/R)",
         main = "NIR spectra of intact peach fruits")
 
 datAll <- read.csv(file = "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/peachNIR.csv", row.names = 1, check.names = F)
-
+str(datAll)
 rownames(datAll)
 colnames(datAll)[1:5]
 colnames(datAll)[(NCOL(datAll)-4):NCOL(datAll)]
