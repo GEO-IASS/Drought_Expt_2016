@@ -14,9 +14,9 @@ setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspec
 #Read in file, used "col.names" argument to rename columns properly. Will need to figure out
 #how to do this with a list of ASCII files
 #Testing reshape with a single file 'test'
-test <- read.table("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+test <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
 str(test)
-test$filename <- basename("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt")
+test$filename <- basename("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt")
 test_wide <- reshape(test, idvar="filename", timevar="wavelength", direction="wide")
 
 
@@ -24,12 +24,12 @@ test_wide <- reshape(test, idvar="filename", timevar="wavelength", direction="wi
 #Lapply to calculate for all hyperspec files -----------------------------------------------------------
 
 #create list of text files (files must be in working directory); 'pattern' is case-sensitive
-setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 #txtfiles_subset is to test out the lapply
 textfiles_subset = textfiles[1:5]
 
-setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
 #Function to format in wide format
 format_PLSR <- function(x){
