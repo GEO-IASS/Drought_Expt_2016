@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Mallory Barnes" />
+
+<meta name="date" content="2017-01-23" />
+
+<title>Analysis For 1/24 Meeting</title>
+
+<script src="For_1_24_Meeting_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="For_1_24_Meeting_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="For_1_24_Meeting_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="For_1_24_Meeting_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="For_1_24_Meeting_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="For_1_24_Meeting_files/navigation-1.1/tabsets.js"></script>
+<link href="For_1_24_Meeting_files/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="For_1_24_Meeting_files/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Analysis For 1/24 Meeting</h1>
+<h4 class="author"><em>Mallory Barnes</em></h4>
+<h4 class="date"><em>January 23, 2017</em></h4>
+
+</div>
+
+
+<p>Analysis objectives for Dave M. one-on-one meeting 1/24/2017</p>
+<div id="is-there-drought-stress" class="section level1">
+<h1>1) Is there drought stress?</h1>
+<div id="yes---but-more-for-some-individuals-than-others" class="section level2">
+<h2>Yes - but more for some individuals than others</h2>
+<p><img src="For_1_24_Meeting_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+</div>
+<div id="analyze-anet-gs-ambient-first-aci-point-against-water-potential" class="section level1">
+<h1>2) Analyze Anet, gs, @ ambient (first A/Ci point) against Water Potential</h1>
+<div id="correlation-between-anet-and-water-potential" class="section level2">
+<h2>Correlation Between Anet and Water Potential</h2>
+<pre><code>## [1] &quot;overall&quot;</code></pre>
+<pre><code>##          COR       SIG
+## 1 0.07063973 0.6049162</code></pre>
+<pre><code>## [1] &quot;by genotype&quot;</code></pre>
+<pre><code>##   Genotype         COR       SIG
+## 1   52-276 -0.02676769 0.8924478
+## 2    R-270  0.25549264 0.1894506</code></pre>
+<pre><code>## [1] &quot;by genotype and phase&quot;</code></pre>
+<pre><code>##   phase Genotype         COR       SIG
+## 1     2   52-276 -0.02676769 0.8924478
+## 2     2    R-270  0.25549264 0.1894506</code></pre>
+<pre><code>## [1] &quot;by plant_ID&quot;</code></pre>
+<pre><code>##    Plant_ID         COR       SIG
+## 1       a18 -0.49753615 0.3937212
+## 2       b06  0.75278332 0.2472167
+## 3       b12  0.39074770 0.5154521
+## 4       c14  0.46980415 0.4246242
+## 5       e03 -0.06612176 0.9158726
+## 6       e04  0.67637753 0.2099404
+## 7       e10 -0.49716222 0.5028378
+## 8       f05  0.57927489 0.3060689
+## 9       f08 -0.18859329 0.8114067
+## 10      g11 -0.10219186 0.8701121
+## 11      h06  0.33024844 0.6697516
+## 12      h09 -0.36321513 0.5479198</code></pre>
+</div>
+<div id="correlation-between-gs-and-water-potential" class="section level2">
+<h2>Correlation Between gs and Water Potential</h2>
+<pre><code>## [1] &quot;overall&quot;</code></pre>
+<pre><code>##           COR       SIG
+## 1 -0.09283565 0.4961744</code></pre>
+<pre><code>## [1] &quot;by genotype&quot;</code></pre>
+<pre><code>##   Genotype        COR       SIG
+## 1   52-276 -0.2936120 0.1294020
+## 2    R-270  0.1949332 0.3202035</code></pre>
+<pre><code>## [1] &quot;by genotype and phase&quot;</code></pre>
+<pre><code>##   phase Genotype        COR       SIG
+## 1     2   52-276 -0.2936120 0.1294020
+## 2     2    R-270  0.1949332 0.3202035</code></pre>
+<pre><code>## [1] &quot;by plant_ID&quot;</code></pre>
+<pre><code>##    Plant_ID        COR        SIG
+## 1       a18  0.3665265 0.54399433
+## 2       b06  0.8804559 0.11954411
+## 3       b12 -0.2837709 0.64360116
+## 4       c14  0.5985159 0.28626972
+## 5       e03 -0.8997560 0.03752155
+## 6       e04  0.7536453 0.14123329
+## 7       e10 -0.1089082 0.89109184
+## 8       f05  0.3729106 0.53644182
+## 9       f08 -0.4183028 0.58169719
+## 10      g11 -0.3957042 0.50964958
+## 11      h06  0.3051596 0.69484038
+## 12      h09 -0.5669186 0.31896131</code></pre>
+</div>
+</div>
+<div id="correlations-nonsignificant" class="section level1">
+<h1>correlations nonsignificant</h1>
+<pre><code>## Warning: package &#39;corrr&#39; was built under R version 3.3.2</code></pre>
+<pre><code>## [1] &quot;Anet/Water Potential: Corr: 0.07063973,Significance: p=0.6049162&quot;</code></pre>
+<pre><code>## [1] &quot;Gs/Water Potential: Corr: -0.09283565,Significance: p=0.4961744&quot;</code></pre>
+<p><img src="For_1_24_Meeting_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="timeseries-vcmax-jmax" class="section level1">
+<h1>3) Timeseries Vcmax &amp; Jmax</h1>
+<div id="jmax-declines-more-consistently-than-vcmax-throughout-season" class="section level2">
+<h2>Jmax declines more consistently than Vcmax throughout season</h2>
+<p><img src="For_1_24_Meeting_files/figure-html/unnamed-chunk-5-1.png" width="672" /><img src="For_1_24_Meeting_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+</div>
+</div>
+<div id="vi-relationships-to-water-potential" class="section level1">
+<h1>4) VI Relationships to Water Potential</h1>
+<div id="only-significant-between-ndwi-and-small-leaf-genotype" class="section level2">
+<h2>Only significant between NDWI and small-leaf genotype</h2>
+<pre><code>## [1] &quot;PRI&quot;</code></pre>
+<pre><code>##          COR       SIG
+## 1 0.04518058 0.7409136</code></pre>
+<pre><code>##   Genotype         COR       SIG
+## 1   52-276 -0.01980668 0.9203139
+## 2    R-270 -0.03721789 0.8508574</code></pre>
+<pre><code>##    Plant_ID        COR        SIG
+## 1       a18 -0.6070391 0.27761082
+## 2       b06  0.9077551 0.09224492
+## 3       b12  0.3373553 0.57875844
+## 4       c14  0.7819627 0.11813809
+## 5       e03 -0.1283519 0.83702710
+## 6       e04  0.7563359 0.13898691
+## 7       e10 -0.1137502 0.88624981
+## 8       f05  0.1198111 0.84781754
+## 9       f08 -0.7025535 0.29744646
+## 10      g11 -0.1868669 0.76346572
+## 11      h06 -0.6260789 0.37392113
+## 12      h09  0.6200558 0.26452371</code></pre>
+<pre><code>## [1] &quot;NDVI&quot;</code></pre>
+<pre><code>##          COR       SIG
+## 1 0.04518058 0.7409136</code></pre>
+<pre><code>##   Genotype          COR       SIG
+## 1   52-276  0.123499053 0.5312458
+## 2    R-270 -0.008287599 0.9666142</code></pre>
+<pre><code>##    Plant_ID         COR        SIG
+## 1       a18 -0.63121390 0.25344085
+## 2       b06 -0.04520177 0.95479823
+## 3       b12  0.74543191 0.14815571
+## 4       c14  0.70846669 0.18046695
+## 5       e03 -0.04098229 0.94783433
+## 6       e04  0.39907785 0.50570790
+## 7       e10 -0.60083625 0.39916375
+## 8       f05  0.91145079 0.03120734
+## 9       f08 -0.23723593 0.76276407
+## 10      g11  0.54105622 0.34637391
+## 11      h06  0.41662393 0.58337607
+## 12      h09  0.16624702 0.78930683</code></pre>
+<pre><code>## [1] &quot;NDWI&quot;</code></pre>
+<pre><code>##          COR       SIG
+## 1 -0.1863824 0.1690118</code></pre>
+<pre><code>##   Genotype         COR        SIG
+## 1   52-276 -0.48793188 0.00843776
+## 2    R-270  0.08391128 0.67118433</code></pre>
+<pre><code>##    Plant_ID         COR       SIG
+## 1       a18 -0.01837551 0.9766049
+## 2       b06  0.14821490 0.8517851
+## 3       b12 -0.60135415 0.2833785
+## 4       c14  0.47183457 0.4223434
+## 5       e03 -0.58737256 0.2976945
+## 6       e04  0.34195541 0.5732496
+## 7       e10 -0.82502447 0.1749755
+## 8       f05  0.39645796 0.5087684
+## 9       f08 -0.09789968 0.9021003
+## 10      g11  0.26850498 0.6622823
+## 11      h06  0.14671447 0.8532855
+## 12      h09 -0.72740712 0.1636809</code></pre>
+</div>
+<div id="only-significant-correlation-between-ndwi-and-water-potential-in-small-leaf-genotype" class="section level2">
+<h2>Only significant correlation between NDWI and Water Potential in small leaf genotype</h2>
+<p><img src="For_1_24_Meeting_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+</div>
+<div id="figure-1-for-only-drier-data-conditions" class="section level1">
+<h1>Figure 1 for only drier data conditions</h1>
+<div id="only-significant-for-big-leaf-genotype-in-phase-2" class="section level2">
+<h2>Only significant for big-leaf genotype in Phase 2</h2>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
