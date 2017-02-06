@@ -55,24 +55,25 @@ indices_tmp <- lapply(textfiles, format_PLSR)
 #Bind rows together: this can also take awhile - about 15 minutes for all files 
 indices <- do.call(rbind, indices_tmp)
 write.csv(indices, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR.csv")
-
 #str still looks really funky
-str(indices)
+str(indices_formated)
 indices[200:235,]
 head(indices)
-#Going to format different variables now (numeric, date, etc. etc. for analysis)
-indices$PRI <- as.numeric(as.character(indices$PRI))
-indices$NDVI <- as.numeric(as.character(indices$NDVI))
-indices$NDWI <- as.numeric(as.character(indices$NDWI))
-indices$date <- as.Date(indices$date, format="%m-%d-%Y")
-
-write.csv(indices,"C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
-
-
-# define vectors to store results (mean sortable silt values)
-results = data.frame(txtfiles_subset, indices)
-print(results)
-
-
-
+#Need to: 
+#1) Format all reflectances as numeric
+#2) Format date "as.date"
+#3) create "unique_ID" column
+#4) Get rid of extraneous filename column
+#1) Format all reflectances as numeric: columns [,7:2157] - opening from .csv solves this problem!
+indices_formatted <- (read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR.csv"))
+str(indices_formatted)
+#2)
+indices_formatted$date <-as.Date(indices_formatted$date, format="%m-%d-%Y")
+#3) create "unique_ID" column
+indices_formatted$ID <- as.character(tolower(indices_formatted$ID))
+indices_formatted$uniqueID <- paste(indices_formatted$ID, indices_formatted$date, sep='-') 
+str(indices_formatted)
+indices_formatted$uniqueID
+#4) Get rid of extraneous filename column 'filename.1'
+indices_formatted <- subset(indices_formatted, select=-c(filename.1))
 
