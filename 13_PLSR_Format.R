@@ -84,5 +84,5 @@ str(indices_formatted)
 write.csv(indices_formatted, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 
 #now average all reflectances by 'uniqueID'
-hyperspec <- ddply(indices_formatted, .(uniqueID))
-
+library(reshape2)
+hyperspectral <- aggregate(. ~indices_formatted$uniqueID, indices_formatted[,6:2156], mean)
