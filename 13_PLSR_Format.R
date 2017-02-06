@@ -86,5 +86,12 @@ write.csv(indices_formatted, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyper
 #now average all reflectances by 'uniqueID'
 hyperspectral <- aggregate(. ~indices_formatted$uniqueID, indices_formatted[,6:2156], mean)
 colnames(hyperspectral)[1] <- "uniqueID"
-
-
+#Load file with other data
+data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
+str(data_aci_etc)
+merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
+str(merged_hyperspec)
+#wanna keep date and genotype columns for potential easy subsetting I think
+merged_hyperspec <- merged_hyperspec[ -c(2:6, 9:14, 16:19, 21:31)]
+str(merged_hyperspec)
+write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
