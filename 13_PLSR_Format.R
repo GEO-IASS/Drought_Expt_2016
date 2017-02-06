@@ -47,10 +47,15 @@ format_PLSR <- function(x){
         return(indices)
 }
 
-#Lapply "calc_indices functinon" over full list of files
+#Lapply "calc_indices functinon" over subset of files: subset of 15 files takes 30 seconds
 indices_tmp <- lapply(textfiles_subset, format_PLSR)
-#Bind rows together
+#Lapply "calc_indices functinon" over full list of files: takes awhile - 34 minutes for all files
+indices_tmp <- lapply(textfiles, format_PLSR)
+
+#Bind rows together: this can also take awhile - about 15 minutes for all files 
 indices <- do.call(rbind, indices_tmp)
+write.csv(indices, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR.csv")
+
 #str still looks really funky
 str(indices)
 indices[200:235,]
