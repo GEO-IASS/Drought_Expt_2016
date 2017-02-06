@@ -76,4 +76,13 @@ str(indices_formatted)
 indices_formatted$uniqueID
 #4) Get rid of extraneous filename column 'filename.1'
 indices_formatted <- subset(indices_formatted, select=-c(filename.1))
+#5) Get rid of "reflectance" in column because we know that's what it is
+names(indices_formatted) <- gsub("reflectance.", "", names(indices_formatted))
+#Get rid of 'wavelength' column too
+indices_formatted <- subset(indices_formatted, select=-c(Wavelength))
+str(indices_formatted)
+write.csv(indices_formatted, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+
+#now average all reflectances by 'uniqueID'
+hyperspec <- ddply(indices_formatted, .(uniqueID))
 
