@@ -3,7 +3,7 @@
 #Purpose: Format files for use in PLSRopt package
 #Input: Hyperspectral  Reflectances in ASCII format
 #Output: Single data frame in following format: 
-peach <- read.csv("")
+library(reshape2)
 
 # UniqueID Vcmax Jmax Water_Pot  300 301 302 303 etc. etc. (data must be in wide format)
 #for my personal laptop
@@ -84,5 +84,7 @@ str(indices_formatted)
 write.csv(indices_formatted, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 
 #now average all reflectances by 'uniqueID'
-library(reshape2)
 hyperspectral <- aggregate(. ~indices_formatted$uniqueID, indices_formatted[,6:2156], mean)
+colnames(hyperspectral)[1] <- "uniqueID"
+
+
