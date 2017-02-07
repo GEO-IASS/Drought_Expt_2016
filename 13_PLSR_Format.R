@@ -55,7 +55,6 @@ indices_tmp <- lapply(textfiles, format_PLSR)
 indices <- do.call(rbind, indices_tmp)
 write.csv(indices, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR.csv")
 #str still looks really funky
-str(indices_formated)
 indices[200:235,]
 head(indices)
 #Need to: 
@@ -73,27 +72,30 @@ indices_formatted$ID <- as.character(tolower(indices_formatted$ID))
 indices_formatted$uniqueID <- paste(indices_formatted$ID, indices_formatted$date, sep='-') 
 str(indices_formatted)
 indices_formatted$uniqueID
-#4) Get rid of extraneous filename column 'filename.1'
-indices_formatted <- subset(indices_formatted, select=-c(filename.1))
+#Not an issuea anymore: #4) Get rid of extraneous filename column 'filename.1'
+#indices_formatted <- subset(indices_formatted, select=-c(filename.1))
+
 #5) Get rid of "reflectance" in column because we know that's what it is
 names(indices_formatted) <- gsub("reflectance.", "", names(indices_formatted))
-#Get rid of 'wavelength' column too
-indices_formatted <- subset(indices_formatted, select=-c(Wavelength))
+#No longer an issue: Get rid of 'wavelength' column too
+#indices_formatted <- subset(indices_formatted, select=-c(Wavelength))
 str(indices_formatted)
 write.csv(indices_formatted, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 
 #now average all reflectances by 'uniqueID'
 str(indices_formatted)
-hyperspectral <- aggregate(indices_formatted[,6:2156], by="uniqueID", FUN=mean)
 hyperspectral <- ddply(indices_formatted, .(uniqueID), colwise(mean))
 str(hyperspectral)
-colnames(hyperspectral)[1] <- "uniqueID"
+hyperspectral <- hyperspectral[ -c(2:3, 5:6)]
+#colnames(hyperspectral)[1] <- "uniqueID"
+#remove columns: x, observation, filename
+
 #Load file with other data
 data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
 str(data_aci_etc)
 merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
 str(merged_hyperspec)
 #wanna keep date and genotype columns for potential easy subsetting I think
-merged_hyperspec <- merged_hyperspec[ -c(2:6, 9:14, 16:19, 21:31)]
+merged_hyperspec <- merged_hyperspec[ -c(2:6, 9:14, 16:19, 21:32)]
 str(merged_hyperspec)
 write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
