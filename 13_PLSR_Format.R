@@ -26,23 +26,25 @@ test_wide <- reshape(test, idvar="filename", timevar="wavelength", direction="wi
 setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 #txtfiles_subset is to test out the lapply
-textfiles_subset = textfiles[1:15]
-
+textfiles_subset = textfiles[1:5]
+textfiles_subset
 setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
 #Function to format in wide format
 format_PLSR <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
+        print(tmp[1:5,])
         tmp$filename <- basename(x)
         tmp = tmp[-1,]
+        print(tmp[1:5,])
         tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
         tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
+        print(tmp[1:5,])
         filename <- substr(tmp[1,3], 1,40)
-        print(filename)
         ID <-  substr(tmp[1,3], 10,12)
         date <- (substr(tmp[1,3], 19,27))
         observation =(substr(tmp[1,3], 31,32))
-        reflectances <- reshape(test, idvar="filename", timevar="wavelength", direction="wide")
+        reflectances <- reshape(tmp, idvar="filename", timevar="wavelength", direction="wide")
         indices=as.data.frame(cbind(filename, ID, date, observation, reflectances))
         return(indices)
 }
@@ -84,7 +86,10 @@ str(indices_formatted)
 write.csv(indices_formatted, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 
 #now average all reflectances by 'uniqueID'
-hyperspectral <- aggregate(. ~indices_formatted$uniqueID, indices_formatted[,6:2156], mean)
+str(indices_formatted)
+hyperspectral <- aggregate(indices_formatted[,6:2156], by="uniqueID", FUN=mean)
+hyperspectral <- ddply(indices_formatted, .(uniqueID), colwise(mean))
+str(hyperspectral)
 colnames(hyperspectral)[1] <- "uniqueID"
 #Load file with other data
 data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
