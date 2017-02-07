@@ -6,7 +6,7 @@
 library(pls)
 library(devtools)
 library(signal)
-install_github("uwadaira/plsropt", dependencies = TRUE)
+#install_github("uwadaira/plsropt", dependencies = TRUE)
 library(plsropt)
 
 #all the following from: plsropt/R/plsrauto.R
@@ -73,7 +73,45 @@ result <- plsrPlot(Brix ~ NIR, data = datTrain, testdata = datTest,
                    validation = "CV", segment.type ="interleaved",
                    output = FALSE)
 
+#Ok now for my own data!!!!!!!!!!!!!
 
-#Need to get data in proper format: 
+poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
+str(poplar_names)
+#get rid of 'x' column, Water_Pot, and Genotype for now 
+poplar_names <- poplar_names[ -c(1, 5:7)]
+#change col names (all say 'x' right now(?))
+names(poplar_names) <- gsub("X", "", names(poplar_names))
+str(poplar_names)
+#rownames of all data
+poplar_all <- poplar_names[,-1]
+rownames(poplar_all) <- poplar_names[,1]
+rownames(poplar_all)
+#check column names
+colnames(poplar_all)[1:5]
+#last five column names
+colnames(poplar_all)[(ncol(poplar_all)-4):ncol(poplar_all)]
+#extract x variables (350 nm - 2500 nm)
+x <-extdat(poplar_all, start=700,end=2500)
+poplar<-data.frame(poplar_all[,1:2], NIR=I(as.matrix(x)))
+#extracting range of 700 nm to 1098 nm
+poplar$NIR<-extdat(poplar$NIR,start=700,end=2500)
+#preprocessing: standard normal variate
+poplar$NIR <- snv(poplar$NIR)
+#Savitky-Golay second derivative
+poplar$NIR <- matsgolay(poplar$NIR, p=2, n=11, m=2)
+#Auto-scaling
+poplar$NIR <- scale(poplar$NIR, center = TRUE, scale = TRUE)
+#Dvidide data set into training and test set
+datTrain <- poplar[24:56,]
+datTest <- poplar[1:24, ]
+
+result <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
+                   ncomp = "auto", maxcomp = 10,
+                   validation = "CV", segment.type ="interleaved",
+                   output = FALSE)
+
+
+
+
 
 
