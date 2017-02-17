@@ -121,3 +121,4 @@ result.all[1:5,]
 
 # save the result as a CSV file
 write.csv(result.all, file = "plsrauto_result.csv")
+
