@@ -15,6 +15,7 @@ library(signal)
 #If plsropt is not installed: use command 'install_github("uwadaira/plsropt", dependencies = TRUE)'
 library(plsropt)
 library(gdata)
+library(progress)
 
 #Load wide format hyperspectral data
 poplar_names <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
@@ -116,7 +117,21 @@ R_squared_spread <- function(x, prop_train){
 }
 
 
-Repeat_R_squared <- function(x, )
+Repeat_R_squared <- function(x, n){
+        pb <- progress_bar$new(total = 100)
+        pb$tick()
+        Sys.sleep(0.1)
+        Prop_0.3 <- do.call(rbind, rlply(n, R_squared_spread(x,0.3), .progress = "text"))
+        Prop_0.4 <- do.call(rbind, rlply(n, R_squared_spread(x,0.4), .progress = "text"))
+        Prop_0.5 <- do.call(rbind, rlply(n, R_squared_spread(x,0.5), .progress = "text"))
+        Prop_0.6 <- do.call(rbind, rlply(n, R_squared_spread(x,0.6), .progress = "text"))
+        Prop_0.7 <- do.call(rbind, rlply(n, R_squared_spread(x,0.7), .progress = "text"))
+        Prop_0.8 <- do.call(rbind, rlply(n, R_squared_spread(x,0.8), .progress = "text"))
+        Prop_0.9 <- do.call(rbind, rlply(n, R_squared_spread(x,0.9), .progress = "text"))
+        return(all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9))
+}
+
+Repeat_R_squared(poplar,5)
 
 Prop_0.3 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.3)))
 Prop_0.4 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.4)))
