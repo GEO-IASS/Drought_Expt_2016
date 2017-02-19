@@ -77,13 +77,10 @@ poplar$NIR <- scale(poplar$NIR, center = TRUE, scale = TRUE)
 str(poplar)
 poplar_rand <- poplar[sample(nrow(poplar)),]
 #Break into training and testing set 
-poplar_rand[sample(poplar_rand, round(0.2*length(poplar_rand))), ]
-tr <- sample(poplar_rand, round(0.2*length(poplar_rand)))
-
+#Doesn't let plsrplot run properly
 datTrain <- (sample_frac(poplar_rand, size = .20, replace = FALSE))
 datTest <- setdiff(poplar_rand, datTrain)
-
-dat_Train <- poplar_rand[c(round(0.2*length(poplar)),]
+#plsrplot runs properly
 datTrain <- poplar_rand[-c(41:56),]
 datTest <- poplar_rand[41:56,]
 
