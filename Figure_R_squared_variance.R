@@ -14,6 +14,7 @@ library(devtools)
 library(signal)
 #If plsropt is not installed: use command 'install_github("uwadaira/plsropt", dependencies = TRUE)'
 library(plsropt)
+library(gdata)
 
 #Load wide format hyperspectral data
 poplar_names <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
@@ -116,5 +117,18 @@ R_squared_spread <- function(x, prop_train){
 }
 
 
+Prop_0.3 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.3)))
+Prop_0.4 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.4)))
 Prop_0.5 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.5)))
-Prop_0.5
+Prop_0.6 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.6)))
+Prop_0.7 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.7)))
+Prop_0.8 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.8)))
+Prop_0.9 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.9)))
+
+all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9)
+
+ggplot(all_prop, aes(y=data, x=source)) + 
+        geom_point(size=3)+
+        
+        theme_bw(base_size=14)+labs(title = "Variance Around R-squared based on proportion training data", y="R-squared", x="Proportion Training (%)")
+
