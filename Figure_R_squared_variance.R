@@ -78,7 +78,12 @@ str(poplar)
 poplar_rand <- poplar[sample(nrow(poplar)),]
 #Break into training and testing set 
 #Doesn't let plsrplot run properly
-datTrain <- (sample_frac(poplar_rand, size = .20, replace = FALSE))
+cutoff = round(0.7*nrow(poplar_rand))
+
+datTrain <- poplar_rand[1:cutoff,]
+datTrain <- poplar_rand[-(1:cutoff),]
+
+datTrain <- (sample_frac(poplar, size = .20, replace = TRUE))
 datTest <- setdiff(poplar_rand, datTrain)
 #plsrplot runs properly
 datTrain <- poplar_rand[-c(41:56),]
@@ -87,7 +92,7 @@ datTest <- poplar_rand[41:56,]
 str(datTrain)
 str(datTest)
 
-#Plot fo Vcmax
+#Plot of Vcmax
 resultV <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                    ncomp = "auto", maxcomp = 10,
                    validation = "CV", segment.type ="interleaved",
