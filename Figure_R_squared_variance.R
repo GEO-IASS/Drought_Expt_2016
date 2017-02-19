@@ -110,25 +110,25 @@ R_squared_spread <- function(x, prop_train){
         resultV <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                             ncomp = "auto", maxcomp = 10,
                             validation = "CV", segment.type ="interleaved",
-                            output = FALSE, return.stats=TRUE)
-        
+                            output = FALSE, return.stats=TRUE, plot=FALSE)
         return(round(resultV$R.test^2 ,3))
         
 }
 
 
-Prop_0.3 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.3)))
-Prop_0.4 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.4)))
-Prop_0.5 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.5)))
-Prop_0.6 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.6)))
-Prop_0.7 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.7)))
-Prop_0.8 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.8)))
-Prop_0.9 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.9)))
+Repeat_R_squared <- function(x, )
+
+Prop_0.3 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.3)))
+Prop_0.4 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.4)))
+Prop_0.5 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.5)))
+Prop_0.6 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.6)))
+Prop_0.7 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.7)))
+Prop_0.8 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.8)))
+Prop_0.9 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.9)))
 
 all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9)
 
 ggplot(all_prop, aes(y=data, x=source)) + 
-        geom_point(size=3)+
-        
-        theme_bw(base_size=14)+labs(title = "Variance Around R-squared based on proportion training data", y="R-squared", x="Proportion Training (%)")
+        geom_point(size=2)+
+        theme_bw(base_size=14)+labs(title = "Variance around R-squared based on prop. training data", y="R-squared", x="Proportion Training Data (%)")
 
