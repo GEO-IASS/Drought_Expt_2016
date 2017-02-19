@@ -4,10 +4,12 @@
 #Figure shows variance around R-squared (10 different random samples) given different proportions
 #of training vs. testing data. 
 #Input: .csv file containing full leaf specta in wide format
-#Output: 
+#Output: ggplot figure: shows spread of R-squared values for various proportions of testing vs. training 
+#data for this dataset
 
 
 library(pls)
+library(plyr)
 library(devtools)
 library(signal)
 #If plsropt is not installed: use command 'install_github("uwadaira/plsropt", dependencies = TRUE)'
@@ -58,31 +60,63 @@ poplar$NIR <- matsgolay(poplar$NIR, p=2, n=11, m=2)
 #Auto-scaling
 poplar$NIR <- scale(poplar$NIR, center = TRUE, scale = TRUE)
 #Divide data set into training and test set
-
-datTrain <- poplar[-c(1:18),]
-datTest <- poplar[19:28,]
-
-
-#Shuffle Rowwise: 
-#poplar_rand <- poplar[sample(nrow(poplar)),]
-
-str(datTrain)
-str(datTest)
+#For non-randomzed purposes
+#datTrain <- poplar[-c(1:18),]
+#datTest <- poplar[19:28,]
 
 #This is for only obs on June 23rd and 24th
 #datTrain <- poplar[-c(25:33),]
 #datTest <- poplar[25:33,]
 
 #This is for only obs on June 23rd and 24th for GT 52-276
-datTrain <- poplar[-c(13:17),]
-datTest <- poplar[13:17,]
+#datTrain <- poplar[-c(13:17),]
+#datTest <- poplar[13:17,]
 
-result <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
+
+#Shuffle Rowwise: 
+str(poplar)
+poplar_rand <- poplar[sample(nrow(poplar)),]
+#Break into training and testing set 
+poplar_rand[sample(poplar_rand, round(0.2*length(poplar_rand))), ]
+tr <- sample(poplar_rand, round(0.2*length(poplar_rand)))
+
+datTrain <- (sample_frac(poplar_rand, size = .20, replace = FALSE))
+datTest <- setdiff(poplar_rand, datTrain)
+
+dat_Train <- poplar_rand[c(round(0.2*length(poplar)),]
+datTrain <- poplar_rand[-c(41:56),]
+datTest <- poplar_rand[41:56,]
+
+str(datTrain)
+str(datTest)
+
+#Plot fo Vcmax
+resultV <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                    ncomp = "auto", maxcomp = 10,
                    validation = "CV", segment.type ="interleaved",
-                   output = FALSE)
-result$validation
+                   output = FALSE, return.stats=TRUE)
+
+
+resultJ <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
+                   ncomp = "auto", maxcomp = 10,
+                   validation = "CV", segment.type ="interleaved",
+                   output = FALSE, return.stats=TRUE)
+
+
+
+
+round(resultV$R.test^2 ,3)
+round(resultJ$R.test^2, 3)
+
+result
+
+resultV$validation
 result.all <- plsrauto(Vcmax ~ NIR, data = datTrain, testdata = datTest, xrange = list(c(350, 2500)))
 result.all$R.val
 
+cor(y.test, yhat.test)^2
 
+yhat.test <- predict(resultV, ncomp = ncomp, newdata = as.matrix(x.test))
+
+result.test.lm <- lm(yhat.test ~ y.test)
+stats <- data.frame(stats, N.test=length(y.test), R.test=cor(y.test, yhat.test), Slope.test, SEP, Bias.test, RPD.test)
