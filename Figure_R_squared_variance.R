@@ -72,23 +72,16 @@ poplar$NIR <- scale(poplar$NIR, center = TRUE, scale = TRUE)
 #datTrain <- poplar[-c(13:17),]
 #datTest <- poplar[13:17,]
 
-
-#Shuffle Rowwise: 
 str(poplar)
+#Shuffle Rowwise: 
 poplar_rand <- poplar[sample(nrow(poplar)),]
-#Break into training and testing set 
-#Doesn't let plsrplot run properly
-cutoff = round(0.7*nrow(poplar_rand))
-
+#Break into training and testing set based on 'cutoff'
+cutoff = round(0.3*nrow(poplar_rand))
 datTrain <- poplar_rand[1:cutoff,]
-datTrain <- poplar_rand[-(1:cutoff),]
-
-datTrain <- (sample_frac(poplar, size = .20, replace = TRUE))
-datTest <- setdiff(poplar_rand, datTrain)
-#plsrplot runs properly
-datTrain <- poplar_rand[-c(41:56),]
-datTest <- poplar_rand[41:56,]
-
+datTest <- poplar_rand[-(1:cutoff),]
+#don't need this anymore
+#datTrain <- poplar_rand[-c(41:56),]
+#datTest <- poplar_rand[41:56,]
 str(datTrain)
 str(datTest)
 
@@ -104,21 +97,24 @@ resultJ <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
                    validation = "CV", segment.type ="interleaved",
                    output = FALSE, return.stats=TRUE)
 
-
-
-
 round(resultV$R.test^2 ,3)
 round(resultJ$R.test^2, 3)
 
-result
 
-resultV$validation
-result.all <- plsrauto(Vcmax ~ NIR, data = datTrain, testdata = datTest, xrange = list(c(350, 2500)))
-result.all$R.val
+R_squared_spread <- function(x, prop_train){
+        x_rand <- x[sample(nrow(x)),]
+        cutoff = round(prop_train*nrow(x_rand))
+        datTrain <- x_rand[1:cutoff,]
+        datTest <- x_rand[-(1:cutoff),]
+        resultV <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
+                            ncomp = "auto", maxcomp = 10,
+                            validation = "CV", segment.type ="interleaved",
+                            output = FALSE, return.stats=TRUE)
+        
+        return(round(resultV$R.test^2 ,3))
+        
+}
 
-cor(y.test, yhat.test)^2
 
-yhat.test <- predict(resultV, ncomp = ncomp, newdata = as.matrix(x.test))
-
-result.test.lm <- lm(yhat.test ~ y.test)
-stats <- data.frame(stats, N.test=length(y.test), R.test=cor(y.test, yhat.test), Slope.test, SEP, Bias.test, RPD.test)
+Prop_0.5 <- do.call(rbind, rlply(5, R_squared_spread(poplar,0.5)))
+Prop_0.5
