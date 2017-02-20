@@ -51,7 +51,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #'merged' file contains A/Ci (Vcmax/Jmax), met variables, and 'unique_ID' 
 merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
 #'hyperspec' file contains processed hyperspectral files including 'unique_ID'
-hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
+hyperspec <-read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Added_Indices.csv")
 
 #Checking out both files
 head(merged)
@@ -65,12 +65,12 @@ head(hyperspec)
 hyperspec$uniqueID <- paste(tolower(hyperspec$ID), hyperspec$date, sep='-')
 
 #want means of VIs by uniqueID - use ddply
-hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(PRI), NDWI=mean(NDWI))
+hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(PRI), NDWI=mean(NDWI), Datt4=mean(Datt4), Vogelmann2=mean(Vogelmann2))
 
 #merge hyperspec and a/ci data
 all_data <- merge(hyperspec_avg, merged, by="uniqueID")
 str(all_data)
-write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
+write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_new_indices.csv")
 
 #clean up "all_data"
 #delete X.2, X.1, and X columns (what even are these?)
