@@ -66,23 +66,23 @@ calc_PRI = function(w_531, w_570){((w_531-w_570)/(w_531+w_570))}
 calc_NDVI = function(w_860, w_690){((w_860-w_690)/(w_860+w_690))}
 calc_NDWI = function(w_860, w_1240){((w_860-w_1240)/(w_860+w_1240))}
 calc_Datt4 = function(w_672, w_550, w_708){(w_672)/(w_550*w_708)}
-calc_Vogelmann2 = function(w_734, w_747, w715, w726){(w_734-w_747)-(w_715+w_726)}
+calc_Vogelmann2 = function(w_734, w_747, w_715, w_726){(w_734-w_747)-(w_715+w_726)}
 
 #create list of text files (files must be in working directory); 'pattern' is case-sensitive
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 
 #txtfiles_subset is to test out the lapply
-textfiles_subset = txtfiles[1:5]
+textfiles_subset = textfiles[1:5]
 
 
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 
-#Lapply "calc_indices functinon"
+#Lapply "calc_indices functinon" - takes a couple minutes over whole list 
 indices_tmp <- lapply(textfiles, calc_indices)
-#Bind rows together
+#Bind rows together - this part takes awhile
 indices <- do.call(rbind, indices_tmp)
-#str still looks really funky
+#str still looks really funky but 'head' looks normal
 str(indices)
 indices[200:235,]
 head(indices)
@@ -94,7 +94,7 @@ indices$Datt4<- as.numeric(as.character(indices$Datt4))
 indices$Vogelmann2<- as.numeric(as.character(indices$Vogelmann2))
 indices$date <- as.Date(indices$date, format="%m-%d-%Y")
 
-write.csv(indices,"C:/Users//Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Added_Indices.csv")
+write.csv(indices,"C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Added_Indices.csv")
 
 calc_indices <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
@@ -122,11 +122,10 @@ calc_indices <- function(x){
         NDVI = calc_NDVI(w_860, w_690)
         NDWI = calc_NDWI(w_860, w_1240)
         Datt4 = calc_Datt4(w_672, w_550, w_708)
-        Vogelmann2 = calc_Vogelmann2(w_734, w_747, w715, w726)
-        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI))
+        Vogelmann2 = calc_Vogelmann2(w_734, w_747, w_715, w_726)
+        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI, Datt4, Vogelmann2))
         return(indices)
 }
-
 
 # define vectors to store results (mean sortable silt values)
 results = data.frame(txtfiles_subset, indices)
