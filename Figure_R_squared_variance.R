@@ -102,8 +102,12 @@ resultJ <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
 round(resultV$R.test^2 ,3)
 round(resultJ$R.test^2, 3)
 
+#These functions are used in the 'repeat R squared function': it pulls the R-squared for the 
+#Correlation between the actual vs. predicted data (training vs. test) from the plsrPlot function
+#and defines a 'cutoff' value (used to divide the proportion of testing and training data). 
+#R_squared_V is for Vcmax and R_squared_J is for Jmax
 
-R_squared_spread <- function(x, prop_train){
+R_squared_V <- function(x, prop_train){
         x_rand <- x[sample(nrow(x)),]
         cutoff = round(prop_train*nrow(x_rand))
         datTrain <- x_rand[1:cutoff,]
@@ -117,33 +121,52 @@ R_squared_spread <- function(x, prop_train){
 }
 
 
-Repeat_R_squared <- function(x, n){
-        pb <- progress_bar$new(total = 100)
-        pb$tick()
-        Sys.sleep(0.1)
-        Prop_0.3 <- do.call(rbind, rlply(n, R_squared_spread(x,0.3), .progress = "text"))
-        Prop_0.4 <- do.call(rbind, rlply(n, R_squared_spread(x,0.4), .progress = "text"))
-        Prop_0.5 <- do.call(rbind, rlply(n, R_squared_spread(x,0.5), .progress = "text"))
-        Prop_0.6 <- do.call(rbind, rlply(n, R_squared_spread(x,0.6), .progress = "text"))
-        Prop_0.7 <- do.call(rbind, rlply(n, R_squared_spread(x,0.7), .progress = "text"))
-        Prop_0.8 <- do.call(rbind, rlply(n, R_squared_spread(x,0.8), .progress = "text"))
-        Prop_0.9 <- do.call(rbind, rlply(n, R_squared_spread(x,0.9), .progress = "text"))
+R_squared_J <- function(x, prop_train){
+        x_rand <- x[sample(nrow(x)),]
+        cutoff = round(prop_train*nrow(x_rand))
+        datTrain <- x_rand[1:cutoff,]
+        datTest <- x_rand[-(1:cutoff),]
+        resultJ <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
+                            ncomp = "auto", maxcomp = 10,
+                            validation = "CV", segment.type ="interleaved",
+                            output = FALSE, return.stats=TRUE, plot=FALSE)
+        return(round(resultJ$R.test^2 ,3))
+        
+}
+
+#This function pulls n random samples for dfferent proportions of training vs. testing data and
+#combines them all into one data frame. 
+
+Repeat_R_V <- function(x, n){
+        Prop_0.3 <- do.call(rbind, rlply(n, R_squared_V(x,0.3), .progress = "text"))
+        Prop_0.4 <- do.call(rbind, rlply(n, R_squared_V(x,0.4), .progress = "text"))
+        Prop_0.5 <- do.call(rbind, rlply(n, R_squared_V(x,0.5), .progress = "text"))
+        Prop_0.6 <- do.call(rbind, rlply(n, R_squared_V(x,0.6), .progress = "text"))
+        Prop_0.7 <- do.call(rbind, rlply(n, R_squared_V(x,0.7), .progress = "text"))
+        Prop_0.8 <- do.call(rbind, rlply(n, R_squared_V(x,0.8), .progress = "text"))
+        Prop_0.9 <- do.call(rbind, rlply(n, R_squared_V(x,0.9), .progress = "text"))
         return(all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9))
 }
 
-Repeat_R_squared(poplar,5)
 
-Prop_0.3 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.3)))
-Prop_0.4 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.4)))
-Prop_0.5 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.5)))
-Prop_0.6 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.6)))
-Prop_0.7 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.7)))
-Prop_0.8 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.8)))
-Prop_0.9 <- do.call(rbind, rlply(100, R_squared_spread(poplar,0.9)))
+Repeat_R_J <- function(x, n){
+        Prop_0.3 <- do.call(rbind, rlply(n, R_squared_J(x,0.3), .progress = "text"))
+        Prop_0.4 <- do.call(rbind, rlply(n, R_squared_J(x,0.4), .progress = "text"))
+        Prop_0.5 <- do.call(rbind, rlply(n, R_squared_J(x,0.5), .progress = "text"))
+        Prop_0.6 <- do.call(rbind, rlply(n, R_squared_J(x,0.6), .progress = "text"))
+        Prop_0.7 <- do.call(rbind, rlply(n, R_squared_J(x,0.7), .progress = "text"))
+        Prop_0.8 <- do.call(rbind, rlply(n, R_squared_J(x,0.8), .progress = "text"))
+        Prop_0.9 <- do.call(rbind, rlply(n, R_squared_J(x,0.9), .progress = "text"))
+        return(all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9))
+}
 
-all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9)
+all_prop_V <- Repeat_R_V(poplar,100)
+all_prop_J <- Repeat_R_J(poplar,100)
 
-ggplot(all_prop, aes(y=data, x=source)) + 
+ggplot(all_prop_V, aes(y=data, x=source)) + 
         geom_point(size=2)+
         theme_bw(base_size=14)+labs(title = "Variance around R-squared based on prop. training data", y="R-squared", x="Proportion Training Data (%)")
 
+ggplot(all_prop_J, aes(y=data, x=source)) + 
+        geom_point(size=2)+
+        theme_bw(base_size=14)+labs(title = "Variance around R-squared based on prop. training data", y="R-squared", x="Proportion Training Data (%)")
