@@ -51,7 +51,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #'merged' file contains A/Ci (Vcmax/Jmax), met variables, and 'unique_ID' 
 merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
 #'hyperspec' file contains processed hyperspectral files including 'unique_ID'
-hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files.csv")
+hyperspec <-read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Added_Indices.csv")
 
 #Checking out both files
 head(merged)
@@ -65,12 +65,12 @@ head(hyperspec)
 hyperspec$uniqueID <- paste(tolower(hyperspec$ID), hyperspec$date, sep='-')
 
 #want means of VIs by uniqueID - use ddply
-hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(PRI), NDWI=mean(NDWI))
+hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(PRI), NDWI=mean(NDWI), Datt4=mean(Datt4), Vogelmann2=mean(Vogelmann2))
 
 #merge hyperspec and a/ci data
 all_data <- merge(hyperspec_avg, merged, by="uniqueID")
 str(all_data)
-write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
+write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_new_indices.csv")
 
 #clean up "all_data"
 #delete X.2, X.1, and X columns (what even are these?)
@@ -83,7 +83,7 @@ write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
 #Reading in merged data
 #START HERE if no changes to original data files necessary--------------- 
-all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data.csv")
+all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_new_indices.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
 head(all_data)
@@ -102,7 +102,7 @@ phase_3$phase <-3
 #Data graphs (data frame) - file has only phases 2 and 3 for graphing purposes
 data_graphs <- rbind(phase_2, phase_3)
 data_graphs$phase <- as.factor(data_graphs$phase)
-
+str(data_graphs)
 #User-defined function to return correlations by group
 #Also returns the p-value of the correlation
 #Have to chagnge the variables based on what you want to look at (xx$____ and xx$y)
@@ -256,51 +256,103 @@ ggsave(fig_15, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_15.png", 
 
 #Figure 2---------------------------------------------
 #Are hyperspectral indices correlated with Vcmax and Jmax?
+#How to get corrs for these: 
+func <- function(xx, a, b)
+        
+{
+        print(cor.test(xx$Vcmax, xx$Datt4))
+        return(data.frame(COR = cor(xx$Vcmax, xx$Datt4)))
+        
+}
+
+#This shows the correlations in all the data by genotype
+ddply(all_data, .(Genotype), func)
 
 graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
         geom_point()+
+        xlim(35,115)+
+        ylim(0.58, 0.9)+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=80, y=0.68, label="52-276: r= 0.837, \n R270: r=0.544")
+        annotate("text", x=90, y=0.65, label="52-276: r= 0.837, \n R270: r=0.544")
 
 
 graph2b <- ggplot(data=all_data, (aes(x=Jmax, y=NDVI, colour=Genotype)))+
         geom_point()+
+        xlim(80,225)+
+        ylim(0.58, 0.9)+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=175, y=0.68, label="52-276: r= 0.786, \n R270: r=0.451")
+        annotate("text", x=179, y=0.65, label="52-276: r= 0.786, \n R270: r=0.451")
 
 graph2c <- ggplot(data=all_data, (aes(x=Vcmax, y=PRI, colour=Genotype)))+
         geom_point()+
+        xlim(35,115)+
+        ylim(-0.07, 0.03)+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=90, y=-0.04, label="52-276: r= 0.478, \n R270: r=0.396")
+        annotate("text", x=92, y=-0.06, label="52-276: r= 0.478, \n R270: r=0.396")
 
 graph2d <- ggplot(data=all_data, (aes(x=Jmax, y=PRI, colour=Genotype)))+
         geom_point()+
+        xlim(80,225)+
+        ylim(-0.07, 0.03)+
         #geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         #annotate("text", x=190, y=-0.035, label="52-276: r= 0.09, \n R270: r=-0.12")
-        annotate("text", x=190, y=-0.035, label="52-276: Corr NS, \n R270: Corr NS")
+        annotate("text", x=192, y=-0.06, label="52-276: Corr NS, \n R270: Corr NS")
         
 
 graph2e <- ggplot(data=all_data, (aes(x=Vcmax, y=NDWI, colour=Genotype)))+
         geom_point()+
+        xlim(35,115)+
+        ylim(0.02, 0.07)+
         #geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         #annotate("text", x=100, y=0.035, label="52-276: r= 0.27, \n R270: r=0.08")+
-        annotate("text", x=100, y=0.035, label="52-276: Corr NS, \n R270: Corr NS")
+        annotate("text", x=100, y=0.025, label="52-276: Corr NS, \n R270: Corr NS")
 
 
 graph2f <- ggplot(data=all_data, (aes(x=Jmax, y=NDWI, colour=Genotype)))+
         geom_point()+
+        xlim(80,225)+
+        ylim(0.02, 0.07)+
         geom_smooth(method="lm", se=FALSE)+
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        annotate("text", x=180, y=0.035, label="52-276: r= 0.554, \n R270: r=0.526")
+        annotate("text", x=180, y=0.025, label="52-276: r= 0.554, \n R270: r=0.526")
 
+graph2g <- ggplot(data=all_data, (aes(x=Vcmax, y=Datt4, colour=Genotype)))+
+        geom_point()+
+        xlim(35,115)+
+        ylim(0,4)+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=90, y=0.6, label="52-276: r= 0.772 \n R270: r=0.719")
 
+graph2h <- ggplot(data=all_data, (aes(x=Jmax, y=Datt4, colour=Genotype)))+
+        geom_point()+
+        xlim(80,225)+
+        ylim(0,4)+
+        geom_smooth(data = subset(all_data, Genotype =="52-276"), method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=190, y=0.4, label="52-276: r= 0.781 \n R270: Corr NS")
+graph2i <- ggplot(data=all_data, (aes(x=Vcmax, y=Vogelmann2, colour=Genotype)))+
+        geom_point()+
+        xlim(35,115)+
+        ylim(-0.9,-0.5)+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=90, y=-0.55, label="52-276: r= 0.626 \n R270: r=0.387")
+graph2j <- ggplot(data=all_data, (aes(x=Jmax, y=Vogelmann2, colour=Genotype)))+
+        geom_point()+
+        xlim(80,225)+
+        ylim(-0.9,-0.5)+
+        geom_smooth(method="lm", se=FALSE)+
+        scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
+        annotate("text", x=110, y=-0.55, label="52-276: r= 0.807 \n R270: r=0.389")
 
 fig_2 <- multiplot(graph2a, graph2c, graph2e, graph2b, graph2d, graph2f, cols=2)
+fig_2b <- multiplot(graph2g, graph2i, graph2h, graph2j, cols=2)
 
 #saved manually because ggsave not working
 
