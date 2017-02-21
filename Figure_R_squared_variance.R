@@ -162,11 +162,16 @@ Repeat_R_J <- function(x, n){
 
 all_prop_V <- Repeat_R_V(poplar,100)
 all_prop_J <- Repeat_R_J(poplar,100)
+all_prop_V$source <- revalue(all_prop_V$source, c("Prop_0.3"="30%", "Prop_0.4"="40%", "Prop_0.5"="50%", "Prop_0.6"="60%", "Prop_0.7"="70%", "Prop_0.8"="80%", "Prop_0.9"="90%"))
+all_prop_J$source <- revalue(all_prop_J$source, c("Prop_0.3"="30%", "Prop_0.4"="40%", "Prop_0.5"="50%", "Prop_0.6"="60%", "Prop_0.7"="70%", "Prop_0.8"="80%", "Prop_0.9"="90%"))
 
-ggplot(all_prop_V, aes(y=data, x=source)) + 
-        geom_point(size=2)+
-        theme_bw(base_size=14)+labs(title = "Variance around R-squared based on prop. training data", y="R-squared", x="Proportion Training Data (%)")
+Vcmax_r <- ggplot(all_prop_V, aes(y=data, x=source)) + 
+        geom_point(size=2, alpha=0.2)+
+        
+        theme_bw(base_size=12)+labs(title = "Vcmax", y="R-squared", x="Proportion Training Data (%)")
 
-ggplot(all_prop_J, aes(y=data, x=source)) + 
-        geom_point(size=2)+
-        theme_bw(base_size=14)+labs(title = "Variance around R-squared based on prop. training data", y="R-squared", x="Proportion Training Data (%)")
+Jmax_r <- ggplot(all_prop_J, aes(y=data, x=source)) + 
+        geom_point(size=2, alpha=0.2)+
+        theme_bw(base_size=12)+labs(title = "Jmax", y="R-squared", x="Proportion Training Data (%)")
+
+multiplot(Vcmax_r, Jmax_r, cols=2)
