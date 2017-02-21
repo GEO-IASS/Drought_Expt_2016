@@ -122,8 +122,9 @@ indices$mSRCHL <- as.numeric(as.character(indices$mSRCHL))
 
 
 indices$date <- as.Date(indices$date, format="%m-%d-%Y")
+str(indices)
 
-write.csv(indices,"C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Added_Indices.csv")
+write.csv(indices,"C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Yendreck_Indices_2_21.csv")
 
 calc_indices <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
