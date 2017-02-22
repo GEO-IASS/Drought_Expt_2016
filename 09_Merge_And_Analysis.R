@@ -7,7 +7,8 @@
 library(plyr)
 library(psych)
 library(Hmisc)
-
+library(ggplot2)
+library(ggpmisc)
 #Multiplot function from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
 #Allows multiple graphs on one page
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
@@ -256,7 +257,17 @@ ggsave(fig_15, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_15.png", 
 
 #Figure 2---------------------------------------------
 #Are hyperspectral indices correlated with Vcmax and Jmax?
-#How to get corrs for these: 
+
+p <- ggplot(data = df, aes(x = x, y = y)) +
+        geom_smooth(method = "lm", se=FALSE, color="black", formula = my.formula) +
+        stat_poly_eq(formula = my.formula, 
+                     aes(label = paste(..eq.label.., ..rr.label.., sep = "~~~")), 
+                     parse = TRUE) +         
+        geom_point()
+p
+
+graph2a = graph2 + geom_text(aes(x = 25, y = 300, label = lm_eqn(lm(y ~ x, df))), parse = TRUE)
+
 func <- function(xx, a)
         
 {
@@ -264,17 +275,20 @@ func <- function(xx, a)
         
 }
 
-
+my.formula <- y ~ x
 #This shows the correlations in all the data by genotype
 ddply(all_data, .(Genotype), func)
-
 graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
         geom_point()+
         xlim(35,115)+
         ylim(0.58, 0.9)+
         geom_smooth(method="lm", se=FALSE)+
+        stat_poly_eq(formula = my.formula, rr.digits=3,
+                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        #annotate("text", x=90, y=0.65, label="52-276: r= 0.837, \n R270: r=0.544")
+        geom_text(aes(x = 35, y = 115, label = lm_eqn(lm(NDVI ~ Vcmax, all_data))), parse = TRUE)
+#annotate("text", x=90, y=0.65, label="52-276: r= 0.837, \n R270: r=0.544")
         annotate("text", x=90, y=0.65, label="52-276: r^2= 0.701, \n R270: r^2=0.296")
 
 
