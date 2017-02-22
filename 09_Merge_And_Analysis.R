@@ -254,10 +254,10 @@ fig_15 <- multiplot(graph15a, graph15b, graph15c, graph15d, cols=2)
 #Save figure 1 as .png - wasn't working properly 
 ggsave(fig_15, file="C:/Users/Mallory/Dropbox/Drought_Expt_2016/Figure_15.png", dpi=500)
 
-
 #Figure 2---------------------------------------------
 #Are hyperspectral indices correlated with Vcmax and Jmax?
-
+#If you want the equation in addition to r-squared on the plot, use the line: 
+# aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
 my.formula <- y ~ x
 
 graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
@@ -266,7 +266,7 @@ graph2a <- ggplot(data=all_data, (aes(x=Vcmax, y=NDVI, colour=Genotype)))+
         ylim(0.6, 0.9)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -279,7 +279,7 @@ graph2b <- ggplot(data=all_data, (aes(x=Jmax, y=NDVI, colour=Genotype)))+
         ylim(0.6, 0.9)+
         geom_smooth(method="lm", se=FALSE)+
                 stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -292,7 +292,7 @@ graph2c <- ggplot(data=all_data, (aes(x=Vcmax, y=PRI, colour=Genotype)))+
         ylim(-0.07, 0.03)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -303,7 +303,7 @@ graph2d <- ggplot(data=all_data, (aes(x=Jmax, y=PRI, colour=Genotype)))+
         ylim(-0.07, 0.03)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -315,7 +315,7 @@ graph2e <- ggplot(data=all_data, (aes(x=Vcmax, y=NDWI, colour=Genotype)))+
         ylim(0.02, 0.07)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -327,7 +327,7 @@ graph2f <- ggplot(data=all_data, (aes(x=Jmax, y=NDWI, colour=Genotype)))+
         ylim(0.02, 0.07)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -339,7 +339,7 @@ graph2g <- ggplot(data=all_data, (aes(x=Vcmax, y=Datt4, colour=Genotype)))+
         ylim(0,4)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -350,7 +350,7 @@ graph2h <- ggplot(data=all_data, (aes(x=Jmax, y=Datt4, colour=Genotype)))+
         ylim(0,4)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -361,7 +361,7 @@ graph2i <- ggplot(data=all_data, (aes(x=Vcmax, y=Vogelmann2, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -372,18 +372,18 @@ graph2j <- ggplot(data=all_data, (aes(x=Jmax, y=Vogelmann2, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2k<- ggplot(data=all_data, (aes(x=Vcmax, y=Maccioni, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(0.2,0.8)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -391,21 +391,21 @@ graph2k<- ggplot(data=all_data, (aes(x=Vcmax, y=Maccioni, colour=Genotype)))+
 graph2l <- ggplot(data=all_data, (aes(x=Jmax, y=Maccioni, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(0.2,0.8)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2m <-ggplot(data=all_data, (aes(x=Vcmax, y=Double_Difference, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(-0.13,0.15)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -413,21 +413,21 @@ graph2m <-ggplot(data=all_data, (aes(x=Vcmax, y=Double_Difference, colour=Genoty
 graph2n <-ggplot(data=all_data, (aes(x=Jmax, y=Double_Difference, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(-0.13,0.15)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2o <-ggplot(data=all_data, (aes(x=Vcmax, y=Vogelmann1, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(1.1,1.6)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -435,21 +435,21 @@ graph2o <-ggplot(data=all_data, (aes(x=Vcmax, y=Vogelmann1, colour=Genotype)))+
 graph2p <- ggplot(data=all_data, (aes(x=Jmax, y=Vogelmann1, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(1.1,1.6)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2q <-ggplot(data=all_data, (aes(x=Vcmax, y=mSR705, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(1.8,5.1)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -457,10 +457,10 @@ graph2q <-ggplot(data=all_data, (aes(x=Vcmax, y=mSR705, colour=Genotype)))+
 graph2r <-ggplot(data=all_data, (aes(x=Jmax, y=mSR705, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(1.8,5.1)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -468,11 +468,11 @@ graph2r <-ggplot(data=all_data, (aes(x=Jmax, y=mSR705, colour=Genotype)))+
 
 graph2s <-ggplot(data=all_data, (aes(x=Vcmax, y=SR3, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(2,5.2)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -480,21 +480,21 @@ graph2s <-ggplot(data=all_data, (aes(x=Vcmax, y=SR3, colour=Genotype)))+
 graph2t <-ggplot(data=all_data, (aes(x=Jmax, y=SR3, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(2,5.2)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2u <-ggplot(data=all_data, (aes(x=Vcmax, y=SR4, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(1.8,4)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -502,21 +502,21 @@ graph2u <-ggplot(data=all_data, (aes(x=Vcmax, y=SR4, colour=Genotype)))+
 graph2v <-ggplot(data=all_data, (aes(x=Jmax, y=SR4, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(1.8,4)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2w <-ggplot(data=all_data, (aes(x=Vcmax, y=SR1, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(1.9,5.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -524,29 +524,32 @@ graph2w <-ggplot(data=all_data, (aes(x=Vcmax, y=SR1, colour=Genotype)))+
 graph2x <-ggplot(data=all_data, (aes(x=Jmax, y=SR1, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(1.9,5.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
 
 graph2y <-ggplot(data=all_data, (aes(x=Vcmax, y=Gitelson, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(4.5,11.5)+
         geom_smooth(method="lm", se=FALSE)+
+        stat_poly_eq(formula = my.formula, rr.digits=3,
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
+                     parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
-        #annotate("text", x=130, y=-0.55, label="52-276: r= 0.807 \n R270: r=0.389")
-        annotate("text", x=130, y=-0.55, label="52-276: r^2= 0.651 \n R270: r^2=0.151")
+        theme_bw(base_size=12)
+
 graph2z <-ggplot(data=all_data, (aes(x=Jmax, y=Gitelson, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(4.5,11.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -557,7 +560,7 @@ graph2aa <-ggplot(data=all_data, (aes(x=Vcmax, y=SR2, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -568,7 +571,7 @@ graph2ab <-ggplot(data=all_data, (aes(x=Jmax, y=SR2, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -579,7 +582,7 @@ graph2ac <-ggplot(data=all_data, (aes(x=Vcmax, y=SIPI, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -590,7 +593,7 @@ graph2ad <-ggplot(data=all_data, (aes(x=Jmax, y=SIPI, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -601,7 +604,7 @@ graph2ae <-ggplot(data=all_data, (aes(x=Vcmax, y=mNDVI, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -612,7 +615,7 @@ graph2af <-ggplot(data=all_data, (aes(x=Jmax, y=mNDVI, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -623,7 +626,7 @@ graph2ag <-ggplot(data=all_data, (aes(x=Vcmax, y=mSRCHL, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
@@ -634,7 +637,7 @@ graph2ah <-ggplot(data=all_data, (aes(x=Jmax, y=mSRCHL, colour=Genotype)))+
         ylim(-0.9,-0.5)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
-                     aes(label = paste(..eq.label.., ..rr.label..,  sep = "~~~")), 
+                     aes(label = paste(..rr.label..,  sep = "~~~")), 
                      parse = TRUE) +         
         scale_color_manual(values=c("#7b3294", "#7fbf7b"))+
         theme_bw(base_size=12)
