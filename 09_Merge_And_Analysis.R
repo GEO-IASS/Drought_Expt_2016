@@ -84,7 +84,7 @@ write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
 #Reading in merged data
 #START HERE if no changes to original data files necessary--------------- 
-all_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_Yendreck_indices.csv")
+all_data <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_Yendreck_indices.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
 head(all_data)
@@ -556,8 +556,8 @@ graph2z <-ggplot(data=all_data, (aes(x=Jmax, y=Gitelson, colour=Genotype)))+
 
 graph2aa <-ggplot(data=all_data, (aes(x=Vcmax, y=SR2, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(4,11)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -568,7 +568,7 @@ graph2aa <-ggplot(data=all_data, (aes(x=Vcmax, y=SR2, colour=Genotype)))+
 graph2ab <-ggplot(data=all_data, (aes(x=Jmax, y=SR2, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(4,11)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -578,8 +578,8 @@ graph2ab <-ggplot(data=all_data, (aes(x=Jmax, y=SR2, colour=Genotype)))+
 
 graph2ac <-ggplot(data=all_data, (aes(x=Vcmax, y=SIPI, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(0.997,1.018)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -590,7 +590,7 @@ graph2ac <-ggplot(data=all_data, (aes(x=Vcmax, y=SIPI, colour=Genotype)))+
 graph2ad <-ggplot(data=all_data, (aes(x=Jmax, y=SIPI, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(0.997,1.018)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -600,8 +600,8 @@ graph2ad <-ggplot(data=all_data, (aes(x=Jmax, y=SIPI, colour=Genotype)))+
 
 graph2ae <-ggplot(data=all_data, (aes(x=Vcmax, y=mNDVI, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(0.95,1.005)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -612,7 +612,7 @@ graph2ae <-ggplot(data=all_data, (aes(x=Vcmax, y=mNDVI, colour=Genotype)))+
 graph2af <-ggplot(data=all_data, (aes(x=Jmax, y=mNDVI, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(0.95,1.005)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -622,8 +622,8 @@ graph2af <-ggplot(data=all_data, (aes(x=Jmax, y=mNDVI, colour=Genotype)))+
 
 graph2ag <-ggplot(data=all_data, (aes(x=Vcmax, y=mSRCHL, colour=Genotype)))+
         geom_point()+
-        xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        xlim(35,115)+
+        ylim(-100,1200)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -634,7 +634,7 @@ graph2ag <-ggplot(data=all_data, (aes(x=Vcmax, y=mSRCHL, colour=Genotype)))+
 graph2ah <-ggplot(data=all_data, (aes(x=Jmax, y=mSRCHL, colour=Genotype)))+
         geom_point()+
         xlim(80,225)+
-        ylim(-0.9,-0.5)+
+        ylim(-100,1200)+
         geom_smooth(method="lm", se=FALSE)+
         stat_poly_eq(formula = my.formula, rr.digits=3,
                      aes(label = paste(..rr.label..,  sep = "~~~")), 
@@ -644,7 +644,10 @@ graph2ah <-ggplot(data=all_data, (aes(x=Jmax, y=mSRCHL, colour=Genotype)))+
 
 fig_2 <- multiplot(graph2a, graph2c, graph2e, graph2b, graph2d, graph2f, cols=2)
 fig_2b <- multiplot(graph2g, graph2i, graph2h, graph2j, cols=2)
-
+fig_2c <- multiplot(graph2k,  graph2m,  graph2o, graph2l,graph2n,  graph2p, cols=2)
+fig_2d<- multiplot(graph2q, graph2s, graph2u, graph2r, graph2t, graph2v, cols=2)
+fig_2e <- multiplot(graph2w, graph2y, graph2aa, graph2x, graph2z, graph2ab, cols=2)
+fig_2f <- multiplot(graph2ac, graph2ae, graph2ag, graph2ad, graph2af, graph2ah, cols=2)
 #saved manually because ggsave not working
 
 #Figure_3-------------------
