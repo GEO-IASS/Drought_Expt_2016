@@ -143,7 +143,7 @@ func_Jmax <- function(xx)
 }
 
 
-
+all_data$uniqueID
 
 #Explore correlations between delta t and vcmax/jmax
 
