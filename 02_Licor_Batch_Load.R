@@ -23,9 +23,10 @@ library(PEcAn.photosynthesis)
   # a naming convention that let's the code pull out whether the file is an A/ci curve or an aq curve
   
   setwd("C:/Users/rsstudent/Dropbox/")
-  path_files <- "Summer_2016_Drought_Experiment/A_Ci/"
+  path_files <- "Summer_2016_Drought_Experiment/A_Ci/A_Ci_Redo_2_23/"
   filenames <- dir(path_files)
   filenames <- filenames[-grep(".xls", filenames, fixed=T)]
+  str(filenames)
   fileswithpath=paste0(path_files, filenames)
     ## Load files to a list
   master = lapply(fileswithpath, read.Licor)

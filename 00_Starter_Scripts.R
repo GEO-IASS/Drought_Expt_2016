@@ -11,7 +11,7 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 library(scales)
-
+library(rjags)
 
 ###### Install Pecan: Only need to do this once ########
 #installing PEcAn.photosynthesis as a stand alone
