@@ -29,6 +29,8 @@ Climate_data$uniqueID <- paste(Climate_data$Plant_ID, Climate_data$Date, sep='-'
 #                       Create uniqueID from the date and Plant_ID
 
 str(A_Ci_ests)
+A_Ci_ests$fname
+
 
 #Custom function for pulling x number of characters from the right of a string: from 
 #http://stackoverflow.com/questions/7963898/extracting-the-last-n-characters-from-a-string-in-r
