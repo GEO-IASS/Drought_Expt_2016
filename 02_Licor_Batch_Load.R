@@ -25,7 +25,7 @@ library(PEcAn.photosynthesis)
   setwd("C:/Users/rsstudent/Dropbox/")
   path_files <- "Summer_2016_Drought_Experiment/A_Ci/A_Ci_Redo_2_23/"
   filenames <- dir(path_files)
-  filenames <- filenames[-grep(".xls", filenames, fixed=T)]
+  #filenames <- filenames[-grep(".xls", filenames, fixed=T)]
   str(filenames)
   fileswithpath=paste0(path_files, filenames)
     ## Load files to a list
@@ -56,11 +56,13 @@ library(PEcAn.photosynthesis)
         
         #If you want both the bad and good observations in a data file, you'll need to save it here: 
         
-        write.csv(dat, "QC_9_1_2016_bad_and_good.csv")
+        write.csv(dat, "QC_2_23_2017_bad_and_good.csv")
         
+        ## Open up excel file and check: specifically remove 400 points (pick first 400 point)
+        
+        dat <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/QC_2_23_2017_good.csv")
 
-          
-          ## if QC was done, remove both unchecked points and those that fail QC
+                  ## if QC was done, remove both unchecked points and those that fail QC
           if("QC" %in% colnames(dat)){
               dat = dat[-which(dat$QC < 1),]  
             } else{
@@ -69,7 +71,7 @@ library(PEcAn.photosynthesis)
               }
 #write "dat" to a .csv file so I don't have to do QA/QC again: 
 
-write.csv(dat, "QC_9_1_2016.csv")
+write.csv(dat, "QC_2_23_2017.csv")
 
 #Status 
         

@@ -14,10 +14,10 @@ library(PEcAn.photosynthesis)
   ## Read LI-COR 6400 files (ASCII not xls)
 #Working across multiple computers so need to set working directory: 
 #For USDA Computer: 
-setwd("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/A_Ci/")
+setwd("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/A_Ci/A_Ci_Redo_2_23/")
 
 
-Single_File <- read.Licor("b2_pop_a18_aci_mb_06_30_2016")
+Single_File <- read.Licor("b2 pop H9 mb aci 5-26-2016")
 
 ?read.Licor
 
