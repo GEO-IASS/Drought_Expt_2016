@@ -9,6 +9,7 @@
 
 
 library(pls)
+library(ggplot2)
 library(plyr)
 library(devtools)
 library(signal)
@@ -78,7 +79,10 @@ str(poplar)
 #Shuffle Rowwise: 
 poplar_rand <- poplar[sample(nrow(poplar)),]
 #Break into training and testing set based on 'cutoff'
+datTest <- poplar[-c(46:56),]
+datTrain <- poplar[c(46:56),]
 cutoff = round(0.3*nrow(poplar_rand))
+
 datTrain <- poplar_rand[1:cutoff,]
 datTest <- poplar_rand[-(1:cutoff),]
 #don't need this anymore
@@ -134,6 +138,36 @@ R_squared_J <- function(x, prop_train){
         
 }
 
+R_squared_V_2 <- function(x, prop_train){
+        datTest <- poplar[c(46:56),]
+        datTrain <- poplar[-c(46:56),]
+        x_rand <- datTrain[sample(nrow(datTrain)),]
+        cutoff = round(prop_train*nrow(x_rand))
+        datTrain <- x_rand[1:cutoff,]
+        #datTest <- x_rand[-(1:cutoff),]
+        resultV <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
+                            ncomp = "auto", maxcomp = 10,
+                            validation = "CV", segment.type ="interleaved",
+                            output = FALSE, return.stats=TRUE, plot=FALSE)
+        return(round(resultV$R.test^2 ,3))
+        
+}
+
+R_squared_J_2 <- function(x, prop_train){
+        datTest <- poplar[c(46:56),]
+        datTrain <- poplar[-c(46:56),]
+        x_rand <- datTrain[sample(nrow(datTrain)),]
+        cutoff = round(prop_train*nrow(x_rand))
+        datTrain <- x_rand[1:cutoff,]
+        #datTest <- x_rand[-(1:cutoff),]
+        resultJ <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
+                            ncomp = "auto", maxcomp = 10,
+                            validation = "CV", segment.type ="interleaved",
+                            output = FALSE, return.stats=TRUE, plot=FALSE)
+        return(round(resultJ$R.test^2 ,3))
+        
+}
+
 #This function pulls n random samples for dfferent proportions of training vs. testing data and
 #combines them all into one data frame. 
 
@@ -175,3 +209,49 @@ Jmax_r <- ggplot(all_prop_J, aes(y=data, x=source)) +
         theme_bw(base_size=12)+labs(title = "Jmax", y="R-squared", x="Proportion Training Data (%)")
 
 multiplot(Vcmax_r, Jmax_r, cols=2)
+
+#Doing the same thing with the _2 function: need to randomize the data first but the rest should be the same
+poplar_rand <- poplar[sample(nrow(poplar)),]
+
+Repeat_R_V_2 <- function(x, n){
+        Prop_0.3 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.3), .progress = "text"))
+        Prop_0.4 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.4), .progress = "text"))
+        Prop_0.5 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.5), .progress = "text"))
+        Prop_0.6 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.6), .progress = "text"))
+        Prop_0.7 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.7), .progress = "text"))
+        Prop_0.8 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.8), .progress = "text"))
+        Prop_0.9 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.9), .progress = "text"))
+        return(all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9))
+}
+
+
+Repeat_R_J_2 <- function(x, n){
+        Prop_0.3 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.3), .progress = "text"))
+        Prop_0.4 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.4), .progress = "text"))
+        Prop_0.5 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.5), .progress = "text"))
+        Prop_0.6 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.6), .progress = "text"))
+        Prop_0.7 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.7), .progress = "text"))
+        Prop_0.8 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.8), .progress = "text"))
+        Prop_0.9 <- do.call(rbind, rlply(n, R_squared_J_2(x,0.9), .progress = "text"))
+        return(all_prop <- combine(Prop_0.3, Prop_0.4, Prop_0.5, Prop_0.6, Prop_0.7, Prop_0.8, Prop_0.9))
+}
+
+
+all_prop_V_2 <- Repeat_R_V_2(poplar,100)
+all_prop_J_2 <- Repeat_R_J_2(poplar,100)
+all_prop_V_2$source <- revalue(all_prop_V_2$source, c("Prop_0.3"="30%", "Prop_0.4"="40%", "Prop_0.5"="50%", "Prop_0.6"="60%", "Prop_0.7"="70%", "Prop_0.8"="80%", "Prop_0.9"="90%"))
+all_prop_J_2$source <- revalue(all_prop_J_2$source, c("Prop_0.3"="30%", "Prop_0.4"="40%", "Prop_0.5"="50%", "Prop_0.6"="60%", "Prop_0.7"="70%", "Prop_0.8"="80%", "Prop_0.9"="90%"))
+
+Vcmax_r_2 <- ggplot(all_prop_V, aes(y=data, x=source)) + 
+        geom_point(size=2, alpha=0.2)+
+        
+        theme_bw(base_size=12)+labs(title = "Vcmax", y="R-squared", x="Proportion Training Data (%)")
+
+Jmax_r_2 <- ggplot(all_prop_J, aes(y=data, x=source)) + 
+        geom_point(size=2, alpha=0.2)+
+        theme_bw(base_size=12)+labs(title = "Jmax", y="R-squared", x="Proportion Training Data (%)")
+
+multiplot(Vcmax_r_2, Jmax_r_2, cols=2)
+
+
+
