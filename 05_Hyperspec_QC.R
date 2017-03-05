@@ -6,6 +6,7 @@
 
 library(ggplot2)
 library(hyperSpec)
+library(plyr)
 #hyperSpec manual can be found here: https://cran.r-project.org/web/packages/hyperSpec/vignettes/introduction.pdf
 
 #Set working directory to location fo hyperspectral ASD Files
