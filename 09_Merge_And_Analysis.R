@@ -84,7 +84,7 @@ write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
 #Reading in merged data
 #START HERE if no changes to original data files necessary--------------- 
-all_data <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_Yendreck_indices.csv")
+all_data <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_Yendreck_indices.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
 head(all_data)
@@ -189,7 +189,7 @@ str(gtR270)
 #Figure_1: ----------------------------------------
 #water potential, vmax, and jmax by genotype with correlations
 #So this will need to be 4 panels, each with 2 lines on it
-
+str(all_data)
 graph1a <- ggplot(data=gt52_276, (aes(x=Water_Pot, y=Vcmax, colour=phase)))+
         geom_point()+
         #geom_smooth(method="lm", se=FALSE)+ 
@@ -643,6 +643,7 @@ graph2ah <-ggplot(data=all_data, (aes(x=Jmax, y=mSRCHL, colour=Genotype)))+
         theme_bw(base_size=12)
 
 fig_2 <- multiplot(graph2a, graph2c, graph2e, graph2b, graph2d, graph2f, cols=2)
+
 fig_2b <- multiplot(graph2g, graph2i, graph2h, graph2j, cols=2)
 fig_2c <- multiplot(graph2k,  graph2m,  graph2o, graph2l,graph2n,  graph2p, cols=2)
 fig_2d<- multiplot(graph2q, graph2s, graph2u, graph2r, graph2t, graph2v, cols=2)
