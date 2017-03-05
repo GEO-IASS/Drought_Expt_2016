@@ -12,7 +12,7 @@ library(plantecophys)
 #Then create summary df for work with stats
 
 #Load up saved datafile
-dat <- read.csv("C:/Users/rsstudent/Dropbox/QC_9_1_2016.csv")
+dat <- read.csv("C:/Users/Mallory/Dropbox/QC_3_5_2017.csv")
 
 #Format dat$fname as factor
 dat$fname <- as.factor(dat$fname)
@@ -58,10 +58,10 @@ vcmax_jmax <- coef(fits)
 
 #Parse filname to get Plant ID and Date using substr
 vcmax_jmax$fname <- as.character(vcmax_jmax$fname)
-vcmax_jmax$PlantID -> substr(vcmax_jmax$fname, 2,3)
-
-vcmax_jmax
-write.csv(vcmax_jmax, "Estimates_post_400_removal.csv")
+#vcmax_jmax$PlantID -> substr(as.character(vcmax_jmax$fname),8,10)
+#substr(vcmax_jmax$fname,8,10)
+str(vcmax_jmax)
+write.csv(vcmax_jmax, "Estimates_3_5_2017.csv")
 plot(vcmax_jmax$Jmax, vcmax_jmax$Jmax_SE)
 
 to_review <- subset(vcmax_jmax, Jmax_SE >5)
