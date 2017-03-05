@@ -211,7 +211,18 @@ Jmax_r <- ggplot(all_prop_J, aes(y=data, x=source)) +
 multiplot(Vcmax_r, Jmax_r, cols=2)
 
 #Doing the same thing with the _2 function: need to randomize the data first but the rest should be the same
+#devtools::source_gist("gist.github.com/mrdwab/6424112", filename = "stratified.R")
+#stratified(df, "color", 3)
+#?stratified
+#poplar_rand_V <- stratified(poplar, "Vcmax", size=0.25)
+#poplar_rand_J <- poplar[strata(nrow(poplar)),]
+
 poplar_rand <- poplar[sample(nrow(poplar)),]
+poplar_rand$Vcmax
+poplar_rand$Jmax
+poplar %>% 
+        group_by(Vcmax) %>% 
+        sample_n(2)
 
 Repeat_R_V_2 <- function(x, n){
         Prop_0.3 <- do.call(rbind, rlply(n, R_squared_V_2(x,0.3), .progress = "text"))
@@ -237,17 +248,17 @@ Repeat_R_J_2 <- function(x, n){
 }
 
 
-all_prop_V_2 <- Repeat_R_V_2(poplar,100)
-all_prop_J_2 <- Repeat_R_J_2(poplar,100)
+all_prop_V_2 <- Repeat_R_V_2(poplar_rand,100)
+all_prop_J_2 <- Repeat_R_J_2(poplar_rand,100)
 all_prop_V_2$source <- revalue(all_prop_V_2$source, c("Prop_0.3"="30%", "Prop_0.4"="40%", "Prop_0.5"="50%", "Prop_0.6"="60%", "Prop_0.7"="70%", "Prop_0.8"="80%", "Prop_0.9"="90%"))
 all_prop_J_2$source <- revalue(all_prop_J_2$source, c("Prop_0.3"="30%", "Prop_0.4"="40%", "Prop_0.5"="50%", "Prop_0.6"="60%", "Prop_0.7"="70%", "Prop_0.8"="80%", "Prop_0.9"="90%"))
 
-Vcmax_r_2 <- ggplot(all_prop_V, aes(y=data, x=source)) + 
+Vcmax_r_2 <- ggplot(all_prop_V_2, aes(y=data, x=source)) + 
         geom_point(size=2, alpha=0.2)+
         
         theme_bw(base_size=12)+labs(title = "Vcmax", y="R-squared", x="Proportion Training Data (%)")
 
-Jmax_r_2 <- ggplot(all_prop_J, aes(y=data, x=source)) + 
+Jmax_r_2 <- ggplot(all_prop_J_2, aes(y=data, x=source)) + 
         geom_point(size=2, alpha=0.2)+
         theme_bw(base_size=12)+labs(title = "Jmax", y="R-squared", x="Proportion Training Data (%)")
 
