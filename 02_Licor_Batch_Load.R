@@ -60,7 +60,7 @@ library(PEcAn.photosynthesis)
         
         ## Open up excel file and check: specifically remove 400 points (pick first 400 point)
         
-        dat <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/QC_2_23_2017_good.csv")
+        dat <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/QC_2_23_2017_good.csv")
 
                   ## if QC was done, remove both unchecked points and those that fail QC
           if("QC" %in% colnames(dat)){
@@ -71,7 +71,7 @@ library(PEcAn.photosynthesis)
               }
 #write "dat" to a .csv file so I don't have to do QA/QC again: 
 
-write.csv(dat, "QC_2_23_2017.csv")
+write.csv(dat, "QC_3_5_2017.csv")
 
 #Status 
         
