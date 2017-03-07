@@ -8,9 +8,8 @@ library(lubridate)
 library(ggplot2)
 #Load files
 getwd()
-A_Ci_ests <- read.csv("C:/Users/Mallory/Dropbox/Estimates_post_400_removal.csv")
-Climate_data <- read.csv("C:/Users/Mallory/Dropbox/Summer_2016_Drought_Experiment/Prelim_Alec2.csv")
-
+A_Ci_ests <- read.csv("C:/Users/Mallory/Dropbox/Estimates_3_5_2017.csv")
+Climate_data <- read.csv("C:/Users/Mallory/Dropbox/Summer_2016_Drought_Experiment/Climate_3_5_2017.csv")
 
 #Going to have to create a "uniqueID" for each observation (with plant Date and Time)
 #In order to properly merge the two datasets. Could potentially do this by hand as well. Maybe 
@@ -23,7 +22,7 @@ str(Climate_data)
 Climate_data$Date <- as.Date(Climate_data$Date, "%m/%d/%Y")
 Climate_data$Plant_ID <- tolower(Climate_data$Plant_ID)
 Climate_data$uniqueID <- paste(Climate_data$Plant_ID, Climate_data$Date, sep='-')
-
+tail(Climate_data)
 
 #Steps for ACI file:    parse date and plant ID from ACIs from column "fname"
 #                       Create uniqueID from the date and Plant_ID
@@ -39,22 +38,29 @@ substrRight <- function(x, n){
         substr(x, nchar(x)-n+1, nchar(x))
 }
 
-
-
 A_Ci_ests$Date <- substrRight(as.character(A_Ci_ests$fname), 9)
+A_Ci_ests$Date <- gsub("-", "_", A_Ci_ests$Date, fixed = TRUE)
 A_Ci_ests$Date <-as.Date(A_Ci_ests$Date, "%m_%d_%Y")
 A_Ci_ests$Plant_ID <- substr(as.character(A_Ci_ests$fname), 8,10)
 A_Ci_ests$uniqueID <- paste(A_Ci_ests$Plant_ID, A_Ci_ests$Date, sep='-')
 
+#Check Files :
+str(A_Ci_ests)
+str(Climate_data)
+Climate_data$uniqueID
+A_Ci_ests$uniqueID
+require(dplyr) 
+library(dplyr)
+#Check for missing files
+anti_join(A_Ci_ests, Climate_data, by="uniqueID")
 #Initial merge - a lot didn't take. 
-
-write.csv(A_Ci_ests, "A_Ci_Ests_to_merge.csv")
-write.csv(Climate_data, "Climate_data_to_merge.csv")
+write.csv(A_Ci_ests, "A_Ci_Ests_to_merge_3_6.csv")
+write.csv(Climate_data, "Climate_data_to_merge_3_6.csv")
 merged <-merge(A_Ci_ests, Climate_data, by="uniqueID")
 
 getwd()
-write.csv(merged, "Merged_data_to_analyze.csv")
-merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
+write.csv(merged, "Merged_data_to_analyze_3_6_2017.csv")
+merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze_3_6_2017.csv")
 str(merged)
 merged$ratio <- (merged$Vcmax/merged$Jmax)
 #Initial Plotting-------------------
