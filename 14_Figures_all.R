@@ -9,6 +9,8 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 library(grid)
+library(tidyr)
+library(reshape2)
 #Define Multiplot function :
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         library(grid)
@@ -155,12 +157,14 @@ p0 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + them
 
 p1 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + theme_minimal() + 
 theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))
+
 #par(new=TRUE)
 p2 <- ggplot(plot_climate,aes(Date, Precip)) + geom_bar(stat="Identity", fill="blue") + theme_minimal() +
 theme(axis.title.x = element_blank(), axis.text.x = element_blank())
 
 vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") + theme_minimal() +
        theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+        
 
 grid.newpage()
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p1), size = "last"))
@@ -168,3 +172,136 @@ grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(j2),
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
 
 #Figure 2---------------------------------------------------------------------------------------
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
+#txtfiles_subset is to test out the lapply
+textfiles_subset = textfiles[1:5]
+textfiles_subset=textfiles[448:457]
+textfiles_subset
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
+read.table("b2popmlb_E04_leaf_6-30-201600003.asd.txt")
+format_spectra <- function(x){
+        tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
+        tmp$filename <- basename(x)
+        tmp = tmp[-1,]
+        tmp$wavelength <- as.numeric(levels(tmp$wavelength))[tmp$wavelength]
+        tmp$reflectance <-as.numeric(levels(tmp$reflectance))[tmp$reflectance]
+        filename <- substr(tmp[1,3], 1,40)
+        print(filename)
+        ID <-  substr(tmp[1,3], 10,12)
+        date <- (substr(tmp[1,3], 19,27))
+        observation =(substr(tmp[1,3], 31,32))
+        reflectances <- reshape(tmp, idvar="filename", timevar="wavelength", direction="wide")
+        indices=as.data.frame(cbind(ID, date, observation, reflectances))
+        return(indices)
+}
+spectra_tmp <- lapply(textfiles, format_spectra)
+spectra <- do.call(rbind, spectra_tmp)
+write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
+spectra <- read.csv("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
+spectra$date <-as.Date(spectra$date, format="%m-%d-%Y")
+#3) create "unique_ID" column
+spectra$ID <- as.character(tolower(spectra$ID))
+spectra$uniqueID <- paste(spectra$ID, spectra$date, sep='-') 
+spectra$uniqueID
+#5) Get rid of "reflectance" in column because we know that's what it is
+names(spectra) <- gsub("reflectance.", "", names(spectra))
+str(spectra)
+#now average all reflectances by 'uniqueID'
+str(spectra)
+spectra[] <- lapply(spectra, function(x) {
+        if(is.factor(x)) as.numeric(as.character(x)) else x
+})
+sapply(spectra, class)
+str(spectra)
+spectra <- spectra[ -c(1:4)]
+hyperspectral <- ddply(spectra, .(uniqueID), colwise(mean))
+str(hyperspectral)
+hyperspectral_long <- gather(hyperspectral, uniqueID, reflectance, c(`350`:`2500`), factor_key=TRUE)
+str(hyperspectral_long)
+#Rename second column "wavelength"
+names(hyperspectral_long)[3] <- "wavelength"
+hyperspectral_long$wavelength <- as.numeric(as.character(hyperspectral_long$wavelength))
+str(hyperspectral_long)
+ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
+        scale_x_continuous(breaks=seq(350, 2500, 200))+
+        geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
+        geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
+        theme(legend.position="none")
+
+#Add red and blue lines: 
+#User Defined Function: Format Hyperspec: 
+not_stressed <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_Leaf_6-01-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+str(not_stressed)
+stressed <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_leaf_6-24-201600001.asd.txt", col.names=c("wavelength", "reflectance"))
+
+#Create Column with filename and then delete the first row of data frame
+Format_hyperspec <- function(test){
+        test$filename <- (test$reflectance[1:1])
+        test = test[-1,]
+        
+        #Change factors to numeric
+        test$wavelength <- as.numeric(levels(test$wavelength))[test$wavelength]
+        test$reflectance <-as.numeric(levels(test$reflectance))[test$reflectance]
+        
+        test
+}
+
+not_stressed <- Format_hyperspec(not_stressed)
+stressed <- Format_hyperspec(stressed)
+#Simple Plot of Test
+str(not_stressed)
+str(stressed)
+
+
+p <- ggplot() +
+        # blue plot
+        geom_point(data=not_stressed, aes(x=wavelength, y=reflectance), colour="blue")  +
+        #geom_smooth(data=not_stressed, aes(x=wavelength, y=reflectance), fill="blue",
+        #colour="darkblue", size=1) +
+        # red plot
+        geom_point(data=stressed, aes(x=wavelength, y=reflectance, colour="red")) 
+
+#geom_smooth(data=stressed, aes(x=wavelength, y=reflectance), fill="red",
+#colour="red", size=1)
+
+
+#Figure 3
+PLSR_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+#now average all reflectances by 'uniqueID'
+str(PLSR_formatted)
+hyperspectral <- ddply(PLSR_formatted, .(uniqueID), colwise(mean))
+str(hyperspectral)
+hyperspectral <- hyperspectral[ -c(2:3, 5:6)]
+#colnames(hyperspectral)[1] <- "uniqueID"
+#remove columns: x, observation, filename
+#Load file with other data
+data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
+str(data_aci_etc)
+merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
+str(merged_hyperspec)
+#wanna keep date and genotype columns for potential easy subsetting I think
+merged_hyperspec <- merged_hyperspec[ -c(2:6, 9:14, 16:19, 21:32)]
+str(merged_hyperspec)
+write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
+
+
+
+
+#Figure 4----------------------
+Corrs <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/Corr_to_plot_3_7_2017.csv")
+str(Corrs)
+
+c1 <- ggplot(Corrs, aes(y=Vcmax_R_squared, x=reorder(Index, -Vcmax_R_squared)))+
+        ylim(0,0.8)+
+        geom_bar(stat="identity")+ theme(axis.text.x = element_text(angle = 90, hjust = 1), axis.title.x=element_blank())+
+         ylab("Vcmax R-squared")
+
+c2 <- ggplot(Corrs, aes(y=Jmax_R_squared, x=reorder(Index, -Jmax_R_squared)))+
+        ylim(0,0.8)+
+        geom_bar(stat="identity")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+        xlab("Indices")+
+        ylab("Jmax R-squared")
+
+multiplot(c1,c2)
+
