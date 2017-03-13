@@ -366,7 +366,7 @@ result3b <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
 #When ordering by water potential (descending)
 poplar_namescd <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 poplar_namescd$Date.x <- as.Date(poplar_namescd$Date.x, format="%m/%d/%Y")
-poplar_namescd <- poplar_namescd[order(-poplar_namescd$Water_Pot),] 
+poplar_namescd <- poplar_namescd[order(poplar_namescd$Date.x),] 
 str(poplar_namescd)
 #Figure 3a&3b: Vcmax &Jmax- randomly order samples; train with 80% and test with 20% of data
 #get rid of 'x' column, Water_Pot, and Genotype for now 
@@ -394,8 +394,8 @@ poplarcd$NIR <- matsgolay(poplarcd$NIR, p=2, n=11, m=2)
 #Auto-scaling
 poplarcd$NIR <- scale(poplarcd$NIR, center = TRUE, scale = TRUE)
 #Divide data set into training and test set
-datTraincd <- poplarcd[-c(70:87),]
-datTestcd <- poplarcd[70:87,]
+datTraincd <- poplarcd[-c(40:52),]
+datTestcd <- poplarcd[40:52,]
 
 result3c <- plsrPlot(Vcmax ~ NIR, data = datTraincd, testdata = datTestcd,
                      ncomp = "auto", maxcomp = 10,
@@ -413,13 +413,10 @@ result3d <- plsrPlot(Jmax ~ NIR, data = datTraincd, testdata = datTestcd,
 str(datTrain)
 str(datTest)
 
-#This is for only obs on June 23rd and 24th
-#datTrain <- poplar[-c(25:33),]
-#datTest <- poplar[25:33,]
-
+#This is for only obs on June 23rd and 24th which are observations 40-52 (out of 87)
 #This is for only obs on June 23rd and 24th for GT 52-276
-datTrain <- poplar[-c(13:17),]
-datTest <- poplar[13:17,]
+datTrain <- poplar[-c(40:52),]
+datTest <- poplar[40:52,]
 
 result <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                    ncomp = "auto", maxcomp = 10,
