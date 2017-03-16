@@ -11,6 +11,7 @@ library(dplyr)
 library(grid)
 library(tidyr)
 library(reshape2)
+library(gtable)
 #Define Multiplot function :
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         library(grid)
@@ -49,7 +50,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 #Load File
 #Figure 1------------------------------------------------------------
-Plot_data <- read.csv("all_data_3_6_2017.csv")
+Plot_data <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
 str(Plot_data)
 #Cleanup data file:
 #Format Dates properly: 
@@ -62,11 +63,13 @@ Plot_data$phase<- ifelse(Plot_data$Date<"2016-06-08", 1,
                       ifelse(Plot_data$Date>="2016-06-16", 3,
                                     NA)))
 str(Plot_data)
+#Remove 5-20 Observation as it's the only one that day: 
+Plot_data <- Plot_data[-c(38),]
 #Figure 1: Multipanel stacked figure; climate/physiology
 #Climate data:
 #1) Dual-axis with VPD and precip
 #2) VPD Timeseires
-Climate_data <- read.csv("C:/Users/Mallory/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
+Climate_data <- read.csv("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
 head(Climate_data)
 str(Climate_data)
 #Custom function for pulling x number of characters from the right of a string: from 
@@ -129,24 +132,26 @@ j2 <- j1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.
 grid.newpage()
 grid.draw(rbind(ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
 
+
+
+
 #Alternative: Timeseries for all: 
-wl <- ggplot(Plot_data, aes(Date, Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-wl1 <- wl + geom_smooth()
-wl2 <- wl1 + geom_point()
+#wl <- ggplot(Plot_data, aes(Date, Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#wl1 <- wl + geom_smooth()
+#wl2 <- wl1 + geom_point()
 
 #Vcmax
-vl <- ggplot(Plot_data, aes(Date, Vcmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-vl1 <- vl+ geom_smooth()
-vl2 <- vl1 + geom_point() + theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
-                                                                       axis.ticks.x=element_blank())
+#vl <- ggplot(Plot_data, aes(Date, Vcmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#vl1 <- vl+ geom_smooth()
+#vl2 <- vl1 + geom_point() + theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
+                                                                       #axis.ticks.x=element_blank())
 #Jmax
-jl <- ggplot(Plot_data, aes(Date, Jmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-jl1 <- jl+ geom_smooth()
-jl2 <- jl1 + geom_point() + theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
-                                  axis.ticks.x=element_blank())
-grid.newpage()
-grid.draw(rbind(ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
-
+#jl <- ggplot(Plot_data, aes(Date, Jmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#jl1 <- jl+ geom_smooth()
+#jl2 <- jl1 + geom_point() + theme(axis.title.x=element_blank(), axis.text.x=element_blank(),
+                                 # axis.ticks.x=element_blank())
+#grid.newpage()
+#grid.draw(rbind(ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
 
 #Now for the climate data: Want a free axis graph with precip and temp and then another with VPD (bars)
 str(plot_climate)
@@ -158,16 +163,38 @@ p0 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + them
 p1 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + theme_minimal() + 
 theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))
 
-#par(new=TRUE)
 p2 <- ggplot(plot_climate,aes(Date, Precip)) + geom_bar(stat="Identity", fill="blue") + theme_minimal() +
 theme(axis.title.x = element_blank(), axis.text.x = element_blank())
 
-vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") + theme_minimal() +
-       theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") + scale_y_continuous(position="right")+theme_minimal() +
+       theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
+        theme(panel.background = element_rect(fill = NA))
         
 
 grid.newpage()
+#Trying to get VPD and temp on same plot; see workaround here! http://rpubs.com/kohske/dual_axis_in_ggplot2
+#extract gtable from temp and vpd plots
+g1 <- ggplot_gtable(ggplot_build(p0))
+g2 <- ggplot_gtable(ggplot_build(vpd))
+
+#overlap the panel of the 2nd plot on that of the 1st plot
+pp <- c(subset(g1$layout, name == "panel", se = t:r))
+g <- gtable_add_grob(g1, g2$grobs[[which(g2$layout$name == "panel")]], pp$t, 
+                     pp$l, pp$b, pp$l)
+#axis tweaks
+ia <- which(g2$layout$name == "axis-l")
+ga <- g2$grobs[[ia]]
+ax <- ga$children[[2]]
+ax$widths <- rev(ax$widths)
+ax$grobs <- rev(ax$grobs)
+ax$grobs[[1]]$x <- ax$grobs[[1]]$x - unit(1, "npc") + unit(0.15, "cm")
+g <- gtable_add_cols(g, g2$widths[g2$layout[ia, ]$l], length(g$widths) - 1)
+g <- gtable_add_grob(g, ax, pp$t, length(g$widths) - 1, pp$b)
+
+#draw it!
+grid.arrange(g, p2, j2, v2, w2, ncol=1, heights=c(2,2,3,3,5.5))
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p1), size = "last"))
+grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(g), size = "last"))
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
 
