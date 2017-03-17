@@ -12,6 +12,9 @@ library(grid)
 library(tidyr)
 library(reshape2)
 library(gtable)
+library(signal)
+library(plsropt)
+library(pls)
 #Define Multiplot function :
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         library(grid)
@@ -225,7 +228,7 @@ format_spectra <- function(x){
 spectra_tmp <- lapply(textfiles, format_spectra)
 spectra <- do.call(rbind, spectra_tmp)
 write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
-spectra <- read.csv("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
+spectra <- read.csv("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
 spectra$date <-as.Date(spectra$date, format="%m-%d-%Y")
 #3) create "unique_ID" column
 spectra$ID <- as.character(tolower(spectra$ID))
@@ -249,7 +252,14 @@ str(hyperspectral_long)
 #Rename second column "wavelength"
 names(hyperspectral_long)[3] <- "wavelength"
 hyperspectral_long$wavelength <- as.numeric(as.character(hyperspectral_long$wavelength))
+str(hyperspectral_long
+#need to compare "uniqueID" here with "uniqueID" in plot_data to ensure we're seeing looking at the proper observations
+anti_join(hyperspectral_long, Plot_data)
+#to delete: eo4-2016-05-20
+hyperspectral_long<-hyperspectral_long[!(hyperspectral_long$uniqueID=="e04-2016-05-20" | hyperspectral_long$uniqueID=="a01-2016-05-20"| hyperspectral_long$uniqueID=="h06-2016-05-20" | hyperspectral_long$uniqueID=="b12-2016-05-20" | hyperspectral_long$uniqueID=="b12-2016-06-01"| hyperspectral_long$uniqueID=="c14-2016-05-26"| hyperspectral_long$uniqueID=="c14-2016-05-20" | hyperspectral_long$uniqueID=="f08-2016-06-27"| hyperspectral_long$uniqueID=="f05-2016-05-31"| hyperspectral_long$uniqueID=="g11-2016-05-24"| hyperspectral_long$uniqueID=="h06-2016-05-26"| hyperspectral_long$uniqueID=="h06-2016-06-01"| hyperspectral_long$uniqueID=="h09-2016-05-26"|  hyperspectral_long$uniqueID=="h09-2016-06-01" |hyperspectral_long$uniqueID=="g11-2016-05-31"| hyperspectral_long$uniqueID=="i06-2016-05-20"| hyperspectral_long$uniqueID=="c14-2016-06-01"),]
 str(hyperspectral_long)
+aggregate(data.frame(count = hyperspectral_long$uniqueID), list(value = hyperspectral_long$uniqueID), length)
+hyperspectral_long$uniqueID
 ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
         scale_x_continuous(breaks=seq(350, 2500, 200))+
         geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
@@ -258,9 +268,9 @@ ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ ge
 
 #Add red and blue lines: 
 #User Defined Function: Format Hyperspec: 
-not_stressed <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_Leaf_6-01-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+not_stressed <- read.table("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_Leaf_6-01-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
 str(not_stressed)
-stressed <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_leaf_6-24-201600001.asd.txt", col.names=c("wavelength", "reflectance"))
+stressed <- read.table("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_leaf_6-24-201600001.asd.txt", col.names=c("wavelength", "reflectance"))
 
 #Create Column with filename and then delete the first row of data frame
 Format_hyperspec <- function(test){
@@ -294,7 +304,7 @@ p <- ggplot() +
 
 
 #Figure 3
-PLSR_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+PLSR_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 #now average all reflectances by 'uniqueID'
 str(PLSR_formatted)
 hyperspectral <- ddply(PLSR_formatted, .(uniqueID), colwise(mean))
@@ -303,7 +313,7 @@ hyperspectral <- hyperspectral[ -c(2:3, 5:6)]
 #colnames(hyperspectral)[1] <- "uniqueID"
 #remove columns: x, observation, filename
 #Load file with other data
-data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/All_with_more_licor_vars.csv")
+data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
 str(data_aci_etc)
 merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
 str(merged_hyperspec)
@@ -338,12 +348,15 @@ merged_hyperspec <- merged_hyperspec[ -c(2:4, 7:10, 12:15, 17:20, 22:24)]
 str(merged_hyperspec)
 write.csv(merged_hyperspec, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 #Prepping data for PLSR
-poplar_names <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
+poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 str(poplar_names)
+poplar_names<-poplar_names[!(poplar_names$uniqueID=="e04-2016-05-20"),]
+write.csv(poplar_names, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
+poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 poplar_names$Date.x <- as.Date(poplar_names$Date.x, format="%m/%d/%Y")
 #Figure 3a&3b: Vcmax &Jmax- randomly order samples; train with 80% and test with 20% of data
 #get rid of 'x' column, Water_Pot, and Genotype for now 
-poplar_names <- poplar_names[ -c(1, 6:7)]
+poplar_names <- poplar_names[ -c(1:2, 6:8)]
 #change col names (all say 'x' right now(?))
 names(poplar_names) <- gsub("X", "", names(poplar_names))
 str(poplar_names)
@@ -370,8 +383,8 @@ poplar$NIR <- scale(poplar$NIR, center = TRUE, scale = TRUE)
 #Shuffle Rowwise: 
 poplar_rand <- poplar[sample(nrow(poplar)),]
 #Divide data set into training and test set
-datTrain <- poplar_rand[-c(70:87),]
-datTest <- poplar_rand[70:87,]
+datTrain <- poplar_rand[-c(69:86),]
+datTest <- poplar_rand[69:86,]
 str(datTrain)
 str(datTest)
 #Now for the PLSR!
@@ -391,13 +404,13 @@ result3b <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
 
 #Figure 3c&d: Vcmax & Jmax - train on high (not stressed) water potential and test on stressed (low water potential)
 #When ordering by water potential (descending)
-poplar_namescd <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
+poplar_namescd <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 poplar_namescd$Date.x <- as.Date(poplar_namescd$Date.x, format="%m/%d/%Y")
 poplar_namescd <- poplar_namescd[order(poplar_namescd$Date.x),] 
 str(poplar_namescd)
 #Figure 3a&3b: Vcmax &Jmax- randomly order samples; train with 80% and test with 20% of data
 #get rid of 'x' column, Water_Pot, and Genotype for now 
-poplar_namescd <- poplar_namescd[ -c(1, 6:7)]
+poplar_namescd <- poplar_namescd[ -c(1:2, 6:8)]
 #change col names (all say 'x' right now(?))
 names(poplar_namescd) <- gsub("X", "", names(poplar_namescd))
 str(poplar_namescd)
