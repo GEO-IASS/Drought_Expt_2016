@@ -398,6 +398,8 @@ result3b <- plsrPlot(Jmax ~ NIR, data = datTrain, testdata = datTest,
                      validation = "CV", segment.type ="interleaved",
                      output = FALSE)
 
+function
+
 #result$validation
 #result.all <- plsrauto(Vcmax ~ NIR, data = datTrain, testdata = datTest, xrange = list(c(350, 2500)))
 #str(result.all)
@@ -434,8 +436,8 @@ poplarcd$NIR <- matsgolay(poplarcd$NIR, p=2, n=11, m=2)
 #Auto-scaling
 poplarcd$NIR <- scale(poplarcd$NIR, center = TRUE, scale = TRUE)
 #Divide data set into training and test set
-datTraincd <- poplarcd[-c(40:52),]
-datTestcd <- poplarcd[40:52,]
+datTraincd <- poplarcd[-c(39:51),]
+datTestcd <- poplarcd[39:51,]
 
 result3c <- plsrPlot(Vcmax ~ NIR, data = datTraincd, testdata = datTestcd,
                      ncomp = "auto", maxcomp = 10,
