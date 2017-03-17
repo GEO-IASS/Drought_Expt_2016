@@ -19,10 +19,10 @@ library(gdata)
 library(progress)
 
 #Load wide format hyperspectral data
-poplar_names <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
+poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 str(poplar_names)
 #Format date properly
-poplar_names$date.y <- as.Date(poplar_names$date.y)
+poplar_names$Date.x <- as.Date(poplar_names$Date.x, format="%m/%d/%Y")
 
 #When subsetting by genotype: 
 #poplar_names <- subset(poplar_names, Genotype=="R-270")
@@ -37,7 +37,7 @@ poplar_names$date.y <- as.Date(poplar_names$date.y)
 #poplar_names$date.y
 
 #get rid of 'x' column, Water_Pot, and Genotype for now 
-poplar_names <- poplar_names[ -c(1, 6:7)]
+poplar_names <- poplar_names[ -c(1:2, 6:8)]
 #change col names (all say 'x' right now(?))
 names(poplar_names) <- gsub("X", "", names(poplar_names))
 str(poplar_names)
@@ -139,8 +139,8 @@ R_squared_J <- function(x, prop_train){
 }
 
 R_squared_V_2 <- function(x, prop_train){
-        datTest <- poplar[c(46:56),]
-        datTrain <- poplar[-c(46:56),]
+        datTest <- poplar[c(70:86),]
+        datTrain <- poplar[-c(70:86),]
         x_rand <- datTrain[sample(nrow(datTrain)),]
         cutoff = round(prop_train*nrow(x_rand))
         datTrain <- x_rand[1:cutoff,]
@@ -154,8 +154,8 @@ R_squared_V_2 <- function(x, prop_train){
 }
 
 R_squared_J_2 <- function(x, prop_train){
-        datTest <- poplar[c(46:56),]
-        datTrain <- poplar[-c(46:56),]
+        datTest <- poplar[c(70:86),]
+        datTrain <- poplar[-c(70:86),]
         x_rand <- datTrain[sample(nrow(datTrain)),]
         cutoff = round(prop_train*nrow(x_rand))
         datTrain <- x_rand[1:cutoff,]
@@ -220,6 +220,7 @@ multiplot(Vcmax_r, Jmax_r, cols=2)
 poplar_rand <- poplar[sample(nrow(poplar)),]
 poplar_rand$Vcmax
 poplar_rand$Jmax
+
 poplar %>% 
         group_by(Vcmax) %>% 
         sample_n(2)
@@ -255,14 +256,15 @@ all_prop_J_2$source <- revalue(all_prop_J_2$source, c("Prop_0.3"="30%", "Prop_0.
 
 Vcmax_r_2 <- ggplot(all_prop_V_2, aes(y=data, x=source)) + 
         geom_point(size=2, alpha=0.2)+
-        
+        ylim(0,0.8)+
         theme_bw(base_size=12)+labs(title = "Vcmax", y="R-squared", x="Proportion Training Data (%)")
 
 Jmax_r_2 <- ggplot(all_prop_J_2, aes(y=data, x=source)) + 
         geom_point(size=2, alpha=0.2)+
+        ylim(0,0.8)+
         theme_bw(base_size=12)+labs(title = "Jmax", y="R-squared", x="Proportion Training Data (%)")
 
 multiplot(Vcmax_r_2, Jmax_r_2, cols=2)
 
-
-
+ddply(all_prop_V_2, .(source), summarize, mean=mean(data), median=median(data))
+ddply(all_prop_J_2, .(source), summarize, mean=mean(data), median=median(data))
