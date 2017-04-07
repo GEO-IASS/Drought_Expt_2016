@@ -16,6 +16,7 @@ library(signal)
 library(plsropt)
 library(pls)
 library(gridExtra)
+library(outliers)
 #Define Multiplot function :
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         library(grid)
@@ -262,7 +263,7 @@ format_spectra <- function(x){
 }
 spectra_tmp <- lapply(textfiles, format_spectra)
 spectra <- do.call(rbind, spectra_tmp)
-write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
+#write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
 spectra <- read.csv("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
 spectra$date <-as.Date(spectra$date, format="%m-%d-%Y")
 #3) create "unique_ID" column
@@ -272,22 +273,64 @@ spectra$uniqueID
 #5) Get rid of "reflectance" in column because we know that's what it is
 names(spectra) <- gsub("reflectance.", "", names(spectra))
 str(spectra)
-#now average all reflectances by 'uniqueID'
 str(spectra)
 spectra[] <- lapply(spectra, function(x) {
         if(is.factor(x)) as.numeric(as.character(x)) else x
 })
+
+#Check to make sure we only have numeric columns
 sapply(spectra, class)
 str(spectra)
 spectra <- spectra[ -c(1:4)]
-hyperspectral <- ddply(spectra, .(uniqueID), colwise(mean))
+#Get rid of reflectances less than zero (no meaning)
+#645 negative reflectance values in total
+spectra[spectra < 0 ] <- NA
+str(spectra)
+#Need to check for outliers here - some observations might be weird which is why we took 9 of them.
+#Test using grubbs.test and this stackoverflow solution; http://stackoverflow.com/questions/22837099/how-to-repeat-the-grubbs-test-and-flag-the-outliers
+#Function to flag outliers accoriding to grubbs test
+grubbs.flag <- function(x) {
+        outliers <- NULL
+        test <- x
+        grubbs.result <- grubbs.test(test)
+        pv <- grubbs.result$p.value
+        while(pv < 0.05) {
+                outliers <- c(outliers,as.numeric(strsplit(grubbs.result$alternative," ")[[1]][3]))
+                test <- x[!x %in% outliers]
+                grubbs.result <- grubbs.test(test)
+                pv <- grubbs.result$p.value
+        }
+        return(data.frame(X=x,Outlier=(x %in% outliers)))
+        df$X <-NA if Outliers="TRUE"
+}
+# Then remove observations that are considered outliers
+# Then move on to averaging all reflectances by unique ID
+#now average all reflectances by 'uniqueID'
+
+#Function to run grubbs flag for each, replace "TRUE" outlier values with NA, then cbind all the results together
+
+grubbies <- grubbs.flag(spectra$`350`)
+mydata <- if(grubbies$Outlier=="TRUE") grubbies[grubbies$grubbies %in% X==NA,] else mydata
+mydata <- if(MyCondition=="high") mydata[mydata$mydata %in% highRandomNumbers==TRUE,] else mydata
+
+grubbies
+str(grubbies)        
+grubbies$X
+
+ggplot(grubbies,aes(x=grubbies$X,color=grubbies$Outlier,fill=grubbies$Outlier))+
+geom_histogram(binwidth=diff(range(X))/30)+
+theme_bw()
+
+outliers <- ddply(spectra, .(uniqueID), grubbs.flag(spectra))
+#This ddply takes 30 secs or so 
+hyperspectral <- ddply(spectra, .(uniqueID), colwise(mean, na.rm=TRUE))
 str(hyperspectral)
 hyperspectral_long <- gather(hyperspectral, uniqueID, reflectance, c(`350`:`2500`), factor_key=TRUE)
 str(hyperspectral_long)
 #Rename second column "wavelength"
 names(hyperspectral_long)[3] <- "wavelength"
 hyperspectral_long$wavelength <- as.numeric(as.character(hyperspectral_long$wavelength))
-str(hyperspectral_long
+str(hyperspectral_long)
 #need to compare "uniqueID" here with "uniqueID" in plot_data to ensure we're seeing looking at the proper observations
 anti_join(hyperspectral_long, Plot_data)
 #to delete: eo4-2016-05-20
@@ -340,13 +383,6 @@ p <- ggplot() +
 
 #Figure 3
 PLSR_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
-#Quality check for outliers
-
-means.without.ols <- tapply(PLSR_formatted$X350, PLSR_formatted$uniqueID, function(x) {
-        mean(x[!(abs(x - median(x)) > 2*sd(x))])
-})
-
-
 #now average all reflectances by 'uniqueID' - this averages all 9 observaitons
 str(PLSR_formatted)
 hyperspectral <- ddply(PLSR_formatted, .(uniqueID), colwise(mean_sd))
@@ -365,7 +401,7 @@ str(merged_hyperspec)
 #wanna keep date and genotype columns for potential easy subsetting I think
 merged_hyperspec <- merged_hyperspec[ -c(2:6, 9:14, 16:19, 21:32)]
 str(merged_hyperspec)
-write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
+#write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
 
 
 
@@ -391,12 +427,12 @@ head(merged_hyperspec)
 #Their positions are: column 1,6,13,16,21 
 merged_hyperspec <- merged_hyperspec[ -c(2:4, 7:10, 12:15, 17:20, 22:24)]
 str(merged_hyperspec)
-write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
+#write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 #Prepping data for PLSR
 poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 str(poplar_names)
 poplar_names<-poplar_names[!(poplar_names$uniqueID=="e04-2016-05-20"),]
-write.csv(poplar_names, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
+#write.csv(poplar_names, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 poplar_names$Date.x <- as.Date(poplar_names$Date.x, format="%m/%d/%Y")
 #Figure 3a&3b: Vcmax &Jmax- randomly order samples; train with 80% and test with 20% of data
