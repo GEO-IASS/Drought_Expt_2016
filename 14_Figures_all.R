@@ -54,7 +54,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 #Load File
 #Figure 1------------------------------------------------------------
-Plot_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
+Plot_data <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
 str(Plot_data)
 #Cleanup data file:
 #Format Dates properly: 
@@ -73,7 +73,7 @@ Plot_data <- Plot_data[-c(38),]
 #Climate data:
 #1) Dual-axis with VPD and precip
 #2) VPD Timeseires
-Climate_data <- read.csv("C:/Users/Mallory/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
+Climate_data <- read.csv("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
 head(Climate_data)
 str(Climate_data)
 #Custom function for pulling x number of characters from the right of a string: from 
@@ -86,6 +86,7 @@ substrRight <- function(x, n){
 Climate_data$TOD <- substrRight(as.character(Climate_data$TIMESTAMP), 5)
 Climate_data$Date <- as.Date(substr(as.character(Climate_data$TIMESTAMP),1, 9), "%m/%d/%Y")
 str(Climate_data)
+#Get values for results section------------------------------------
 #Get average maximum and minimum daily temperature
 Climate_data_study <- subset(Climate_data, Date >= as.Date("2016-05-24", "%Y-%m-%d") & Date <= as.Date("2016-07-07", "%Y-%m-%d"))
 str(Climate_data_study)
@@ -108,7 +109,7 @@ daytime_temp <-function(x){
 } 
 temp <- daytime_temp(Climate_data)
 #To get VPD (Vapor pressure deficit) in kPA
-#Doing midday VPD to assess atmospheric demand
+#Doing midday VPD to assess atmospheric demand: from 10:00am 2:00pm (10:00 to 14:00 hrs)
 get_VPD <- function(x){
         x$hr <-as.numeric(substr(x$TOD, 1,2))
         temp <- x$AirTC_Avg
@@ -122,6 +123,22 @@ get_VPD <- function(x){
 
 VPD <- get_VPD(Climate_data)
 plot_climate <- merge(merge(temp, VPD, by="Date"), precip)
+
+#Get VPD/temp/Vcmax/Jmax/Water_Potential values for results section---------------
+str(plot_climate)
+summary(plot_climate)
+sd(plot_climate$Temp)
+sd(plot_climate$VPD)
+
+plot_climate
+sum(plot_climate$Precip)
+
+summary(Plot_data)
+sd(Plot_data$Vcmax)
+sd(Plot_data$Jmax)
+sd(Plot_data$Water_Pot)
+
+
 
 #Physiological data
 #Water Potential Data 
@@ -217,13 +234,13 @@ grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(j2),
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
 
 #Figure 2---------------------------------------------------------------------------------------
-setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 #txtfiles_subset is to test out the lapply
 textfiles_subset = textfiles[1:5]
 textfiles_subset=textfiles[448:457]
 textfiles_subset
-setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
+setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 read.table("b2popmlb_E04_leaf_6-30-201600003.asd.txt")
 #User-defined function "format_spectra"
 #Formats hyperspectral ASD files and parses various information based on filename
@@ -246,7 +263,7 @@ format_spectra <- function(x){
 spectra_tmp <- lapply(textfiles, format_spectra)
 spectra <- do.call(rbind, spectra_tmp)
 write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
-spectra <- read.csv("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
+spectra <- read.csv("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
 spectra$date <-as.Date(spectra$date, format="%m-%d-%Y")
 #3) create "unique_ID" column
 spectra$ID <- as.character(tolower(spectra$ID))
@@ -322,7 +339,7 @@ p <- ggplot() +
 
 
 #Figure 3
-PLSR_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+PLSR_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 #Quality check for outliers
 
 means.without.ols <- tapply(PLSR_formatted$X350, PLSR_formatted$uniqueID, function(x) {
@@ -355,7 +372,7 @@ write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar
 
 #Figure 3---------------------------------------------
 #Figure 3 -  new PLSR figure
-indices_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+indices_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 #now average all reflectances by 'uniqueID'
 str(indices_formatted)
 hyperspectral <- ddply(indices_formatted, .(uniqueID), colwise(mean))
@@ -364,7 +381,7 @@ hyperspectral <- hyperspectral[ -c(2:7)]
 #colnames(hyperspectral)[1] <- "uniqueID"
 #remove columns: x, observation, filename
 #Load file with other data
-data_aci_etc <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze_3_6_2017.csv")
+data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Merged_data_to_analyze_3_6_2017.csv")
 str(data_aci_etc)
 merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
 str(merged_hyperspec)
@@ -374,7 +391,7 @@ head(merged_hyperspec)
 #Their positions are: column 1,6,13,16,21 
 merged_hyperspec <- merged_hyperspec[ -c(2:4, 7:10, 12:15, 17:20, 22:24)]
 str(merged_hyperspec)
-write.csv(merged_hyperspec, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
+write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 #Prepping data for PLSR
 poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 str(poplar_names)
@@ -494,7 +511,7 @@ result <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                    output = FALSE)
 
 #Figure 4----------------------
-Corrs <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/Corr_to_plot_3_7_2017.csv")
+Corrs <- read.csv("C:/Users/rsstudent/Dropbox/Paper_2/Corr_to_plot_3_7_2017.csv")
 str(Corrs)
 
 c1 <- ggplot(Corrs, aes(y=Vcmax_R_squared, x=reorder(Index, -Vcmax_R_squared)))+
