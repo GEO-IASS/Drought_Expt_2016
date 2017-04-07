@@ -15,6 +15,7 @@ library(gtable)
 library(signal)
 library(plsropt)
 library(pls)
+library(gridExtra)
 #Define Multiplot function :
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
         library(grid)
@@ -53,7 +54,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 #Load File
 #Figure 1------------------------------------------------------------
-Plot_data <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
+Plot_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
 str(Plot_data)
 #Cleanup data file:
 #Format Dates properly: 
@@ -72,7 +73,7 @@ Plot_data <- Plot_data[-c(38),]
 #Climate data:
 #1) Dual-axis with VPD and precip
 #2) VPD Timeseires
-Climate_data <- read.csv("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
+Climate_data <- read.csv("C:/Users/Mallory/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
 head(Climate_data)
 str(Climate_data)
 #Custom function for pulling x number of characters from the right of a string: from 
@@ -84,6 +85,15 @@ substrRight <- function(x, n){
 	
 Climate_data$TOD <- substrRight(as.character(Climate_data$TIMESTAMP), 5)
 Climate_data$Date <- as.Date(substr(as.character(Climate_data$TIMESTAMP),1, 9), "%m/%d/%Y")
+str(Climate_data)
+#Get average maximum and minimum daily temperature
+Climate_data_study <- subset(Climate_data, Date >= as.Date("2016-05-24", "%Y-%m-%d") & Date <= as.Date("2016-07-07", "%Y-%m-%d"))
+str(Climate_data_study)
+tempbydate <- ddply(Climate_data_study, .(Date), summarise, maxtemp=max(AirTC_Avg), mintemp=min(AirTC_Avg), precip=sum(Rain_mm_Tot))
+mean(tempbydate$maxtemp)
+mean(tempbydate$mintemp)
+sum(tempbydate$precip)
+
 #Need sum of precip, and average daytime temp (06:00 to 18:00 hours)
 #Sum precip by date; 
 str(precip)
@@ -116,7 +126,8 @@ plot_climate <- merge(merge(temp, VPD, by="Date"), precip)
 #Physiological data
 #Water Potential Data 
 str(Plot_data)
-w <- ggplot(Plot_data, aes(factor(Date), Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+w <- ggplot(Plot_data, aes(factor(Date), Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+        xlab("Date")
 w1 <- w + geom_boxplot(outlier.colour = NA)
 w2 <- w1 + geom_point(position = position_jitter(width = 0.2))
 
@@ -167,7 +178,11 @@ p1 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + them
 theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))
 
 p2 <- ggplot(plot_climate,aes(Date, Precip)) + geom_bar(stat="Identity", fill="blue") + theme_minimal() +
-theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+        geom_rect(aes(xmin=as.Date("2016-06-02", "%Y-%m-%d"),xmax=as.Date("2016-06-07", "%Y-%m-%d") ,ymin=-Inf,ymax=Inf),
+                  fill="darkslategray1")+
+        geom_rect(aes(xmin=as.Date("2016-06-19", "%Y-%m-%d"),xmax=as.Date("2016-06-20", "%Y-%m-%d") ,ymin=-Inf,ymax=Inf),
+                  fill="darkslategray1")+
+        theme(axis.title.x = element_blank(), axis.text.x = element_blank())
 
 vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") + scale_y_continuous(position="right")+theme_minimal() +
        theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
@@ -210,6 +225,9 @@ textfiles_subset=textfiles[448:457]
 textfiles_subset
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 read.table("b2popmlb_E04_leaf_6-30-201600003.asd.txt")
+#User-defined function "format_spectra"
+#Formats hyperspectral ASD files and parses various information based on filename
+#This takes awhile to run
 format_spectra <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
         tmp$filename <- basename(x)
@@ -228,7 +246,7 @@ format_spectra <- function(x){
 spectra_tmp <- lapply(textfiles, format_spectra)
 spectra <- do.call(rbind, spectra_tmp)
 write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
-spectra <- read.csv("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
+spectra <- read.csv("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
 spectra$date <-as.Date(spectra$date, format="%m-%d-%Y")
 #3) create "unique_ID" column
 spectra$ID <- as.character(tolower(spectra$ID))
@@ -304,10 +322,20 @@ p <- ggplot() +
 
 
 #Figure 3
-PLSR_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
-#now average all reflectances by 'uniqueID'
+PLSR_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+#Quality check for outliers
+
+means.without.ols <- tapply(PLSR_formatted$X350, PLSR_formatted$uniqueID, function(x) {
+        mean(x[!(abs(x - median(x)) > 2*sd(x))])
+})
+
+
+#now average all reflectances by 'uniqueID' - this averages all 9 observaitons
 str(PLSR_formatted)
-hyperspectral <- ddply(PLSR_formatted, .(uniqueID), colwise(mean))
+hyperspectral <- ddply(PLSR_formatted, .(uniqueID), colwise(mean_sd))
+
+ddply(PLSR_formatted,~uniqueID,summarise, mean=(means.without.obs(x)))
+
 str(hyperspectral)
 hyperspectral <- hyperspectral[ -c(2:3, 5:6)]
 #colnames(hyperspectral)[1] <- "uniqueID"
