@@ -289,50 +289,60 @@ str(spectra)
 #Need to check for outliers here - some observations might be weird which is why we took 9 of them.
 #Test using grubbs.test and this stackoverflow solution; http://stackoverflow.com/questions/22837099/how-to-repeat-the-grubbs-test-and-flag-the-outliers
 #Function to flag outliers accoriding to grubbs test
-grubbs.flag <- function(x) {
-        outliers <- NULL
-        test <- x
-        grubbs.result <- grubbs.test(test)
-        pv <- grubbs.result$p.value
-        while(pv < 0.05) {
-                outliers <- c(outliers,as.numeric(strsplit(grubbs.result$alternative," ")[[1]][3]))
-                test <- x[!x %in% outliers]
-                grubbs.result <- grubbs.test(test)
-                pv <- grubbs.result$p.value
-        }
-        return(data.frame(X=x,Outlier=(x %in% outliers)))
-        df$X <-NA if Outliers="TRUE"
-}
+#grubbs.flag <- function(x) {
+#        outliers <- NULL
+#        test <- x
+#        grubbs.result <- grubbs.test(test)
+#        pv <- grubbs.result$p.value
+#        while(pv < 0.05) {
+#                outliers <- c(outliers,as.numeric(strsplit(grubbs.result$alternative," ")[[1]][3]))
+#                test <- x[!x %in% outliers]
+#                grubbs.result <- grubbs.test(test)
+#                pv <- grubbs.result$p.value
+#        }
+#        return(data.frame(X=x,Outlier=(x %in% outliers)))
+#        df$X <-NA if Outliers="TRUE"
+#}
 # Then remove observations that are considered outliers
 # Then move on to averaging all reflectances by unique ID
 #now average all reflectances by 'uniqueID'
 
 #Function to run grubbs flag for each, replace "TRUE" outlier values with NA, then cbind all the results together
 
-grubbies <- grubbs.flag(spectra$`350`)
-mydata <- if(grubbies$Outlier=="TRUE") grubbies[grubbies$grubbies %in% X==NA,] else mydata
-mydata <- if(MyCondition=="high") mydata[mydata$mydata %in% highRandomNumbers==TRUE,] else mydata
+#grubbies <- grubbs.flag(spectra$`350`)
+#mydata <- if(grubbies$Outlier=="TRUE") grubbies[grubbies$grubbies %in% X==NA,] else mydata
+#mydata <- if(MyCondition=="high") mydata[mydata$mydata %in% highRandomNumbers==TRUE,] else mydata
 
-grubbies
-str(grubbies)        
-grubbies$X
+#grubbies
+#str(grubbies)        
+#grubbies$X
 
-ggplot(grubbies,aes(x=grubbies$X,color=grubbies$Outlier,fill=grubbies$Outlier))+
-geom_histogram(binwidth=diff(range(X))/30)+
-theme_bw()
+#ggplot(grubbies,aes(x=grubbies$X,color=grubbies$Outlier,fill=grubbies$Outlier))+
+#geom_histogram(binwidth=diff(range(X))/30)+
+#theme_bw()
 
 outliers <- ddply(spectra, .(uniqueID), grubbs.flag(spectra))
 #This ddply takes 30 secs or so 
 hyperspectral <- ddply(spectra, .(uniqueID), colwise(mean, na.rm=TRUE))
+hyperspectral1 <-ddply(spectra, .(uniqueID), numcolwise(median, na.rm=TRUE))
 str(hyperspectral)
 hyperspectral_long <- gather(hyperspectral, uniqueID, reflectance, c(`350`:`2500`), factor_key=TRUE)
+hyperspectral1_long <- gather(hyperspectral1, uniqueID, reflectance, c(`350`:`2500`), factor_key=TRUE)
+
 str(hyperspectral_long)
+str(hyperspectral1_long)
 #Rename second column "wavelength"
 names(hyperspectral_long)[3] <- "wavelength"
+names(hyperspectral1_long)[2] <- "wavelength"
 hyperspectral_long$wavelength <- as.numeric(as.character(hyperspectral_long$wavelength))
+hyperspectral1_long$wavelength <- as.numeric(as.character(hyperspectral1_long$wavelength))
+
 str(hyperspectral_long)
+str(hyperspectral1_long)
 #need to compare "uniqueID" here with "uniqueID" in plot_data to ensure we're seeing looking at the proper observations
 anti_join(hyperspectral_long, Plot_data)
+anti_join(hyperspectral1_long, Plot_data)
+
 #to delete: eo4-2016-05-20
 hyperspectral_long<-hyperspectral_long[!(hyperspectral_long$uniqueID=="e04-2016-05-20" | hyperspectral_long$uniqueID=="a01-2016-05-20"| hyperspectral_long$uniqueID=="h06-2016-05-20" | hyperspectral_long$uniqueID=="b12-2016-05-20" | hyperspectral_long$uniqueID=="b12-2016-06-01"| hyperspectral_long$uniqueID=="c14-2016-05-26"| hyperspectral_long$uniqueID=="c14-2016-05-20" | hyperspectral_long$uniqueID=="f08-2016-06-27"| hyperspectral_long$uniqueID=="f05-2016-05-31"| hyperspectral_long$uniqueID=="g11-2016-05-24"| hyperspectral_long$uniqueID=="h06-2016-05-26"| hyperspectral_long$uniqueID=="h06-2016-06-01"| hyperspectral_long$uniqueID=="h09-2016-05-26"|  hyperspectral_long$uniqueID=="h09-2016-06-01" |hyperspectral_long$uniqueID=="g11-2016-05-31"| hyperspectral_long$uniqueID=="i06-2016-05-20"| hyperspectral_long$uniqueID=="c14-2016-06-01"),]
 str(hyperspectral_long)
@@ -342,7 +352,19 @@ ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ ge
         scale_x_continuous(breaks=seq(350, 2500, 200))+
         geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
         geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
-        theme(legend.position="none")
+        theme(legend.position="none")+ ggtitle("Mean-based reflectance")
+#And for median-based
+hyperspectral1_long<-hyperspectral1_long[!(hyperspectral1_long$uniqueID=="e04-2016-05-20" | hyperspectral1_long$uniqueID=="a01-2016-05-20"| hyperspectral1_long$uniqueID=="h06-2016-05-20" | hyperspectral1_long$uniqueID=="b12-2016-05-20" | hyperspectral1_long$uniqueID=="b12-2016-06-01"| hyperspectral1_long$uniqueID=="c14-2016-05-26"| hyperspectral1_long$uniqueID=="c14-2016-05-20" | hyperspectral1_long$uniqueID=="f08-2016-06-27"| hyperspectral1_long$uniqueID=="f05-2016-05-31"| hyperspectral1_long$uniqueID=="g11-2016-05-24"| hyperspectral1_long$uniqueID=="h06-2016-05-26"| hyperspectral1_long$uniqueID=="h06-2016-06-01"| hyperspectral1_long$uniqueID=="h09-2016-05-26"|  hyperspectral1_long$uniqueID=="h09-2016-06-01" |hyperspectral1_long$uniqueID=="g11-2016-05-31"| hyperspectral1_long$uniqueID=="i06-2016-05-20"| hyperspectral1_long$uniqueID=="c14-2016-06-01"),]
+str(hyperspectral1_long)
+aggregate(data.frame(count = hyperspectral1_long$uniqueID), list(value = hyperspectral1_long$uniqueID), length)
+hyperspectral1_long$uniqueID
+ggplot(hyperspectral1_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
+        scale_x_continuous(breaks=seq(350, 2500, 200))+
+        geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
+        geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
+        theme(legend.position="none")+ ggtitle("Median-based reflectance")
+
+
 
 #Add red and blue lines: 
 #User Defined Function: Format Hyperspec: 
@@ -385,7 +407,9 @@ p <- ggplot() +
 PLSR_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 #now average all reflectances by 'uniqueID' - this averages all 9 observaitons
 str(PLSR_formatted)
-hyperspectral <- ddply(PLSR_formatted, .(uniqueID), colwise(mean_sd))
+hyperspectral_mean <- ddply(PLSR_formatted, .(uniqueID), colwise(mean))
+hyperspectral_med <- ddply(PLSR_formatted, .(uniqueID), numcolwise(median))
+
 
 ddply(PLSR_formatted,~uniqueID,summarise, mean=(means.without.obs(x)))
 
@@ -402,9 +426,6 @@ str(merged_hyperspec)
 merged_hyperspec <- merged_hyperspec[ -c(2:6, 9:14, 16:19, 21:32)]
 str(merged_hyperspec)
 #write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths.csv")
-
-
-
 
 #Figure 3---------------------------------------------
 #Figure 3 -  new PLSR figure
