@@ -55,7 +55,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 }
 #Load File
 #Figure 1------------------------------------------------------------
-Plot_data <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
+Plot_data <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
 str(Plot_data)
 #Cleanup data file:
 #Format Dates properly: 
@@ -68,13 +68,14 @@ Plot_data$phase<- ifelse(Plot_data$Date<"2016-06-08", 1,
                       ifelse(Plot_data$Date>="2016-06-16", 3,
                                     NA)))
 str(Plot_data)
+Plot_data$VPD_scale <- rescale
 #Remove 5-20 Observation as it's the only one that day: 
 Plot_data <- Plot_data[-c(38),]
 #Figure 1: Multipanel stacked figure; climate/physiology
 #Climate data:
 #1) Dual-axis with VPD and precip
 #2) VPD Timeseires
-Climate_data <- read.csv("C:/Users/rsstudent/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
+Climate_data <- read.csv("C:/Users/Mallory/Dropbox/Summer_2016_Drought_Experiment/Cleaned_Table.csv")
 head(Climate_data)
 str(Climate_data)
 #Custom function for pulling x number of characters from the right of a string: from 
@@ -147,7 +148,9 @@ str(Plot_data)
 w <- ggplot(Plot_data, aes(factor(Date), Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
         xlab("Date")
 w1 <- w + geom_boxplot(outlier.colour = NA)
-w2 <- w1 + geom_point(position = position_jitter(width = 0.2))
+w2 <- w1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.x=element_blank(),
+                                                                      axis.text.x=element_blank(),
+                                                                      axis.ticks.x=element_blank())
 
 #Vcmax
 v <- ggplot(Plot_data, aes(factor(Date), Vcmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -158,9 +161,7 @@ v2 <- v1 + geom_point(position = position_jitter(width = 0.2)) + theme(axis.titl
 #Jmax
 j <- ggplot(Plot_data, aes(factor(Date), Jmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 j1 <- j + geom_boxplot(outlier.colour = NA)
-j2 <- j1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.x=element_blank(),
-                                                                     axis.text.x=element_blank(),
-                                                                     axis.ticks.x=element_blank())
+j2 <- j1 + geom_point(position = position_jitter(width = 0.2))
 grid.newpage()
 grid.draw(rbind(ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
 
@@ -193,21 +194,61 @@ p0 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + them
 
 
 p1 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + theme_minimal() + 
-theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))
+theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))+
+        theme(panel.border = element_blank(), axis.ticks.x = element_line(size=1,color='black'),
+              axis.ticks.y = element_line(size=1, color='black'), axis.ticks.length=unit(0.25, "cm"), 
+              axis.line = element_blank(), panel.background = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              axis.text.x = element_text(margin=unit(c(0.5,-0.5,0.5,0.5), "cm")))+
+        guides(colour=FALSE)
 
 p2 <- ggplot(plot_climate,aes(Date, Precip)) + geom_bar(stat="Identity", fill="blue") + theme_minimal() +
         geom_rect(aes(xmin=as.Date("2016-06-02", "%Y-%m-%d"),xmax=as.Date("2016-06-07", "%Y-%m-%d") ,ymin=-Inf,ymax=Inf),
                   fill="darkslategray1")+
         geom_rect(aes(xmin=as.Date("2016-06-19", "%Y-%m-%d"),xmax=as.Date("2016-06-20", "%Y-%m-%d") ,ymin=-Inf,ymax=Inf),
                   fill="darkslategray1")+
-        theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+        theme(axis.title.x = element_blank(), axis.text.x = element_blank())+ 
+        theme(panel.border = element_blank(), panel.background = element_blank(), 
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              plot.margin=unit(c(-0.5,1,1,1), "cm"))
+
 
 vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") + scale_y_continuous(position="right")+theme_minimal() +
-       theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
-        theme(panel.background = element_rect(fill = NA))
-        
+        theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
+        theme(panel.background = element_rect(fill = NA))+ 
+        theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))+
+        theme(panel.border = element_blank(), axis.ticks.x = element_line(size=1,color='black'),
+              axis.ticks.y = element_line(size=1, color='black'), axis.ticks.length=unit(0.25, "cm"), 
+                    axis.line = element_blank(), panel.background = element_blank(),
+                    panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              axis.text.x = element_text(margin=unit(c(0.5,-0.5,0.5,0.5), "cm")))
 
-grid.newpage()
+vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") +
+        geom_line()+
+        geom_line()+
+        scale_y_continuous(position="right")+theme_minimal() +
+        theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
+        theme(panel.background = element_rect(fill = NA))+ 
+        theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))+
+        theme(panel.border = element_blank(), axis.ticks.x = element_line(size=1,color='black'),
+              axis.ticks.y = element_line(size=1, color='black'), axis.ticks.length=unit(0.25, "cm"), 
+              axis.line = element_blank(), panel.background = element_blank(),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              axis.text.x = element_text(margin=unit(c(0.5,-0.5,0.5,0.5), "cm")))
+
+#Got both on same axis! YES!
+
+p <- p1 +geom_line(aes(y = VPD*5, colour = 'red'))
+
+# now adding the secondary axis, following the example in the help file ?scale_y_continuous
+# and, very important, reverting the above transformation
+p <- p + scale_y_continuous(sec.axis = sec_axis(~./5, name = "VPD [KPa]")) + 
+        theme(axis.title.x=element_blank(),
+              axis.text.x=element_blank(),
+              axis.ticks.x=element_blank(),
+        plot.margin=unit(c(1,1,-0.5,1), "cm"))
+
+
 #Trying to get VPD and temp on same plot; see workaround here! http://rpubs.com/kohske/dual_axis_in_ggplot2
 #extract gtable from temp and vpd plots
 g1 <- ggplot_gtable(ggplot_build(p0))
@@ -228,20 +269,23 @@ g <- gtable_add_cols(g, g2$widths[g2$layout[ia, ]$l], length(g$widths) - 1)
 g <- gtable_add_grob(g, ax, pp$t, length(g$widths) - 1, pp$b)
 
 #draw it!
-grid.arrange(g, p2, j2, v2, w2, ncol=1, heights=c(2,2,3,3,5.5))
+grid.arrange(p, p2, w2, v2, j2, ncol=1, heights=c(2,2,3,5,5.5))
+grid.arrange(vpd, w2, v2, j2, ncol=1, heights=c(3,3,5.5, 5.5))
+grid.arrange(p1, w2, v2, j2, ncol=1, heights=c(3,3,5.5, 5.5))
+
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p1), size = "last"))
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(g), size = "last"))
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
 grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
 
 #Figure 2---------------------------------------------------------------------------------------
-setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
 textfiles = list.files("ASCII_Reflectance/", pattern = "*.txt")
 #txtfiles_subset is to test out the lapply
 textfiles_subset = textfiles[1:5]
 textfiles_subset=textfiles[448:457]
 textfiles_subset
-setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
+setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/")
 read.table("b2popmlb_E04_leaf_6-30-201600003.asd.txt")
 #User-defined function "format_spectra"
 #Formats hyperspectral ASD files and parses various information based on filename
@@ -264,7 +308,7 @@ format_spectra <- function(x){
 spectra_tmp <- lapply(textfiles, format_spectra)
 spectra <- do.call(rbind, spectra_tmp)
 #write.csv(spectra, "spectra_for_fig_2_3_7_2017.csv")
-spectra <- read.csv("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
+spectra <- read.csv("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/spectra_for_fig_2_3_7_2017.csv")
 spectra$date <-as.Date(spectra$date, format="%m-%d-%Y")
 #3) create "unique_ID" column
 spectra$ID <- as.character(tolower(spectra$ID))
@@ -321,10 +365,43 @@ str(spectra)
 #geom_histogram(binwidth=diff(range(X))/30)+
 #theme_bw()
 
-outliers <- ddply(spectra, .(uniqueID), grubbs.flag(spectra))
+#outliers <- ddply(spectra, .(uniqueID), grubbs.flag(spectra))
 #This ddply takes 30 secs or so 
 hyperspectral <- ddply(spectra, .(uniqueID), colwise(mean, na.rm=TRUE))
 hyperspectral1 <-ddply(spectra, .(uniqueID), numcolwise(median, na.rm=TRUE))
+#Get range of reflectance
+str(hyperspectral)
+rel_range <- function(x){
+min <- min(x, na.rm=TRUE)
+max <- max(x, na.rm=TRUE)
+rel<- (max-min)/((min+max)/2) * 100
+return(rel)}
+ksd<-apply(hyperspectral[-(1:2)],2,rel_range)
+str(ksd)
+
+
+vis_ref <- mean(ksd[101:351])
+NIR_ref <- mean(ksd[351:951])
+SWIR_ref<- mean(ksd[1151:2151])
+
+ksd_subset <- ksd[101:2151]
+which.min(ksd_subset)
+which.max(ksd_subset)
+min(ksd_subset)
+max(ksd_subset)
+
+
+
+
+
+
+ksd[101]
+ksd[351]
+ksd[951]
+ksd[1151]
+ksd[2151]
+
+
 str(hyperspectral)
 hyperspectral_long <- gather(hyperspectral, uniqueID, reflectance, c(`350`:`2500`), factor_key=TRUE)
 hyperspectral1_long <- gather(hyperspectral1, uniqueID, reflectance, c(`350`:`2500`), factor_key=TRUE)
@@ -348,11 +425,14 @@ hyperspectral_long<-hyperspectral_long[!(hyperspectral_long$uniqueID=="e04-2016-
 str(hyperspectral_long)
 aggregate(data.frame(count = hyperspectral_long$uniqueID), list(value = hyperspectral_long$uniqueID), length)
 hyperspectral_long$uniqueID
+str(hyperspectral_long)
+
 ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
-        scale_x_continuous(breaks=seq(350, 2500, 200))+
+        scale_x_continuous(breaks=seq(450, 2500, 200))+
+        xlim(450,2500)+
         geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
         geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
-        theme(legend.position="none")+ ggtitle("Mean-based reflectance")
+        theme(legend.position="none")+ ggtitle("Mean Reflectance")
 #And for median-based
 hyperspectral1_long<-hyperspectral1_long[!(hyperspectral1_long$uniqueID=="e04-2016-05-20" | hyperspectral1_long$uniqueID=="a01-2016-05-20"| hyperspectral1_long$uniqueID=="h06-2016-05-20" | hyperspectral1_long$uniqueID=="b12-2016-05-20" | hyperspectral1_long$uniqueID=="b12-2016-06-01"| hyperspectral1_long$uniqueID=="c14-2016-05-26"| hyperspectral1_long$uniqueID=="c14-2016-05-20" | hyperspectral1_long$uniqueID=="f08-2016-06-27"| hyperspectral1_long$uniqueID=="f05-2016-05-31"| hyperspectral1_long$uniqueID=="g11-2016-05-24"| hyperspectral1_long$uniqueID=="h06-2016-05-26"| hyperspectral1_long$uniqueID=="h06-2016-06-01"| hyperspectral1_long$uniqueID=="h09-2016-05-26"|  hyperspectral1_long$uniqueID=="h09-2016-06-01" |hyperspectral1_long$uniqueID=="g11-2016-05-31"| hyperspectral1_long$uniqueID=="i06-2016-05-20"| hyperspectral1_long$uniqueID=="c14-2016-06-01"),]
 str(hyperspectral1_long)
@@ -368,9 +448,9 @@ ggplot(hyperspectral1_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ g
 
 #Add red and blue lines: 
 #User Defined Function: Format Hyperspec: 
-not_stressed <- read.table("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_Leaf_6-01-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+not_stressed <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_Leaf_6-01-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
 str(not_stressed)
-stressed <- read.table("C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_leaf_6-24-201600001.asd.txt", col.names=c("wavelength", "reflectance"))
+stressed <- read.table("C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/ASCII_Reflectance/b2popmlb_E03_leaf_6-24-201600001.asd.txt", col.names=c("wavelength", "reflectance"))
 
 #Create Column with filename and then delete the first row of data frame
 Format_hyperspec <- function(test){
@@ -404,7 +484,7 @@ p <- ggplot() +
 
 
 #Figure 3
-PLSR_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+PLSR_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 #now average all reflectances by 'uniqueID' - this averages all 9 observaitons
 str(PLSR_formatted)
 hyperspectral_mean <- ddply(PLSR_formatted, .(uniqueID), colwise(mean))
@@ -418,7 +498,7 @@ hyperspectral <- hyperspectral[ -c(2:3, 5:6)]
 #colnames(hyperspectral)[1] <- "uniqueID"
 #remove columns: x, observation, filename
 #Load file with other data
-data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
+data_aci_etc <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
 str(data_aci_etc)
 merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
 str(merged_hyperspec)
@@ -429,7 +509,7 @@ str(merged_hyperspec)
 
 #Figure 3---------------------------------------------
 #Figure 3 -  new PLSR figure
-indices_formatted <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
+indices_formatted <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_for_PLSR_formatted.csv")
 #now average all reflectances by 'uniqueID'
 str(indices_formatted)
 hyperspectral <- ddply(indices_formatted, .(uniqueID), colwise(mean))
@@ -438,7 +518,7 @@ hyperspectral <- hyperspectral[ -c(2:7)]
 #colnames(hyperspectral)[1] <- "uniqueID"
 #remove columns: x, observation, filename
 #Load file with other data
-data_aci_etc <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/Merged_data_to_analyze_3_6_2017.csv")
+data_aci_etc <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze_3_6_2017.csv")
 str(data_aci_etc)
 merged_hyperspec <- merge(data_aci_etc, hyperspectral, by="uniqueID")
 str(merged_hyperspec)
@@ -450,11 +530,11 @@ merged_hyperspec <- merged_hyperspec[ -c(2:4, 7:10, 12:15, 17:20, 22:24)]
 str(merged_hyperspec)
 #write.csv(merged_hyperspec, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 #Prepping data for PLSR
-poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
+poplar_names <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_11_2017.csv")
 str(poplar_names)
 poplar_names<-poplar_names[!(poplar_names$uniqueID=="e04-2016-05-20"),]
-#write.csv(poplar_names, "C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
-poplar_names <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
+#write.csv(poplar_names, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
+poplar_names <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 poplar_names$Date.x <- as.Date(poplar_names$Date.x, format="%m/%d/%Y")
 #Figure 3a&3b: Vcmax &Jmax- randomly order samples; train with 80% and test with 20% of data
 #get rid of 'x' column, Water_Pot, and Genotype for now 
@@ -508,7 +588,7 @@ function
 
 #Figure 3c&d: Vcmax & Jmax - train on high (not stressed) water potential and test on stressed (low water potential)
 #When ordering by water potential (descending)
-poplar_namescd <- read.csv("C:/Users/rsstudent/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
+poplar_namescd <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/poplar_allwavelengths_3_17_2017.csv")
 poplar_namescd$Date.x <- as.Date(poplar_namescd$Date.x, format="%m/%d/%Y")
 poplar_namescd <- poplar_namescd[order(poplar_namescd$Date.x),] 
 str(poplar_namescd)
@@ -568,15 +648,17 @@ result <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                    output = FALSE)
 
 #Figure 4----------------------
-Corrs <- read.csv("C:/Users/rsstudent/Dropbox/Paper_2/Corr_to_plot_3_7_2017.csv")
+Corrs <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/Corr_to_plot_4_9_2017.csv")
+str(Corrs)
+Corrs$Sum_Corrs <- Corrs$Vcmax_R_squared + Corrs$Jmax_R_squared
 str(Corrs)
 
-c1 <- ggplot(Corrs, aes(y=Vcmax_R_squared, x=reorder(Index, -Vcmax_R_squared)))+
+c1 <- ggplot(Corrs, aes(y=Vcmax_R_squared, x=reorder(Index, -Sum_Corrs)))+
         ylim(0,0.8)+
         geom_bar(stat="identity")+ theme(axis.text.x = element_text(angle = 90, hjust = 1), axis.title.x=element_blank())+
          ylab("Vcmax R-squared")
 
-c2 <- ggplot(Corrs, aes(y=Jmax_R_squared, x=reorder(Index, -Jmax_R_squared)))+
+c2 <- ggplot(Corrs, aes(y=Jmax_R_squared, x=reorder(Index, -Sum_Corrs)))+
         ylim(0,0.8)+
         geom_bar(stat="identity")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
         xlab("Indices")+
