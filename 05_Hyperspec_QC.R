@@ -7,6 +7,7 @@
 library(ggplot2)
 library(hyperSpec)
 library(plyr)
+library(pavo)
 #hyperSpec manual can be found here: https://cran.r-project.org/web/packages/hyperSpec/vignettes/introduction.pdf
 
 #Set working directory to location fo hyperspectral ASD Files
@@ -18,7 +19,7 @@ setwd(dir = "C:/Users/rsstudent/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspec
 
 #Read in file, used "col.names" argument to rename columns properly. Will need to figure out
 #how to do this with a list of ASCII files
-test <- read.table("ASCII_Reflectance/b2popmlb_A1_Leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
+test <- read.table("ASCII_Reflectance/b2popmlb_A01_leaf_5-20-201600000.asd.txt", col.names=c("wavelength", "reflectance"))
 str(test)
 
 #Create Column with filename and then delete the first row of data frame
@@ -45,6 +46,15 @@ observation <- (substr(test[1,3], 30,31))
 PRI <- ((test[182,2]-test[221,2])/(test[182,2]+test[221,2]))
 NDVI <- ((test[511,2]-test[341,2])/(test[511,2]+test[341,2]))
 NDWI <- ((test[511,2]-test[891,2])/(test[511,2]+test[891,2]))
+
+#Calcluating full width half max----------------------------------------------
+names(test)[names(test) == 'wavelength'] <- 'wl'
+red <- test[271:321,]
+NIR <- test[492:527,]
+r1 <- as.data.frame(peakshape(red, select = 2, plot=FALSE))
+
+
+
 
 
 test_df <- cbind(filename, ID, date, observation, PRI, NDVI, NDWI)
@@ -119,13 +129,14 @@ indices$SR2 <- as.numeric(as.character(indices$SR2))
 indices$SIPI <- as.numeric(as.character(indices$SIPI))
 indices$mNDVI <- as.numeric(as.character(indices$mNDVI))
 indices$mSRCHL <- as.numeric(as.character(indices$mSRCHL))
+indices$NDVI_mod <- as.numeric(as.character(indicesNDVI_mod))
 
 
 
 indices$date <- as.Date(indices$date, format="%m-%d-%Y")
 str(indices)
 
-write.csv(indices,"C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Yendreck_Indices_2_21.csv")
+write.csv(indices,"C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_4_25_2017.csv")
 
 calc_indices <- function(x){
         tmp = read.table(x,  col.names=c("wavelength", "reflectance"))
@@ -138,6 +149,8 @@ calc_indices <- function(x){
         date <- (substr(tmp[1,3], 19,27))
         observation =(substr(tmp[1,3], 31,32))
         
+        mod_red=tmp[96:102, 2]
+        mod_NIR=tmp[120:123, 2]
         w_445=tmp[96,2]
         w_531=tmp[182,2]
         w_550=tmp[201,2]
@@ -165,7 +178,7 @@ calc_indices <- function(x){
         w_860=tmp[511,2]
         w_1240=tmp[891,2]
         
-        
+        NDVI_mod <- FWHM(tmp)
         PRI = calc_PRI(w_531, w_570)
         NDVI = calc_NDVI(w_860, w_690)
         NDWI = calc_NDWI(w_860, w_1240)
@@ -184,7 +197,7 @@ calc_indices <- function(x){
         SIPI=calc_SIPI(w_800, w_445, w_680)
         mNDVI=calc_mNDVI(w_800, w_680, w_445)
         mSRCHL=calc_mSRCHL(w_800, w_445, w_680)
-        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI, Datt4, Vogelmann2, Maccioni, Double_Difference, Vogelmann1, mSR705, mNDVI705, SR3, SR4, SR1, Gitelson, SR2, SIPI, mNDVI, mSRCHL))
+        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI, Datt4, Vogelmann2, Maccioni, Double_Difference, Vogelmann1, mSR705, mNDVI705, SR3, SR4, SR1, Gitelson, SR2, SIPI, mNDVI, mSRCHL, NDVI_mod))
         return(indices)
 }
 
@@ -192,6 +205,30 @@ calc_indices <- function(x){
 # define vectors to store results (mean sortable silt values)
 results = data.frame(txtfiles_subset, indices)
 print(results)
+
+
+
+#Function to calculate mean over FWHM range - uses 'peakshape' function from 'pavo" package
+#to get wavelength at full width half max and the range around it 
+#Where x is a dataframe
+FWHM = function(x){
+        names(x)[names(x) == 'wavelength'] <- 'wl'
+        redrange <- x[271:321,]
+        NIRrange <- x[492:527,]
+        r1 <- as.data.frame(peakshape(redrange, select = 2, plot=FALSE))
+        top <- r1$H1 + r1$HWHM.r
+        bottom <- r1$H1 - r1$HWHM.l
+        redvalue <-mean(subset(x, wl < top & wl > bottom)$reflectance)
+        NIR1 <- as.data.frame(peakshape(NIRrange, select = 2, plot=FALSE))
+        top1 <- NIR1$H1 + NIR1$HWHM.r
+        bottom1 <- NIR1$H1 - NIR1$HWHM.l
+        NIRvalue <-mean(subset(x, wl < top1 & wl > bottom1)$reflectance)
+        NDVI_modis <- (NIRvalue-redvalue)/(NIRvalue + redvalue)
+        return(NDVI_modis)
+        
+}
+
+FWHM(test)
 
 
 
