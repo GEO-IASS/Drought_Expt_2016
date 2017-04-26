@@ -68,7 +68,7 @@ Plot_data$phase<- ifelse(Plot_data$Date<"2016-06-08", 1,
                       ifelse(Plot_data$Date>="2016-06-16", 3,
                                     NA)))
 str(Plot_data)
-Plot_data$VPD_scale <- rescale
+#Get rid of obs 38 (5-20_2016)
 #Remove 5-20 Observation as it's the only one that day: 
 Plot_data <- Plot_data[-c(38),]
 #Figure 1: Multipanel stacked figure; climate/physiology
@@ -140,34 +140,6 @@ sd(Plot_data$Vcmax)
 sd(Plot_data$Jmax)
 sd(Plot_data$Water_Pot)
 
-
-
-#Physiological data
-#Water Potential Data 
-str(Plot_data)
-w <- ggplot(Plot_data, aes(factor(Date), Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
-        xlab("Date")
-w1 <- w + geom_boxplot(outlier.colour = NA)
-w2 <- w1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.x=element_blank(),
-                                                                      axis.text.x=element_blank(),
-                                                                      axis.ticks.x=element_blank())
-
-#Vcmax
-v <- ggplot(Plot_data, aes(factor(Date), Vcmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-v1 <- v + geom_boxplot(outlier.colour = NA)
-v2 <- v1 + geom_point(position = position_jitter(width = 0.2)) + theme(axis.title.x=element_blank(),
-                                                                       axis.text.x=element_blank(),
-                                                                       axis.ticks.x=element_blank())
-#Jmax
-j <- ggplot(Plot_data, aes(factor(Date), Jmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-j1 <- j + geom_boxplot(outlier.colour = NA)
-j2 <- j1 + geom_point(position = position_jitter(width = 0.2))
-grid.newpage()
-grid.draw(rbind(ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
-
-
-
-
 #Alternative: Timeseries for all: 
 #wl <- ggplot(Plot_data, aes(Date, Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
 #wl1 <- wl + geom_smooth()
@@ -189,8 +161,18 @@ grid.draw(rbind(ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
 #Now for the climate data: Want a free axis graph with precip and temp and then another with VPD (bars)
 str(plot_climate)
 
-p0 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + theme_minimal() + 
-        theme(axis.title.x = element_blank(),axis.text.x = element_blank())
+#p0 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + theme_minimal() + 
+        #theme(axis.title.x = element_blank(),axis.text.x = element_blank())
+#vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") +
+        #scale_y_continuous(position="right")+theme_minimal() +
+        #theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
+        #theme(panel.background = element_rect(fill = NA))+ 
+        #theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))+
+        #theme(panel.border = element_blank(), axis.ticks.x = element_line(size=1,color='black'),
+              #axis.ticks.y = element_line(size=1, color='black'), axis.ticks.length=unit(0.25, "cm"), 
+              #axis.line = element_blank(), panel.background = element_blank(),
+              #panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+              #axis.text.x = element_text(margin=unit(c(0.5,-0.5,0.5,0.5), "cm")))
 
 
 p1 <- ggplot(plot_climate, aes(Date, Temp)) + geom_line(colour="darkred") + theme_minimal() + 
@@ -207,37 +189,13 @@ p2 <- ggplot(plot_climate,aes(Date, Precip)) + geom_bar(stat="Identity", fill="b
                   fill="darkslategray1")+
         geom_rect(aes(xmin=as.Date("2016-06-19", "%Y-%m-%d"),xmax=as.Date("2016-06-20", "%Y-%m-%d") ,ymin=-Inf,ymax=Inf),
                   fill="darkslategray1")+
-        theme(axis.title.x = element_blank(), axis.text.x = element_blank())+ 
+        theme(axis.title.x = element_blank(), axis.text.x = element_blank(),
+              axis.title.y=element_text(vjust=6), axis.text.y=element_text(hjust=-1))+ 
         theme(panel.border = element_blank(), panel.background = element_blank(), 
               panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              plot.margin=unit(c(-0.5,1,1,1), "cm"))
-
-
-vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") + scale_y_continuous(position="right")+theme_minimal() +
-        theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
-        theme(panel.background = element_rect(fill = NA))+ 
-        theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))+
-        theme(panel.border = element_blank(), axis.ticks.x = element_line(size=1,color='black'),
-              axis.ticks.y = element_line(size=1, color='black'), axis.ticks.length=unit(0.25, "cm"), 
-                    axis.line = element_blank(), panel.background = element_blank(),
-                    panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              axis.text.x = element_text(margin=unit(c(0.5,-0.5,0.5,0.5), "cm")))
-
-vpd <- ggplot(plot_climate,aes(Date, VPD)) + geom_line(colour="red") +
-        geom_line()+
-        geom_line()+
-        scale_y_continuous(position="right")+theme_minimal() +
-        theme(axis.title.x = element_blank(), axis.text.x = element_blank()) %+replace% 
-        theme(panel.background = element_rect(fill = NA))+ 
-        theme(axis.title.x = element_blank(),axis.text.x = element_text(angle=90))+
-        theme(panel.border = element_blank(), axis.ticks.x = element_line(size=1,color='black'),
-              axis.ticks.y = element_line(size=1, color='black'), axis.ticks.length=unit(0.25, "cm"), 
-              axis.line = element_blank(), panel.background = element_blank(),
-              panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              axis.text.x = element_text(margin=unit(c(0.5,-0.5,0.5,0.5), "cm")))
+              plot.margin=unit(c(-0.25,1.5,1,1), "cm"))
 
 #Got both on same axis! YES!
-
 p <- p1 +geom_line(aes(y = VPD*5, colour = 'red'))
 
 # now adding the secondary axis, following the example in the help file ?scale_y_continuous
@@ -246,37 +204,44 @@ p <- p + scale_y_continuous(sec.axis = sec_axis(~./5, name = "VPD [KPa]")) +
         theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank(),
-        plot.margin=unit(c(1,1,-0.5,1), "cm"))
+        plot.margin=unit(c(1,1,-1,1), "cm"))
 
+#Physiological data
+#Water Potential Data 
+str(Plot_data)
+w <- ggplot(Plot_data, aes(factor(Date), Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+        xlab("Date")
+w1 <- w + geom_boxplot(outlier.colour = NA)
+w2 <- w1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.x=element_blank(),
+                                                                     axis.text.x=element_blank(),
+                                                                     axis.ticks.x=element_blank(),
+                                                                     plot.margin=unit(c(0,1,0,1), "cm"))+
+        theme(panel.border = element_blank(), panel.background = element_blank(), 
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
-#Trying to get VPD and temp on same plot; see workaround here! http://rpubs.com/kohske/dual_axis_in_ggplot2
-#extract gtable from temp and vpd plots
-g1 <- ggplot_gtable(ggplot_build(p0))
-g2 <- ggplot_gtable(ggplot_build(vpd))
+#Vcmax
+v <- ggplot(Plot_data, aes(factor(Date), Vcmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+v1 <- v + geom_boxplot(outlier.colour = NA)
+v2 <- v1 + geom_point(position = position_jitter(width = 0.2)) + theme(axis.title.x=element_blank(),
+                                                                       axis.text.x=element_blank(),
+                                                                       axis.ticks.x=element_blank(),
+                                                                       plot.margin=unit(c(0,1,0.5,1), "cm"))+
+        theme(panel.border = element_blank(), panel.background = element_blank(), 
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+#Jmax
+j <- ggplot(Plot_data, aes(factor(Date), Jmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
+j1 <- j + geom_boxplot(outlier.colour = NA)
+j2 <- j1 + geom_point(position = position_jitter(width = 0.2))+ theme(plot.margin=unit(c(0,1,0,1), "cm"))+
+        xlab("Date")+
+        theme(panel.border = element_blank(), panel.background = element_blank(), 
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+grid.newpage()
+grid.draw(rbind(ggplotGrob(w2), ggplotGrob(v2), ggplotGrob(j2), size = "last"))
 
-#overlap the panel of the 2nd plot on that of the 1st plot
-pp <- c(subset(g1$layout, name == "panel", se = t:r))
-g <- gtable_add_grob(g1, g2$grobs[[which(g2$layout$name == "panel")]], pp$t, 
-                     pp$l, pp$b, pp$l)
-#axis tweaks
-ia <- which(g2$layout$name == "axis-l")
-ga <- g2$grobs[[ia]]
-ax <- ga$children[[2]]
-ax$widths <- rev(ax$widths)
-ax$grobs <- rev(ax$grobs)
-ax$grobs[[1]]$x <- ax$grobs[[1]]$x - unit(1, "npc") + unit(0.15, "cm")
-g <- gtable_add_cols(g, g2$widths[g2$layout[ia, ]$l], length(g$widths) - 1)
-g <- gtable_add_grob(g, ax, pp$t, length(g$widths) - 1, pp$b)
+grid.draw(rbind(ggplotGrob(p2), ggplotGrob(p),ggplotGrob(w2), ggplotGrob(v2), ggplotGrob(j2), size = "last"))
 
 #draw it!
-grid.arrange(p, p2, w2, v2, j2, ncol=1, heights=c(2,2,3,5,5.5))
-grid.arrange(vpd, w2, v2, j2, ncol=1, heights=c(3,3,5.5, 5.5))
-grid.arrange(p1, w2, v2, j2, ncol=1, heights=c(3,3,5.5, 5.5))
-
-grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p1), size = "last"))
-grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(g), size = "last"))
-grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(j2), ggplotGrob(v2), ggplotGrob(w2), size = "last"))
-grid.draw(rbind(ggplotGrob(vpd), ggplotGrob(p2), ggplotGrob(p0), ggplotGrob(jl2), ggplotGrob(vl2), ggplotGrob(wl2), size = "last"))
+grid.arrange(p, p2, w2, v2, j2, ncol=1, heights=c(2,2,3,5.5,8))
 
 #Figure 2---------------------------------------------------------------------------------------
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
@@ -427,7 +392,7 @@ aggregate(data.frame(count = hyperspectral_long$uniqueID), list(value = hyperspe
 hyperspectral_long$uniqueID
 str(hyperspectral_long)
 
-ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
+Refs <- ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
         scale_x_continuous(breaks=seq(450, 2500, 200))+
         xlim(450,2500)+
         geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
@@ -648,7 +613,7 @@ result <- plsrPlot(Vcmax ~ NIR, data = datTrain, testdata = datTest,
                    output = FALSE)
 
 #Figure 4----------------------
-Corrs <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/Corr_to_plot_4_9_2017.csv")
+Corrs <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/Corr_to_plot_4_25_2017.csv")
 str(Corrs)
 Corrs$Sum_Corrs <- Corrs$Vcmax_R_squared + Corrs$Jmax_R_squared
 str(Corrs)
@@ -656,13 +621,364 @@ str(Corrs)
 c1 <- ggplot(Corrs, aes(y=Vcmax_R_squared, x=reorder(Index, -Sum_Corrs)))+
         ylim(0,0.8)+
         geom_bar(stat="identity")+ theme(axis.text.x = element_text(angle = 90, hjust = 1), axis.title.x=element_blank())+
-         ylab("Vcmax R-squared")
+         ylab("Vcmax R-squared")+
+         annotate("text", x = 19:20, y = 0.1, label = c("ns", "ns"))+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+        
+        
 
 c2 <- ggplot(Corrs, aes(y=Jmax_R_squared, x=reorder(Index, -Sum_Corrs)))+
         ylim(0,0.8)+
         geom_bar(stat="identity")+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
         xlab("Indices")+
-        ylab("Jmax R-squared")
+        ylab("Jmax R-squared")+
+        annotate("text", x = 18:20, y = 0.1, label = c("ns", "ns", "ns"))+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+        
+        
 
 multiplot(c1,c2)
 
+#Figure 3 4-18-2017
+#values to plot are from fitted value 'test'
+#get r-squared from stats - r-test (gotta square it)
+RMSE = function(m, o){
+        sqrt(mean((m - o)^2))
+}
+#Leave-one-out
+#Vcmax
+file1 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_LOO/2comps(n=86)_train/fittedvalue.csv")
+tests1 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result//Vcmax_LOO/2comps(n=86)_train/stats.csv")
+rsquared1 <- tests1$R.val^2
+lb1 <- paste("R^2 == ", round(rsquared1,2))
+RMSE1 <- paste("RMSE==", round(RMSE(file1$yhat.cal, file1$yhat.val),2))
+str(file1)
+plot1 <- ggplot(file1, aes(y=yhat.cal, x=yhat.val))+
+        geom_point(shape=19, colour="tomato2", size=4)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Vcmax")+
+        ylab("Predicted Vcmax")+
+        theme(axis.text.x=element_text(size=14), axis.text.y = element_text(size=14), axis.title=element_text(size=18), plot.title = element_text(size = 18, face = "bold"))+
+        annotate("text", label = lb1, parse=TRUE, x = 90, y = 60, size = 7, colour = "Black")+
+        annotate("text", label = RMSE1, parse=TRUE, x = 90, y = 50, size = 7, colour = "Black")+
+                theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("a) Vcmax - leave-one-out") + 
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))
+
+plot1
+
+#Jmax
+file2 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_LOO/4comps(n=86)_train/fittedvalue.csv")
+tests2 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_LOO/4comps(n=86)_train/stats.csv")
+rsquared2 <- tests2$R.val^2
+lb2 <- paste("R^2 == ", round(rsquared2,2))
+RMSE2 <- paste("RMSE==", round(RMSE(file2$yhat.cal, file2$yhat.val),2))
+str(file2)
+plot2 <- ggplot(file2, aes(y=yhat.cal, x=yhat.val))+
+        geom_point(shape=19, colour="tomato2", size=4)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Jmax")+
+        ylab("Predicted Jmax")+
+        theme(axis.text.x=element_text(size=14), axis.text.y = element_text(size=14), axis.title=element_text(size=18), plot.title = element_text(size = 18, face = "bold"))+
+        annotate("text", label = lb2, parse=TRUE, x = 200, y = 80, size = 7, colour = "Black")+
+        annotate("text", label = RMSE2, parse=TRUE, x = 200, y = 65, size = 7, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("b) Jmax - leave-one-out") + 
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))
+
+plot2
+
+#80-20
+#Vcmax
+file3 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_80_20_fig/2comps(n=68)_test/fittedvalue_test.csv")
+tests3 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_80_20_fig/2comps(n=68)_test/stats.csv")
+rsquared3 <- tests3$R.test^2
+lb3 <- paste("R^2 == ", round(rsquared3,2))
+RMSE3 <- paste("RMSE==", round(RMSE(file3$y.2.comps, file3$y.test),2))
+plot3 <- ggplot(file3, aes(y=y.test, x=y.2.comps))+
+        geom_point(shape=19, colour="tomato2", size=5)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Vcmax")+
+        ylab("Predicted Vcmax")+
+        theme(axis.text.x=element_text(size=14), axis.text.y = element_text(size=14), axis.title=element_text(size=18), plot.title = element_text(size = 18, face = "bold"))+
+        annotate("text", label = lb3, parse=TRUE, x = 90, y = 60, size = 7, colour = "Black")+
+        annotate("text", label = RMSE3, parse=TRUE, x = 90, y = 50, size = 7, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("c) Vcmax - representative 80/20") +
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))
+
+plot3
+#Jmax
+file4 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_80_20_fig/4comps(n=68)_test/fittedvalue_test.csv")
+tests4 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_80_20_fig/4comps(n=68)_test/stats.csv")
+rsquared4 <- tests4$R.test^2
+lb4 <- paste("R^2 == ", round(rsquared4,2))
+RMSE4 <- paste("RMSE==", round(RMSE(file4$y.4.comps, file4$y.test),2))
+
+plot4 <- ggplot(file4, aes(y=y.test, x=y.4.comps))+
+        geom_point(shape=19, colour="tomato2", size=5)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Jmax")+
+        ylab("Predicted Jmax")+
+        theme(axis.text.x=element_text(size=14), axis.text.y = element_text(size=14), axis.title=element_text(size=18), plot.title = element_text(size = 18, face = "bold"))+
+        annotate("text", label = lb4, parse=TRUE, x = 170, y = 80, size = 7, colour = "Black")+
+        annotate("text", label = RMSE4, parse=TRUE, x = 170, y = 65, size = 7, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("d) Jmax - representative 80/20") + 
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))
+
+plot4
+
+#Hardest
+#Vcmax
+file5 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_test_stressed_Period/2comps(n=73)_test/fittedvalue_test.csv")
+tests5 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_test_stressed_Period/2comps(n=73)_test/stats.csv")
+rsquared5 <- tests5$R.test^2
+lb5 <- paste("R^2 == ", round(rsquared5,2))
+RMSE5 <- paste("RMSE==", round(RMSE(file5$y.2.comps, file5$y.test),2))
+
+plot5 <- ggplot(file5, aes(y=y.test, x=y.2.comps))+
+        geom_point(shape=19, colour="tomato2", size=5)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Vcmax")+
+        ylab("Predicted Vcmax")+
+        theme(axis.text.x=element_text(size=14), axis.text.y = element_text(size=14), axis.title=element_text(size=18), plot.title = element_text(size = 18, face = "bold"))+
+        annotate("text", label = lb5, parse=TRUE, x = 75, y = 55, size = 7, colour = "Black")+
+        annotate("text", label = RMSE5, parse=TRUE, x = 75, y = 50, size = 7, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("d) Vcmax - tested on variable water potential") +
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))
+
+plot5
+
+#Jmax
+file6 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_test_stressed_Period/5comps(n=73)_test/fittedvalue_test.csv")
+tests6 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_test_stressed_Period/5comps(n=73)_test/stats.csv")
+rsquared6 <- tests6$R.test^2
+lb6 <- paste("R^2 == ", round(rsquared6,2))
+RMSE6 <- paste("RMSE==", round(RMSE(file6$y.5.comps, file6$y.test),2))
+
+
+plot6 <- ggplot(file6, aes(y=y.test, x=y.5.comps))+
+        geom_point(shape=19, colour="tomato2", size=6)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Jmax")+
+        ylab("Predicted Jmax")+
+        theme(axis.text.x=element_text(size=14), axis.text.y = element_text(size=14), axis.title=element_text(size=18), plot.title = element_text(size = 18, face = "bold"))+
+        annotate("text", label = lb6, parse=TRUE, x = 155, y = 100, size = 7, colour = "Black")+
+        annotate("text", label = RMSE5, parse=TRUE, x = 155, y = 94, size = 7, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("d) Jmax - tested on variable water potential") +
+        theme(plot.title = element_text(margin = margin(c(10, 10, -10, 0))))
+
+plot6
+
+grid.arrange(plot1,plot2,plot3,plot4,plot5,plot6, ncol=2)
+grid.arrange(plot1_resize,plot2_resize,plot3_resize,plot4_resize,plot5_resize,plot6_resize, ncol=2)
+plot1_resize
+plot2_resize
+plot3_resize
+plot4_resize
+plot5_resize
+plot6_resize
+
+
+#Vcmax
+file1 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_LOO/2comps(n=86)_train/fittedvalue.csv")
+tests1 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result//Vcmax_LOO/2comps(n=86)_train/stats.csv")
+rsquared1 <- tests1$R.val^2
+lb1 <- paste("R^2 == ", round(rsquared1,2))
+RMSE1 <- paste("RMSE==", round(RMSE(file1$yhat.cal, file1$yhat.val),2))
+str(file1)
+plot1_resize <- ggplot(file1, aes(y=yhat.cal, x=yhat.val))+
+        geom_point(aes(fill="tomato2"), shape=21, colour="black", size=2)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Vcmax")+
+        ylab("Predicted Vcmax")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        annotate("text", label = lb1, parse=TRUE, x = 98, y = 60, size = 4, colour = "Black")+
+        annotate("text", label = RMSE1, parse=TRUE, x = 98, y = 45, size = 4, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("a) Vcmax - leave-one-out") + 
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))+
+        guides(fill=FALSE)
+
+#Jmax
+file2 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_LOO/4comps(n=86)_train/fittedvalue.csv")
+tests2 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_LOO/4comps(n=86)_train/stats.csv")
+rsquared2 <- tests2$R.val^2
+lb2 <- paste("R^2 == ", round(rsquared2,2))
+RMSE2 <- paste("RMSE==", round(RMSE(file2$yhat.cal, file2$yhat.val),2))
+str(file2)
+plot2_resize <- ggplot(file2, aes(y=yhat.cal, x=yhat.val))+
+        geom_point(aes(fill="tomato2"), shape=21, colour="black", size=2)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Jmax")+
+        ylab("Predicted Jmax")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        annotate("text", label = lb2, parse=TRUE, x = 200, y = 100, size = 4, colour = "Black")+
+        annotate("text", label = RMSE2, parse=TRUE, x = 200, y = 80, size = 4, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("b) Jmax - leave-one-out") + 
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))+
+        guides(fill=FALSE)
+
+
+#80-20
+#Vcmax
+file3 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_80_20_fig/2comps(n=68)_test/fittedvalue_test.csv")
+tests3 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_80_20_fig/2comps(n=68)_test/stats.csv")
+rsquared3 <- tests3$R.test^2
+lb3 <- paste("R^2 == ", round(rsquared3,2))
+RMSE3 <- paste("RMSE==", round(RMSE(file3$y.2.comps, file3$y.test),2))
+plot3_resize <- ggplot(file3, aes(y=y.test, x=y.2.comps))+
+        geom_point(aes(fill="tomato2"), shape=21, colour="black", size=3)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Vcmax")+
+        ylab("Predicted Vcmax")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        annotate("text", label = lb3, parse=TRUE, x = 90, y = 60, size = 4, colour = "Black")+
+        annotate("text", label = RMSE3, parse=TRUE, x = 90, y = 48, size = 4, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("c) Vcmax - representative 80/20") +
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))+
+        guides(fill=FALSE)
+
+
+#Jmax
+file4 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_80_20_fig/4comps(n=68)_test/fittedvalue_test.csv")
+tests4 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_80_20_fig/4comps(n=68)_test/stats.csv")
+rsquared4 <- tests4$R.test^2
+lb4 <- paste("R^2 == ", round(rsquared4,2))
+RMSE4 <- paste("RMSE==", round(RMSE(file4$y.4.comps, file4$y.test),2))
+
+plot4_resize <- ggplot(file4, aes(y=y.test, x=y.4.comps))+
+        geom_point(aes(fill="tomato2"), shape=21, colour="black", size=3)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Jmax")+
+        ylab("Predicted Jmax")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        annotate("text", label = lb4, parse=TRUE, x = 170, y = 100, size = 4, colour = "Black")+
+        annotate("text", label = RMSE4, parse=TRUE, x = 170, y = 80, size = 4, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("d) Jmax - representative 80/20") + 
+        theme(plot.title = element_text(margin = margin(c(10, 10, -20, 0))))+
+        guides(fill=FALSE)
+
+#Hardest
+#Vcmax
+file5 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_test_stressed_Period/2comps(n=73)_test/fittedvalue_test.csv")
+tests5 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_test_stressed_Period/2comps(n=73)_test/stats.csv")
+rsquared5 <- tests5$R.test^2
+lb5 <- paste("R^2 == ", round(rsquared5,2))
+RMSE5 <- paste("RMSE==", round(RMSE(file5$y.2.comps, file5$y.test),2))
+
+plot5_resize <- ggplot(file5, aes(y=y.test, x=y.2.comps))+
+        geom_point(aes(fill="tomato2"), shape=21, colour="black", size=3)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Vcmax")+
+        ylab("Predicted Vcmax")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        annotate("text", label = lb5, parse=TRUE, x = 75, y = 62, size = 4, colour = "Black")+
+        annotate("text", label = RMSE5, parse=TRUE, x = 75, y = 55, size = 4, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("e) Vcmax - tested on variable water potential") +
+        theme(plot.title = element_text(margin = margin(c(10, 10, 0, 0))))+
+        guides(fill=FALSE)
+
+
+#Jmax
+file6 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_test_stressed_Period/5comps(n=73)_test/fittedvalue_test.csv")
+tests6 <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_test_stressed_Period/5comps(n=73)_test/stats.csv")
+rsquared6 <- tests6$R.test^2
+lb6 <- paste("R^2 == ", round(rsquared6,2))
+RMSE6 <- paste("RMSE==", round(RMSE(file6$y.5.comps, file6$y.test),2))
+
+
+plot6_resize <- ggplot(file6, aes(y=y.test, x=y.5.comps))+
+        geom_point(aes(fill="tomato2"), shape=21, colour="black", size=3)+
+        geom_abline(intercept = 0, slope = 1)+
+        xlab("Measured Jmax")+
+        ylab("Predicted Jmax")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        annotate("text", label = lb6, parse=TRUE, x = 155, y = 115, size = 4, colour = "Black")+
+        annotate("text", label = RMSE5, parse=TRUE, x = 155, y = 105, size = 4, colour = "Black")+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("f) Jmax - tested on variable water potential") +
+        theme(plot.title = element_text(margin = margin(c(10, 10, 0, 0))))+
+        guides(fill=FALSE)
+
+
+plot6
+
+#Figure 3 Redo: 
+#Hyperspectral fig + SR and VIP below? Or SR for Vcmax and Jmax perhaps
+
+SR_Jmax <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_test_stressed_period/5comps(n=73)_test/selectivityRatio.csv")
+str(SR_Jmax)
+SR_Jmax$wavelength <- SR_Jmax$X+500
+SR_plotJ <- ggplot(SR_Jmax, aes(y=x, x=wavelength))+
+        geom_line(colour="darkslategray3")+
+        xlim(500,2400)+
+        ylim(0,3)+
+        geom_smooth(method="loess",span=0.1, color="red")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("c) Jmax - tested on variable water potential") +
+        xlab("wavelength (nm)")+
+        ylab("Selectivity Ratio")+
+        theme(plot.margin=unit(c(-0.2,0.5,0,0.5), "cm"))+
+        theme(plot.title = element_text(margin = margin(c(10, 10, -10, 0))))+
+        guides(fill=FALSE)
+
+SR_Vcmax <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Vcmax_test_stressed_Period/2comps(n=73)_test/selectivityRatio.csv")
+str(SR_Vcmax)
+SR_Vcmax$wavelength <- SR_Vcmax$X+500
+SR_plotV <- ggplot(SR_Vcmax, aes(y=x, x=wavelength))+
+        geom_line(colour="darkslategray3")+
+        xlim(500,2400)+
+        ylim(0,7)+
+        geom_smooth(method="loess",span=0.1, color="red")+
+        theme(axis.text.x=element_blank(), axis.text.y = element_text(size=10), axis.title.x=element_blank(), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        ggtitle("b) Vcmax - tested on variable water potential") +
+        xlab("wavelength (nm)")+
+        ylab("Selectivity Ratio")+
+        theme(plot.title = element_text(margin = margin(c(10, 10, -10, 0))))+
+        guides(fill=FALSE)+
+        theme(plot.margin=unit(c(-0.3,0.5,-0.1,0.5), "cm"))
+
+Refs <- ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
+        #scale_x_continuous(breaks=seq(500, 2400, 200))+
+        xlim(500,2400)+
+        geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
+        geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
+        theme(legend.position="none")+ ggtitle("Mean Reflectance")+
+        theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title.x=element_blank(), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
+        theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
+              panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        theme(plot.margin=unit(c(0.2,0.5,0,0.5), "cm"))+
+        ggtitle("a) Leaf Spectra") +
+        xlab("wavelength (nm)")+
+        ylab("reflectance")+
+        theme(plot.title = element_text(margin = margin(c(10, 10, -10, 0))))
+        
+
+
+grid.arrange(Refs, SR_plotV, SR_plotJ, heights=c(6,3,3.7))
