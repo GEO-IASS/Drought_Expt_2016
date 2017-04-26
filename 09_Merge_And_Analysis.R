@@ -53,7 +53,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze.csv")
 merged <- read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Merged_data_to_analyze_3_6_2017.csv")
 #'hyperspec' file contains processed hyperspectral files including 'unique_ID'
-hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_Yendreck_Indices_2_21.csv")
+hyperspec <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/Processed_Hyperspec_Files_4_25_2017.csv")
 
 #Checking out both files
 head(merged)
@@ -65,16 +65,16 @@ head(hyperspec)
 #'uniqueID' takes form: a18-2016-06-08 
 
 hyperspec$uniqueID <- paste(tolower(hyperspec$ID), hyperspec$date, sep='-')
-
+str(hyperspec)
 #want means of VIs by uniqueID - use ddply
-hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, NDVI=mean(NDVI), PRI=mean(PRI), NDWI=mean(NDWI), Datt4=mean(Datt4), Vogelmann2=mean(Vogelmann2), Maccioni=mean(Maccioni), Double_Difference=mean(Double_Difference), Vogelmann1=mean(Vogelmann1), mSR705=mean(mSR705), SR3=mean(SR3), SR4=mean(SR4), SR1=mean(SR1), Gitelson=mean(Gitelson), SR2=mean(SR2), SIPI=mean(SIPI), mNDVI=mean(mNDVI), mSRCHL=mean(mSRCHL))
+hyperspec_avg <- ddply(hyperspec,~uniqueID,summarise, SRcarter=mean(SRcarter), NDVI=mean(NDVI), NDVI_mod=mean(NDVI_mod, na.rm=TRUE), PRI=mean(PRI), NDWI=mean(NDWI), Datt4=mean(Datt4), Vogelmann2=mean(Vogelmann2), Maccioni=mean(Maccioni), Double_Difference=mean(Double_Difference), Vogelmann1=mean(Vogelmann1), mSR705=mean(mSR705), SR3=mean(SR3), SR4=mean(SR4), SR1=mean(SR1), Gitelson=mean(Gitelson), SR2=mean(SR2), SIPI=mean(SIPI), mNDVI=mean(mNDVI), mSRCHL=mean(mSRCHL))
 
 #merge hyperspec and a/ci data
 anti_join(merged, hyperspec_avg, by="uniqueID")
 hyperspec_avg$uniqueID
 all_data <- merge(hyperspec_avg, merged, by="uniqueID")
 str(all_data)
-write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
+write.csv(all_data, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_4_25_2017.csv")
 
 #clean up "all_data"
 #delete X.2, X.1, and X columns (what even are these?)
@@ -83,11 +83,24 @@ all_data <- subset(all_data, select=-c(X,X.1))
 #giant correlation matrix to clipboard for quick glance
 #Saved as 'corr matrix' in the Paper_2 folder in dropbox
 c <-(cor(all_data[,unlist(lapply(all_data, is.numeric))]))
+
+check_corrs <- function(xx)
+{
+        CORV=cor(xx$SRcarter, xx$Vcmax, use="pairwise.complete.obs")
+        SIGV=cor.test(xx$SRcarter,xx$Vcmax, use="pairwise.complete.obs")$p.value
+        CORJ=cor(xx$SRcarter, xx$Jmax, use="pairwise.complete.obs")
+        SIGJ=cor.test(xx$SRcarter,xx$Jmax, use="pairwise.complete.obs")$p.value
+        return(data.frame(CORV, SIGV, CORJ, SIGJ))
+        
+}
+str(all_data)
+check_corrs(all_data)
+
 write.table(c, "clipboard", sep="\t", row.names=FALSE)
 
 #Reading in merged data
 #START HERE if no changes to original data files necessary--------------- 
-all_data <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_3_6_2017.csv")
+all_data <-read.csv("C:/Users/Mallory/Dropbox/Drought_Expt_2016/all_data_4_25_2017.csv")
 str(all_data)
 all_data$ratio <- (all_data$Vcmax/all_data$Jmax)
 head(all_data)
