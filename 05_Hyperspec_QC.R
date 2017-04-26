@@ -91,6 +91,8 @@ calc_SR2=function(w_752, w_690){(w_752/w_690)}
 calc_SIPI=function(w_800, w_445, w_680){(w_800-w_445)/(w_800-w_680)}
 calc_mNDVI=function(w_800, w_680, w_445){(w_800-w_680)/(w_800+w_680+-2*w_445)}
 calc_mSRCHL=function(w_800, w_445, w_680){(w_800-w_445)/(w_680-w_445)}
+calc_SRcarter=function(w_760, w_695){(w_760/w_695)}
+
 
 #create list of text files (files must be in working directory); 'pattern' is case-sensitive
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
@@ -129,7 +131,8 @@ indices$SR2 <- as.numeric(as.character(indices$SR2))
 indices$SIPI <- as.numeric(as.character(indices$SIPI))
 indices$mNDVI <- as.numeric(as.character(indices$mNDVI))
 indices$mSRCHL <- as.numeric(as.character(indices$mSRCHL))
-indices$NDVI_mod <- as.numeric(as.character(indicesNDVI_mod))
+indices$NDVI_mod <- as.numeric(as.character(indices$NDVI_mod))
+indices$SRcarter <- as.numeric(as.character(indices$SRcarter))
 
 
 
@@ -158,7 +161,8 @@ calc_indices <- function(x){
         w_670=tmp[321,2]
         w_672=tmp[323,2]
         w_680=tmp[331,2]
-        w_690=tmp[341,2]        
+        w_690=tmp[341,2]
+        w_695=tmp[346,2]
         w_700=tmp[351,2]
         w_701=tmp[352,2]
         w_705=tmp[356,2]
@@ -173,6 +177,7 @@ calc_indices <- function(x){
         w_749=tmp[400,2]
         w_750=tmp[401,2]
         w_752=tmp[403,2]
+        w_760=tmp[411,2]
         w_780=tmp[431,2]
         w_800=tmp[451,2]
         w_860=tmp[511,2]
@@ -194,10 +199,11 @@ calc_indices <- function(x){
         SR1=calc_SR1(w_750, w_700)
         Gitelson=calc_Gitelson(w_700)
         SR2=calc_SR2(w_752, w_690)
+        SRcarter=calc_SRcarter(w_760, w_695)
         SIPI=calc_SIPI(w_800, w_445, w_680)
         mNDVI=calc_mNDVI(w_800, w_680, w_445)
         mSRCHL=calc_mSRCHL(w_800, w_445, w_680)
-        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI, Datt4, Vogelmann2, Maccioni, Double_Difference, Vogelmann1, mSR705, mNDVI705, SR3, SR4, SR1, Gitelson, SR2, SIPI, mNDVI, mSRCHL, NDVI_mod))
+        indices=as.data.frame(cbind(filename, ID, date, observation, PRI, NDVI, NDWI, Datt4, Vogelmann2, Maccioni, SRcarter, Double_Difference, Vogelmann1, mSR705, mNDVI705, SR3, SR4, SR1, Gitelson, SR2, SIPI, mNDVI, mSRCHL, NDVI_mod))
         return(indices)
 }
 
