@@ -86,14 +86,15 @@ c <-(cor(all_data[,unlist(lapply(all_data, is.numeric))]))
 
 check_corrs <- function(xx)
 {
-        CORV=cor(xx$SRcarter, xx$Vcmax, use="pairwise.complete.obs")
-        SIGV=cor.test(xx$SRcarter,xx$Vcmax, use="pairwise.complete.obs")$p.value
-        CORJ=cor(xx$SRcarter, xx$Jmax, use="pairwise.complete.obs")
-        SIGJ=cor.test(xx$SRcarter,xx$Jmax, use="pairwise.complete.obs")$p.value
+        CORV=cor(xx$Jmax, xx$Vcmax, use="pairwise.complete.obs")
+        SIGV=cor.test(xx$Jmax,xx$Vcmax, use="pairwise.complete.obs")$p.value
+        CORJ=cor(xx$Wind_Speed, xx$Jmax, use="pairwise.complete.obs")
+        SIGJ=cor.test(xx$Wind_Speed,xx$Vcmax, use="pairwise.complete.obs")$p.value
         return(data.frame(CORV, SIGV, CORJ, SIGJ))
         
 }
 str(all_data)
+
 check_corrs(all_data)
 
 write.table(c, "clipboard", sep="\t", row.names=FALSE)
