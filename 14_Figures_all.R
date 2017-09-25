@@ -6,6 +6,7 @@
 #Necessary Pacakges: 
 library(lubridate)
 library(ggplot2)
+library(scales)
 library(plyr)
 library(dplyr)
 library(grid)
@@ -189,14 +190,15 @@ p2 <- ggplot(plot_climate,aes(Date, Precip)) + geom_bar(stat="Identity", fill="b
                   fill="darkslategray1")+
         geom_rect(aes(xmin=as.Date("2016-06-19", "%Y-%m-%d"),xmax=as.Date("2016-06-20", "%Y-%m-%d") ,ymin=-Inf,ymax=Inf),
                   fill="darkslategray1")+
+      ylab("Precip (mm)")+
         theme(axis.title.x = element_blank(), axis.text.x = element_blank(),
               axis.title.y=element_text(vjust=6), axis.text.y=element_text(hjust=-1))+ 
         theme(panel.border = element_blank(), panel.background = element_blank(), 
               panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              plot.margin=unit(c(-0.25,1.5,1,1), "cm"))
+              plot.margin=unit(c(-0.25,2,1,1), "cm"))
 
 #Got both on same axis! YES!
-p <- p1 +geom_line(aes(y = VPD*5, colour = 'red'))
+p <- p1 +geom_line(aes(y = VPD*5, colour = 'red'))+ ylab("Temp (C)")
 
 # now adding the secondary axis, following the example in the help file ?scale_y_continuous
 # and, very important, reverting the above transformation
@@ -204,14 +206,14 @@ p <- p + scale_y_continuous(sec.axis = sec_axis(~./5, name = "VPD [KPa]")) +
         theme(axis.title.x=element_blank(),
               axis.text.x=element_blank(),
               axis.ticks.x=element_blank(),
-        plot.margin=unit(c(1,1,-1,1), "cm"))
-
+        plot.margin=unit(c(1,1,0,1), "cm"))
+grid.arrange(p, p2)
 #Physiological data
 #Water Potential Data 
 str(Plot_data)
 w <- ggplot(Plot_data, aes(factor(Date), Water_Pot))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+
         xlab("Date")
-w1 <- w + geom_boxplot(outlier.colour = NA)
+w1 <- w + geom_boxplot(outlier.colour = NA, width=0.5)
 w2 <- w1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.x=element_blank(),
                                                                      axis.text.x=element_blank(),
                                                                      axis.ticks.x=element_blank(),
@@ -221,7 +223,7 @@ w2 <- w1 + geom_point(position = position_jitter(width = 0.2))+theme(axis.title.
 
 #Vcmax
 v <- ggplot(Plot_data, aes(factor(Date), Vcmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-v1 <- v + geom_boxplot(outlier.colour = NA)
+v1 <- v + geom_boxplot(outlier.colour = NA, width=0.4)
 v2 <- v1 + geom_point(position = position_jitter(width = 0.2)) + theme(axis.title.x=element_blank(),
                                                                        axis.text.x=element_blank(),
                                                                        axis.ticks.x=element_blank(),
@@ -229,8 +231,15 @@ v2 <- v1 + geom_point(position = position_jitter(width = 0.2)) + theme(axis.titl
         theme(panel.border = element_blank(), panel.background = element_blank(), 
               panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 #Jmax
-j <- ggplot(Plot_data, aes(factor(Date), Jmax))+ theme(axis.text.x = element_text(angle = 90, hjust = 1))
-j1 <- j + geom_boxplot(outlier.colour = NA)
+str(Plot_data)
+str(Plot_data)
+as.Date(Plot_data$Date, format="%Y/%m/%d")
+j <- ggplot(Plot_data, aes(factor(Date), y=Jmax))+ 
+                            #scale_x_date(labels = date_format("%Y-%m-%d"))+
+                            theme(axis.text.x = element_text(angle = 90, hjust = 1))
+j1 <- j + geom_boxplot(outlier.colour = NA, width=0.4),aes(xmin = as.Date("2004-04-29", "%Y-%m-%d"), 
+                                                              xmax = as.Date("2004-12-20",  "%Y-%m-%d")))
+
 j2 <- j1 + geom_point(position = position_jitter(width = 0.2))+ theme(plot.margin=unit(c(0,1,0,1), "cm"))+
         xlab("Date")+
         theme(panel.border = element_blank(), panel.background = element_blank(), 
@@ -242,6 +251,21 @@ grid.draw(rbind(ggplotGrob(p2), ggplotGrob(p),ggplotGrob(w2), ggplotGrob(v2), gg
 
 #draw it!
 grid.arrange(p, p2, w2, v2, j2, ncol=1, heights=c(2,2,3,5.5,8))
+grid.arrange(w2, v2, j2, ncol=1, heights=c(6,8,10))
+
+#Quantifying change in Vcmax early vs. late
+#early = 5-24 through 6-15
+#late = 6-15 through 7-06
+str(Plot_data)
+early <- subset(Plot_data, Date < as.Date("2016-06-08"))
+late <- subset(Plot_data, Date > as.Date("2016-06-24"))
+str(early)
+str(late)
+mean(early$Vcmax)
+mean(late$Vcmax)
+
+mean(early$Jmax)
+mean(late$Jmax)
 
 #Figure 2---------------------------------------------------------------------------------------
 setwd(dir = "C:/Users/Mallory/Dropbox/Mallory_Hyperspectral/9_2_2016_hyperspectral/")
@@ -393,8 +417,8 @@ hyperspectral_long$uniqueID
 str(hyperspectral_long)
 
 Refs <- ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
-        scale_x_continuous(breaks=seq(450, 2500, 200))+
-        xlim(450,2500)+
+      scale_x_continuous(breaks=seq(500, 2400, 200), limits=c(500,2400))+
+       xlim(450,2500)+
         geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
         geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
         theme(legend.position="none")+ ggtitle("Mean Reflectance")
@@ -927,6 +951,9 @@ plot6
 
 #Figure 3 Redo: 
 #Hyperspectral fig + SR and VIP below? Or SR for Vcmax and Jmax perhaps
+SR_Jmax[which.max(SR_Jmax$x),]
+SR_Vcmax[which.max(SR_Vcmax$x),]
+
 
 SR_Jmax <- read.csv("C:/Users/Mallory/Dropbox/Paper_2/PLSR_result/Jmax_test_stressed_period/5comps(n=73)_test/selectivityRatio.csv")
 str(SR_Jmax)
@@ -935,7 +962,8 @@ SR_plotJ <- ggplot(SR_Jmax, aes(y=x, x=wavelength))+
         geom_line(colour="darkslategray3")+
         xlim(500,2400)+
         ylim(0,3)+
-        geom_smooth(method="loess",span=0.1, color="red")+
+    scale_x_continuous(breaks=seq(500, 2400, 200), limits=c(500,2400))+
+          geom_smooth(method="loess",span=0.1, color="red")+
         theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
         theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
@@ -952,6 +980,7 @@ SR_Vcmax$wavelength <- SR_Vcmax$X+500
 SR_plotV <- ggplot(SR_Vcmax, aes(y=x, x=wavelength))+
         geom_line(colour="darkslategray3")+
         xlim(500,2400)+
+        scale_x_continuous(breaks=seq(500, 2400, 200), limits=c(500,2400))+
         ylim(0,7)+
         geom_smooth(method="loess",span=0.1, color="red")+
         theme(axis.text.x=element_blank(), axis.text.y = element_text(size=10), axis.title.x=element_blank(), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
@@ -962,23 +991,30 @@ SR_plotV <- ggplot(SR_Vcmax, aes(y=x, x=wavelength))+
         ylab("Selectivity Ratio")+
         theme(plot.title = element_text(margin = margin(c(10, 10, -10, 0))))+
         guides(fill=FALSE)+
-        theme(plot.margin=unit(c(-0.3,0.5,-0.1,0.5), "cm"))
+        theme(plot.margin=unit(c(-0.2,0.5,-0.1,0.5), "cm"))
 
 Refs <- ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=uniqueID))+ geom_line(alpha=0.2)+
         #scale_x_continuous(breaks=seq(500, 2400, 200))+
         xlim(500,2400)+
-        geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
-        geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
+        scale_x_continuous(breaks=seq(500, 2400, 200), limits=c(500,2400))+
+        #geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
+        #geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
         theme(legend.position="none")+ ggtitle("Mean Reflectance")+
         theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title.x=element_blank(), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
         theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
               panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
-        theme(plot.margin=unit(c(0.2,0.5,0,0.5), "cm"))+
+        theme(plot.margin=unit(c(0.2,0.6,0,0.5), "cm"))+
         ggtitle("a) Leaf Spectra") +
         xlab("wavelength (nm)")+
         ylab("reflectance")+
         theme(plot.title = element_text(margin = margin(c(10, 10, -10, 0))))
-        
 
+str(hyperspectral_long)
 
+mean(hyperspectral_long$reflectance, na.rm=TRUE)
+names(hyperspectral_long)[3] <- "wavelength"
+hyperspect_stats <- ddply(hyperspectral_long, .(wavelength), summarise, mean_ref=mean(reflectance, na.rm=TRUE), max_ref=max(reflectance,na.rm=TRUE), min_ref=min(reflectance,na.rm=TRUE))
+rename(hyperspectral_long, )
+grid.newpage()
 grid.arrange(Refs, SR_plotV, SR_plotJ, heights=c(6,3,3.7))
+
