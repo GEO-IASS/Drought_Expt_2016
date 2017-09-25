@@ -997,8 +997,9 @@ Refs <- ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=unique
         #scale_x_continuous(breaks=seq(500, 2400, 200))+
         xlim(500,2400)+
         scale_x_continuous(breaks=seq(500, 2400, 200), limits=c(500,2400))+
-        #geom_line(data=not_stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="blue")  +
-        #geom_line(data=stressed, aes(x=wavelength, y=reflectance, group=1, fill=1), size=1, colour="red")+
+        geom_line(data=hyperspect_stats, aes(x=wavelength, y=mean_ref, group=1, fill=1), size=1, colour="red")  +
+        geom_line(data=hyperspect_stats, aes(x=wavelength, y=max_ref, group=1, fill=1), size=1, colour="blue")  +
+        geom_line(data=hyperspect_stats, aes(x=wavelength, y=min_ref, group=1, fill=1), size=1, colour="green")  +
         theme(legend.position="none")+ ggtitle("Mean Reflectance")+
         theme(axis.text.x=element_text(size=10), axis.text.y = element_text(size=10), axis.title.x=element_blank(), axis.title=element_text(size=10), plot.title = element_text(size = 10, face = "bold"))+
         theme(panel.background = element_blank(), panel.border = element_rect(colour = "black", fill=NA, size=1),
@@ -1011,10 +1012,10 @@ Refs <- ggplot(hyperspectral_long, aes(y=reflectance, x=wavelength, group=unique
 
 str(hyperspectral_long)
 
-mean(hyperspectral_long$reflectance, na.rm=TRUE)
-names(hyperspectral_long)[3] <- "wavelength"
 hyperspect_stats <- ddply(hyperspectral_long, .(wavelength), summarise, mean_ref=mean(reflectance, na.rm=TRUE), max_ref=max(reflectance,na.rm=TRUE), min_ref=min(reflectance,na.rm=TRUE))
-rename(hyperspectral_long, )
+
 grid.newpage()
 grid.arrange(Refs, SR_plotV, SR_plotJ, heights=c(6,3,3.7))
+
+write.csv(hyperspectral_long, "C:/Users/Mallory/Dropbox/Drought_Expt_2016/hyperspec_long.csv")
 
